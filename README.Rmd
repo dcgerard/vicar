@@ -1,0 +1,49 @@
+---
+output: github_document
+bibliography: vicar.bib
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, echo = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.path = "README-"
+)
+```
+
+# VICAR: Variance Inflation for Confounder Adjustment in Regression
+
+## Description
+Let
+
+Y = XB + ZA + E,
+
+for
+
+* Y an n by p matrix of gene expression data with n samples and p genes,
+* X an n by q matrix of of q covariates,
+* B a q by p matrix of unobserved coefficients for the observed covariates,
+* Z an n by k matrix of hidden confounders,
+* A a k by p matrix of hidden coefficients for the hidden confounders, and
+* E an n by p matrix of independent normal errors with column variances s1,...,sp.
+
+Not accounting for the hidden covariates, Z, can reduce power and result in poor control of false discovery rate.
+
+There are many approaches available for estimating hidden confounders,
+but in practice they are not well calibrated. This package calibrates
+RUV2 [@gagnon2012using], RUV4 [@gagnon2013removing], and LEAPP
+[@sun2012multiple]. If I come up with a way to calibrate SVA
+[@leek2007capturing, @leek2008general], then I'll include that as
+well.
+
+## Installation
+To install, run in R:
+
+```{r, eval = FALSE}
+install.packages("devtools")
+devtools::install_github("dcgerard/vicar")
+```
+
+## References
