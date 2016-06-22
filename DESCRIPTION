@@ -13,4 +13,6 @@ Imports: ruv,
     SQUAREM,
     limma,
     sva,
-    assertthat
+    assertthat,
+    MASS
+Suggests: testthat
