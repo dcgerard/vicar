@@ -9,9 +9,49 @@ vicarius_leapp(Y, X, k = NULL, cov_of_interest = ncol(X),
   limmashrink = FALSE, include_intercept = TRUE, fa_func = pca_naive,
   fa_args = list())
 }
+\arguments{
+\item{Y}{A matrix of numerics. These are the response variables
+where each column has its own variance. In a gene expression
+study, the rows are the individuals and the columns are the
+genes.}
+
+\item{X}{A matrix of numerics. The covariates of interest.}
+
+\item{k}{A non-negative integer.The number of unobserved
+confounders. If not specified and the R package sva is
+installed, then this function will estimate the number of
+hidden confounders using the methods of Buja and Eyuboglu
+(1992).}
+
+\item{cov_of_interest}{A vector of positive integers. The column
+numbers of the covariates in X whose coefficients you want to
+apply ASH to.}
+
+\item{limmashrink}{A logical. Should we apply hierarchical
+shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?}
+
+\item{include_intercept}{A logical. If \code{TRUE}, then it will
+check \code{X} to see if it has an intercept term. If not, then
+it will add an intercept term. If \code{FALSE}, then \code{X}
+will be unchanged.}
+
+\item{fa_func}{A factor analysis function. The function must have
+as inputs a numeric matrix \code{Y} and a rank (numeric scalar)
+\code{r}. It must output a numeric matrix \code{alpha} and a
+numeric vector \code{sig_diag}. \code{alpha} is the estimate of
+the coefficients of the unobserved confounders, so it must be
+an \code{r} by \code{ncol(Y)} matrix. \code{sig_diag} is the
+estimate of the column-wise variances so it must be of length
+\code{ncol(Y)}. The default is the function \code{pca_naive}
+that just uses the first \code{r} singular vectors as the
+estimate of \code{alpha}. The estimated variances are just the
+column-wise mean square.}
+
+\item{fa_args}{A list. Additional arguments you want to pass to
+fa_func.}
+}
 \description{
-Calibrated LEAPP where the tuning parameter is chosen by a modified
-cross-validation.
+Doesn't work too well.
 }
 \author{
 David Gerard

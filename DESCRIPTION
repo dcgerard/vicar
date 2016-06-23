@@ -16,4 +16,5 @@ Imports: ruv,
     assertthat,
     MASS
 Suggests: testthat,
-    ashr
+    ashr,
+    leapp

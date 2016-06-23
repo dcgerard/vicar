@@ -113,7 +113,7 @@ A list whose elements are:
     \code{sigma2 * multiplier}.
 
     \code{mult_matrix} A matrix of numerics. Equal to
-    \code{solve(Rsub \%*\% t(Rsub))}. One multiplies \code{sigma2} or
+    \code{solve(t(Rsub) \%*\% Rsub)}. One multiplies \code{sigma2} or
     \code{simga2_adjused} by the diagonal elements of
     \code{mult_matrix} to get the standard errors of
     \code{betahat}.

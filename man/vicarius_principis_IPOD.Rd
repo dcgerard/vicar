@@ -7,8 +7,23 @@ cross-validation to choose the tuning parameter.}
 \usage{
 vicarius_principis_IPOD(X, Y, H, sigma, method = "hard", TOL = 1e-04)
 }
+\arguments{
+\item{X}{A matrix of numerics. The covariates of interest.}
+
+\item{Y}{A matrix of numerics. These are the response variables
+where each column has its own variance. In a gene expression
+study, the rows are the individuals and the columns are the
+genes.}
+
+\item{H}{Equal to X(X'X)^{-1}X'}
+
+\item{sigma}{The variance.}
+
+\item{method}{Either "hard" or "soft"}
+
+\item{TOL}{The stopping criterion tolerance.}
+}
 \description{
-Modified version of leapp::IPOD to run a version of
-cross-validation to choose the tuning parameter.
+Doesn't work too well.
 }
 
