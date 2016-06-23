@@ -22,8 +22,9 @@ installed, then this function will estimate the number of
 hidden confounders using the methods of Buja and Eyuboglu
 (1992).}
 
-\item{cov_of_interest}{A positive integer. The column number of the
-covariate in X whose coefficients you want to apply ASH to.}
+\item{cov_of_interest}{A vector of positive integers. The column
+numbers of the covariates in X whose coefficients you want to
+apply ASH to.}
 
 \item{include_intercept}{A logical. If \code{TRUE}, then it will
 check \code{X} to see if it has an intercept term. If not, then
@@ -47,8 +48,13 @@ column-wise mean square.}
 
 \item{fa_args}{A list. Additional arguments you want to pass to
 fa_func.}
+
+\item{do_ols}{A logical. Should we just do OLS?}
 }
 \description{
 QR rotation to independent models.
+}
+\author{
+David Gerard
 }
 

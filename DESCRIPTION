@@ -15,4 +15,5 @@ Imports: ruv,
     sva,
     assertthat,
     MASS
-Suggests: testthat
+Suggests: testthat,
+    ashr

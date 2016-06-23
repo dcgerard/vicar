@@ -5,7 +5,7 @@
 \title{Calibrated RUV4 where the control genes are used to estimate hidden
 confounders and variance inflation parameter.}
 \usage{
-vicarius_ruv4(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
+vicarius_ruv4(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
   likelihood = c("t", "normal"), limmashrink = FALSE,
   degrees_freedom = NULL, include_intercept = TRUE, gls = TRUE,
   fa_func = pca_naive, fa_args = list())
@@ -30,8 +30,9 @@ installed, then this function will estimate the number of
 hidden confounders using the methods of Buja and Eyuboglu
 (1992).}
 
-\item{cov_of_interest}{A positive integer. The column number of the
-covariate in X whose coefficients you want to apply ASH to.}
+\item{cov_of_interest}{A vector of positive integers. The column
+numbers of the covariates in X whose coefficients you want to
+apply ASH to.}
 
 \item{likelihood}{Either \code{"normal"} or \code{"t"}. If
 \code{likelihood = "t"}, then the user may provide the degrees
@@ -90,7 +91,7 @@ A list whose elements are:
     YOU ALSO INCLUDE THE ESTIMATES OF THE UNOBSERVED CONFOUNDERS.
 
     \code{sebetahat} A vector of positive numerics. This is equal
-    to sqrt(ruv$sebethat_ols * ruv$multiplier). This is the
+    to \code{sebethat_ols * sqrt(multiplier)}. This is the
     post-inflation adjusted standard errors for \code{ruv$betahat}.
 
     \code{tstats} A vector of numerics. The t-statistics for
@@ -105,15 +106,24 @@ A list whose elements are:
     coefficients of the hidden confounders.
 
     \code{sigma2} A vector of positive numerics. The estimates of
-    the variances.
+    the variances PRIOR to inflation.
 
-    \code{fnorm_x} A numeric. This is the diagonal element of
-    \code{t(X) \%*\% X} that corresponds to the covariate of
-    interest. Returned mostly for debugging reasons and may be
-    removed in the future.
+    \code{sigma2_adjusted} A vector of positive numerics. The
+    estimates of the variances AFTER to inflation. This is equal to
+    \code{sigma2 * multiplier}.
+
+    \code{mult_matrix} A matrix of numerics. Equal to
+    \code{solve(Rsub \%*\% t(Rsub))}. One multiplies \code{sigma2} or
+    \code{simga2_adjused} by the diagonal elements of
+    \code{mult_matrix} to get the standard errors of
+    \code{betahat}.
+
+    \code{Rsub} A matrix of numerics numeric. This is the submatrix
+    of the R in the QR decomposition of X that corresponds to the
+    covariates of interest. May be removed in the future.
 
     \code{Z1} A matrix of numerics of length 1. This is the
-    estimated confounders (after a rotation). Not useful on it's
+    estimated confounders (after a rotation). Not useful on it is
     own and is mostly returned for debugging purposes. It may be
     removed in the future.
 }

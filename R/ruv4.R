@@ -92,7 +92,7 @@
 #'     YOU ALSO INCLUDE THE ESTIMATES OF THE UNOBSERVED CONFOUNDERS.
 #'
 #'     \code{sebetahat} A vector of positive numerics. This is equal
-#'     to sqrt(ruv$sebethat_ols * ruv$multiplier). This is the
+#'     to \code{sebethat_ols * sqrt(multiplier)}. This is the
 #'     post-inflation adjusted standard errors for \code{ruv$betahat}.
 #'
 #'     \code{tstats} A vector of numerics. The t-statistics for
@@ -107,15 +107,24 @@
 #'     coefficients of the hidden confounders.
 #'
 #'     \code{sigma2} A vector of positive numerics. The estimates of
-#'     the variances.
+#'     the variances PRIOR to inflation.
 #'
-#'     \code{fnorm_x} A numeric. This is the diagonal element of
-#'     \code{t(X) \%*\% X} that corresponds to the covariate of
-#'     interest. Returned mostly for debugging reasons and may be
-#'     removed in the future.
+#'     \code{sigma2_adjusted} A vector of positive numerics. The
+#'     estimates of the variances AFTER to inflation. This is equal to
+#'     \code{sigma2 * multiplier}.
+#'
+#'     \code{mult_matrix} A matrix of numerics. Equal to
+#'     \code{solve(t(Rsub) \%*\% Rsub)}. One multiplies \code{sigma2} or
+#'     \code{simga2_adjused} by the diagonal elements of
+#'     \code{mult_matrix} to get the standard errors of
+#'     \code{betahat}.
+#'
+#'     \code{Rsub} A matrix of numerics numeric. This is the submatrix
+#'     of the R in the QR decomposition of X that corresponds to the
+#'     covariates of interest. May be removed in the future.
 #'
 #'     \code{Z1} A matrix of numerics of length 1. This is the
-#'     estimated confounders (after a rotation). Not useful on it's
+#'     estimated confounders (after a rotation). Not useful on it is
 #'     own and is mostly returned for debugging purposes. It may be
 #'     removed in the future.
 #'
@@ -185,33 +194,52 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
     betahat_ols     <- rotate_out$betahat_ols
 
     ## RUN RUV4 HERE ----------------------------------------------------------
-    if (length(cov_of_interest) == 1) {
-        alpha_scaled    <- rotate_out$alpha / rotate_out$Rsub[1, 1]
-        sig_diag_scaled <- rotate_out$sig_diag / rotate_out$Rsub[1, 1] ^ 2
-        k               <- rotate_out$k
-        ruv4_out <- cruv4(betahat_ols = t(betahat_ols), alpha_scaled = alpha_scaled,
-                          sig_diag_scaled = sig_diag_scaled, ctl = ctl,
-                          degrees_freedom = degrees_freedom,
-                          gls = gls, likelihood = likelihood)
+    
+        ## alpha_scaled    <- rotate_out$alpha / rotate_out$Rsub[1, 1]
+        ## sig_diag_scaled <- rotate_out$sig_diag / rotate_out$Rsub[1, 1] ^ 2
+        ## k               <- rotate_out$k
+        ## ruv4_out <- cruv4(betahat_ols = t(betahat_ols), alpha_scaled = alpha_scaled,
+        ##                   sig_diag_scaled = sig_diag_scaled, ctl = ctl,
+        ##                   degrees_freedom = degrees_freedom,
+        ##                   gls = gls, likelihood = likelihood)
 
-        ruv4_out$alphahat <- rotate_out$alpha
-        ruv4_out$sigma2   <- rotate_out$sig_diag
-        ruv4_out$fnorm_x  <- rotate_out$Rsub[1, 1]
-    } else {
-        Y2       <- rotate_out$Y2
-        alpha    <- rotate_out$alpha
-        sig_diag <- rotate_out$sig_diag
-        Rsub     <- rotate_out$Rsub
-        ruv4_out <- cruv4_multicov(Y2 = t(Y2), alpha = alpha,
-                                   sig_diag = sig_diag, ctl = ctl,
-                                   Rsub = Rsub,
-                                   degrees_freedom = degrees_freedom,
-                                   gls = gls, likelihood = likelihood)
-    }
-
+        ## ruv4_out$alphahat <- rotate_out$alpha
+        ## ruv4_out$sigma2   <- rotate_out$sig_diag
+        ## ruv4_out$fnorm_x  <- rotate_out$Rsub[1, 1]
+    
+    Y2       <- rotate_out$Y2
+    alpha    <- rotate_out$alpha
+    sig_diag <- rotate_out$sig_diag
+    Rsub     <- rotate_out$Rsub
+    ruv4_out <- cruv4_multicov(Y2 = t(Y2), alpha = alpha,
+                               sig_diag = sig_diag, ctl = ctl,
+                               Rsub = Rsub,
+                               degrees_freedom = degrees_freedom,
+                               gls = gls, likelihood = likelihood)
+    
     return(ruv4_out)
 }
 
+
+#' RUV4's second step.
+#'
+#' @param Y2 A matrix of numerics with p rows and q columns, where q
+#'     is the number of covariates of interest and p is the number of
+#'     genes.
+#' @param alpha A matrix of numerics of dimension p by k, where k is
+#'     the number of hidden confounders. The estimated coefficients of
+#'     the unobserved confounders.
+#' @param sig_diag A vector of positive numerics. The estimates of the
+#'     variances.
+#' @param degrees_freedom A positive numeric. The degrees of freedom
+#'     of the t-likelihood if using it.
+#' @param Rsub A matrix of numerics numeric. This is the submatrix
+#'     of the R in the QR decomposition of X that corresponds to the
+#'     covariates of interest. May be removed in the future.
+#' @inheritParams vicarius_ruv4
+#'
+#' @author David Gerard
+#'
 cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
                            gls = TRUE, likelihood = "t") {
     assertthat::assert_that(is.matrix(Y2))
@@ -243,11 +271,14 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
     } else {
         Z1        <- NULL
         resid_mat <- Yc
-        betahat   <- Y2 %*% solve(Rsub)
+        betahat   <- Y2 %*% solve(t(Rsub))
     }
 
     ## Gaussian MLE of variance inflation parameter.
     multiplier <- mean(resid_mat ^ 2 / sig_diag[ctl])
+
+    ## multiplier should be the exact same as below
+    ## sum(diag(t(resid_mat) %*% diag(1 / sig_diag[ctl]) %*% resid_mat)) / prod(dim(resid_mat))
 
     ## T-likelihood regression and estimate variance inflation
     ## parameter using control genes.
@@ -262,7 +293,7 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
                                 nu = degrees_freedom, lambda_init = multiplier,
                                 Z_init = Z1)
             Z1         <- tout$Z
-            betahat    <- (Y2 - alpha %*% Z1) %*% solve(Rsub)
+            betahat    <- (Y2 - alpha %*% Z1) %*% solve(t(Rsub))
             multiplier <- tout$lambda
         } else if (k == 0) {
             tout <- stats::optim(par = multiplier, fn = tregress_obj_wrapper,
@@ -278,7 +309,7 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
 
     ## Output values
     ruv4_out <- list()
-    mult_matrix       <- solve(Rsub %*% t(Rsub))
+    mult_matrix       <- solve(t(Rsub) %*% Rsub)
     sig_diag_adjusted <- sig_diag * multiplier
     sebetahat         <- sqrt(outer(sig_diag_adjusted, diag(mult_matrix), FUN = "*"))
     sebetahat_ols     <- sqrt(outer(sig_diag, diag(mult_matrix), FUN = "*"))
@@ -403,6 +434,7 @@ cruv4 <- function(betahat_ols, alpha_scaled, sig_diag_scaled, ctl, degrees_freed
 #' QR rotation to independent models.
 #'
 #' @inheritParams vicarius_ruv4
+#' @param do_ols A logical. Should we just do OLS?
 #'
 #' @author David Gerard
 #'
@@ -433,10 +465,6 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
     }
 
     assertthat::assert_that(k + ncol(X) < nrow(X))
-
-    if (k >= sum(ctl) & !do_ols) {
-        stop("k is larger than the number of control genes so model not identified.\nReduce k or increase the number of control genes.\nYou can also try out succotashr. To install succotashr, run in R:\n    install.packages(\"devtools\")\n    devtools::install_github(\"dcgerard/succotashr\")")
-    }
 
     ## Place desired covariate as last covariate
     X <- X[, c( (1:ncol(X))[-cov_of_interest], cov_of_interest), drop = FALSE]
