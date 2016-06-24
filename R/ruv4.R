@@ -61,22 +61,24 @@
 #'     shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?
 #' @param fa_func A factor analysis function. The function must have
 #'     as inputs a numeric matrix \code{Y} and a rank (numeric scalar)
-#'     \code{r}. It must output a numeric matrix \code{alpha} and a
-#'     numeric vector \code{sig_diag}. \code{alpha} is the estimate of
-#'     the coefficients of the unobserved confounders, so it must be
-#'     an \code{r} by \code{ncol(Y)} matrix. \code{sig_diag} is the
-#'     estimate of the column-wise variances so it must be of length
-#'     \code{ncol(Y)}. The default is the function \code{pca_naive}
-#'     that just uses the first \code{r} singular vectors as the
-#'     estimate of \code{alpha}. The estimated variances are just the
-#'     column-wise mean square.
+#'     \code{r}. It must output numeric matrices \code{alpha} and
+#'     \code{Z} and a numeric vector \code{sig_diag}. \code{alpha} is
+#'     the estimate of the coefficients of the unobserved confounders,
+#'     so it must be an \code{r} by \code{ncol(Y)} matrix. \code{Z}
+#'     must be an \code{r} by \code{nrow(Y)} matrix. \code{sig_diag}
+#'     is the estimate of the column-wise variances so it must be of
+#'     length \code{ncol(Y)}. The default is the function
+#'     \code{pca_naive} that just uses the first \code{r} singular
+#'     vectors as the estimate of \code{alpha}. The estimated
+#'     variances are just the column-wise mean square.
 #' @param fa_args A list. Additional arguments you want to pass to
 #'     fa_func.
 #'
 #'
 #' @return A list whose elements are:
 #'
-#'     \code{multiplier} A numeric. The estimated variance inflation parameter.
+#'     \code{multiplier} A numeric. The estimated variance inflation
+#'     parameter.
 #'
 #'     \code{betahat_ols} A vector of numerics. The ordinary least
 #'     squares estimates of the coefficients of the covariate of
@@ -104,7 +106,12 @@
 #'     above.
 #'
 #'     \code{alphahat} A matrix of numerics. The estimates of the
-#'     coefficients of the hidden confounders.
+#'     coefficients of the hidden confounders. Only identified up to a
+#'     rotation on the rowspace.
+#'
+#'     \code{Zhat} A matrix of numerics. The estimates of the
+#'     confounding variables. Only identified up to a rotation on the
+#'     columnspace.
 #'
 #'     \code{sigma2} A vector of positive numerics. The estimates of
 #'     the variances PRIOR to inflation.
@@ -114,17 +121,18 @@
 #'     \code{sigma2 * multiplier}.
 #'
 #'     \code{mult_matrix} A matrix of numerics. Equal to
-#'     \code{solve(t(Rsub) \%*\% Rsub)}. One multiplies \code{sigma2} or
+#'     \code{solve(t(R22) \%*\% R22)}. One multiplies \code{sigma2} or
 #'     \code{simga2_adjused} by the diagonal elements of
 #'     \code{mult_matrix} to get the standard errors of
 #'     \code{betahat}.
 #'
-#'     \code{Rsub} A matrix of numerics numeric. This is the submatrix
+#'     \code{R22} A matrix of numerics numeric. This is the submatrix
 #'     of the R in the QR decomposition of X that corresponds to the
-#'     covariates of interest. May be removed in the future.
+#'     covariates of interest. This is mostly returned for debugging
+#'     purposes and may be removed in the future.
 #'
-#'     \code{Z1} A matrix of numerics of length 1. This is the
-#'     estimated confounders (after a rotation). Not useful on it is
+#'     \code{Z2} A matrix of numerics of length 1. This is the
+#'     estimated confounders (after a rotation). Not useful on it's
 #'     own and is mostly returned for debugging purposes. It may be
 #'     removed in the future.
 #'
@@ -194,9 +202,9 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
     betahat_ols     <- rotate_out$betahat_ols
 
     ## RUN RUV4 HERE ----------------------------------------------------------
-    
-        ## alpha_scaled    <- rotate_out$alpha / rotate_out$Rsub[1, 1]
-        ## sig_diag_scaled <- rotate_out$sig_diag / rotate_out$Rsub[1, 1] ^ 2
+
+        ## alpha_scaled    <- rotate_out$alpha / rotate_out$R22[1, 1]
+        ## sig_diag_scaled <- rotate_out$sig_diag / rotate_out$R22[1, 1] ^ 2
         ## k               <- rotate_out$k
         ## ruv4_out <- cruv4(betahat_ols = t(betahat_ols), alpha_scaled = alpha_scaled,
         ##                   sig_diag_scaled = sig_diag_scaled, ctl = ctl,
@@ -205,18 +213,41 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
 
         ## ruv4_out$alphahat <- rotate_out$alpha
         ## ruv4_out$sigma2   <- rotate_out$sig_diag
-        ## ruv4_out$fnorm_x  <- rotate_out$Rsub[1, 1]
-    
+        ## ruv4_out$fnorm_x  <- rotate_out$R22[1, 1]
+
     Y2       <- rotate_out$Y2
     alpha    <- rotate_out$alpha
     sig_diag <- rotate_out$sig_diag
-    Rsub     <- rotate_out$Rsub
+    R22     <- rotate_out$R22
     ruv4_out <- cruv4_multicov(Y2 = t(Y2), alpha = alpha,
                                sig_diag = sig_diag, ctl = ctl,
-                               Rsub = Rsub,
+                               R22 = R22,
                                degrees_freedom = degrees_freedom,
                                gls = gls, likelihood = likelihood)
-    
+
+    ## Estimate rest of the hidden confounders.
+    Y1  <- rotate_out$Y1
+    Z2  <- ruv4_out$Z2
+    Z3  <- rotate_out$Z3
+    if (!is.null(Y1)) {
+        R12 <- rotate_out$R12
+        R11 <- rotate_out$R11
+        Q   <- rotate_out$Q
+        beta1_ols <- solve(R11) %*% (Y1 - R12 %*% t(ruv4_out$betahat_ols))
+        resid_top <- Y1 - R12 %*% t(ruv4_out$betahat) - R11 %*% beta1_ols
+
+        if (gls) {
+            Z1  <- solve(t(alpha) %*% diag(1 / sig_diag) %*% alpha) %*%
+                t(alpha) %*% diag(1 / sig_diag) %*% t(resid_top)
+        } else {
+            Z1  <- solve(t(alpha) %*%  alpha) %*% t(alpha) %*% t(resid_top)
+        }
+        Zhat <- Q %*% rbind(t(Z1), t(Z2), Z3)
+    } else {
+        Zhat <- Q %*% rbind(t(Z2), Z3)
+    }
+    ruv4_out$Zhat <- Zhat
+
     return(ruv4_out)
 }
 
@@ -233,19 +264,19 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
 #'     variances.
 #' @param degrees_freedom A positive numeric. The degrees of freedom
 #'     of the t-likelihood if using it.
-#' @param Rsub A matrix of numerics numeric. This is the submatrix
+#' @param R22 A matrix of numerics numeric. This is the submatrix
 #'     of the R in the QR decomposition of X that corresponds to the
 #'     covariates of interest. May be removed in the future.
 #' @inheritParams vicarius_ruv4
 #'
 #' @author David Gerard
 #'
-cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
+cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, R22, degrees_freedom,
                            gls = TRUE, likelihood = "t") {
     assertthat::assert_that(is.matrix(Y2))
     assertthat::assert_that(is.matrix(alpha))
     assertthat::assert_that(is.vector(sig_diag))
-    assertthat::assert_that(is.matrix(Rsub))
+    assertthat::assert_that(is.matrix(R22))
     assertthat::assert_that(all(sig_diag > 0))
     assertthat::assert_that(is.logical(ctl))
     assertthat::assert_that(length(degrees_freedom) == 1 | length(degrees_freedom) == ncol(Y2))
@@ -254,24 +285,24 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
 
     k <- ncol(alpha)
 
-    ## Use control genes to jointly estimate Z1 and variance scaling parameter.
+    ## Use control genes to jointly estimate Z2 and variance scaling parameter.
     Yc <- Y2[ctl, , drop = FALSE]
     if (k != 0) {
         alphac       <- alpha[ctl, , drop = FALSE]
         sig_diag_inv <- 1 / sig_diag[ctl]
         if (gls) {
-            Z1 <- crossprod(solve(crossprod(alphac, sig_diag_inv * alphac)),
+            Z2 <- crossprod(solve(crossprod(alphac, sig_diag_inv * alphac)),
                             crossprod(alphac, sig_diag_inv * Yc))
         } else {
-            Z1 <- crossprod(solve(crossprod(alphac, alphac)),
+            Z2 <- crossprod(solve(crossprod(alphac, alphac)),
                             crossprod(alphac, Yc))
         }
-        resid_mat <- Yc - alphac %*% Z1
-        betahat <- (Y2 - alpha %*% Z1) %*% solve(t(Rsub))
+        resid_mat <- Yc - alphac %*% Z2
+        betahat <- (Y2 - alpha %*% Z2) %*% solve(t(R22))
     } else {
-        Z1        <- NULL
+        Z2        <- NULL
         resid_mat <- Yc
-        betahat   <- Y2 %*% solve(t(Rsub))
+        betahat   <- Y2 %*% solve(t(R22))
     }
 
     ## Gaussian MLE of variance inflation parameter.
@@ -291,9 +322,9 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
             tout <- tregress_em(Y = Yc, alpha = alphac,
                                 sig_diag = sig_diag[ctl],
                                 nu = degrees_freedom, lambda_init = multiplier,
-                                Z_init = Z1)
-            Z1         <- tout$Z
-            betahat    <- (Y2 - alpha %*% Z1) %*% solve(t(Rsub))
+                                Z_init = Z2)
+            Z2         <- tout$Z
+            betahat    <- (Y2 - alpha %*% Z2) %*% solve(t(R22))
             multiplier <- tout$lambda
         } else if (k == 0) {
             tout <- stats::optim(par = multiplier, fn = tregress_obj_wrapper,
@@ -309,11 +340,11 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
 
     ## Output values
     ruv4_out <- list()
-    mult_matrix       <- solve(t(Rsub) %*% Rsub)
+    mult_matrix       <- solve(t(R22) %*% R22)
     sig_diag_adjusted <- sig_diag * multiplier
     sebetahat         <- sqrt(outer(sig_diag_adjusted, diag(mult_matrix), FUN = "*"))
     sebetahat_ols     <- sqrt(outer(sig_diag, diag(mult_matrix), FUN = "*"))
-    betahat_ols       <- Y2 %*% solve(t(Rsub))
+    betahat_ols       <- Y2 %*% solve(t(R22))
 
 
     ruv4_out$sigma2            <- sig_diag
@@ -327,108 +358,14 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom,
     ruv4_out$tstats            <- betahat / sebetahat
     ruv4_out$pvalues           <- 2 * (stats::pt(q = -abs(ruv4_out$tstats),
                                                  df = degrees_freedom))
-    ruv4_out$Z1                <- Z1
+    ruv4_out$Z2                <- Z2
     ruv4_out$alphahat          <- alpha
-    ruv4_out$Rsub              <- Rsub
+    ruv4_out$R22               <- R22
     return(ruv4_out)
 }
 
 
-#' RUV4's second step.
-#'
-#' @param betahat_ols A matrix of numerics with one column. The ols
-#'     estimates of beta.
-#' @param alpha_scaled A matrix of numerics. The estimated
-#'     coefficients of the unobserved confounders.
-#' @param sig_diag_scaled A vector of positive numerics. The estimated
-#'     standard errors of \code{betahat_ols}.
-#' @param degrees_freedom A positive numeric. The degrees of freedom
-#'     of the t-likelihood if using it.
-#' @inheritParams vicarius_ruv4
-#'
-#' @author David Gerard
-#'
-cruv4 <- function(betahat_ols, alpha_scaled, sig_diag_scaled, ctl, degrees_freedom,
-                  gls = TRUE, likelihood = "t") {
 
-    assertthat::assert_that(is.matrix(betahat_ols))
-    assertthat::assert_that(is.matrix(alpha_scaled))
-    assertthat::assert_that(is.vector(sig_diag_scaled))
-    assertthat::assert_that(all(sig_diag_scaled > 0))
-    assertthat::assert_that(is.logical(ctl))
-    assertthat::assert_that(length(degrees_freedom) == 1 | length(degrees_freedom) == ncol(betahat_ols))
-    assertthat::assert_that(all(degrees_freedom > 0))
-    assertthat::are_equal(nrow(betahat_ols), nrow(alpha_scaled))
-
-    k <- ncol(alpha_scaled)
-
-    ## Use control genes to jointly estimate Z1 and variance scaling parameter.
-    Yc <- betahat_ols[ctl, , drop = FALSE]
-    if (k != 0) {
-        alphac       <- alpha_scaled[ctl, , drop = FALSE]
-        sig_diag_inv <- 1 / sig_diag_scaled[ctl]
-        if (gls) {
-            Z1 <- crossprod(solve(crossprod(alphac, sig_diag_inv * alphac)),
-                            crossprod(alphac, sig_diag_inv * Yc))
-        } else {
-            Z1 <- crossprod(solve(crossprod(alphac, alphac)),
-                            crossprod(alphac, Yc))
-        }
-        resid_mat <- Yc - alphac %*% Z1
-        betahat <- betahat_ols - alpha_scaled %*% Z1
-    } else {
-        Z1        <- NULL
-        resid_mat <- Yc
-        betahat   <- betahat_ols
-    }
-
-    ## Gaussian MLE of variance inflation parameter.
-    multiplier <- mean(resid_mat ^ 2 / sig_diag_scaled[ctl])
-
-    ## T-likelihood regression and estimate variance inflation
-    ## parameter using control genes.
-    if (likelihood == "t") {
-        if (k != 0) {
-            if (!gls) {
-                message("gls = FALSE not supported for t-likelihood, using gls = TRUE.")
-            }
-            alphac <- alpha_scaled[ctl, , drop = FALSE]
-            tout <- tregress_em(Y = Yc, alpha = alphac,
-                                sig_diag = sig_diag_scaled[ctl],
-                                nu = degrees_freedom, lambda_init = multiplier,
-                                Z_init = Z1)
-            Z1         <- tout$Z
-            betahat    <- betahat_ols - alpha_scaled %*% Z1
-            multiplier <- tout$lambda
-        } else if (k == 0) {
-            tout <- stats::optim(par = multiplier, fn = tregress_obj_wrapper,
-                                 Z = matrix(0, nrow = 1, ncol = 1), Y = Yc,
-                                 alpha = matrix(0, nrow = nrow(Yc), ncol = 1),
-                                 sig_diag = sig_diag_scaled[ctl],
-                                 nu = degrees_freedom, method = "Brent",
-                                 lower = 0, upper = 10,
-                                 control = list(fnscale = -1))
-            multiplier <- tout$par
-        }
-    }
-
-    ## Output values
-    sebetahat <- sqrt(sig_diag_scaled * multiplier)
-
-    ruv4_out <- list()
-    ruv4_out$multiplier    <- multiplier
-    ruv4_out$betahat_ols   <- betahat_ols
-    ruv4_out$sebetahat_ols <- sqrt(sig_diag_scaled)
-    ruv4_out$betahat       <- betahat
-    ruv4_out$sebetahat     <- sebetahat
-    ruv4_out$tstats        <- betahat / sebetahat
-    ruv4_out$pvalues       <- 2 * (stats::pt(q = -abs(ruv4_out$tstats),
-                                             df = degrees_freedom))
-
-    ruv4_out$Z1            <- Z1
-
-    return(ruv4_out)
-}
 
 
 #' QR rotation to independent models.
@@ -479,6 +416,12 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
 
     y2start_index <- ncol(X) - length(cov_of_interest) + 1
     y3start_index <- ncol(X) + 1
+
+    if (y2start_index > 1) {
+        Y1 <- Y_tilde[1:(y2start_index - 1), , drop = FALSE]
+    } else {
+        Y1 <- NULL
+    }
     Y2 <- Y_tilde[y2start_index:(y3start_index - 1), , drop = FALSE]
 
     Y3 <- Y_tilde[y3start_index:nrow(Y_tilde), , drop = FALSE]
@@ -490,6 +433,7 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
     fa_out    <- do.call(what = fa_func, args = fa_args)
     alpha     <- fa_out$alpha
     sig_diag  <- fa_out$sig_diag
+    Z3        <- fa_out$Z
 
     ## make sure the user didn't screw up the factor analysis.
     assertthat::assert_that(is.vector(sig_diag))
@@ -499,8 +443,12 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
         assertthat::assert_that(is.matrix(alpha))
         assertthat::are_equal(ncol(alpha), k)
         assertthat::are_equal(nrow(alpha), ncol(Y))
+        assertthat::assert_that(is.matrix(Z3))
+        assertthat::are_equal(ncol(Z3), k)
+        assertthat::are_equal(nrow(Z3), nrow(Y))
     } else {
         assertthat::assert_that(is.null(alpha))
+        assertthat::assert_that(is.null(Z3))
     }
 
     ## Shrink variances if desired.
@@ -514,16 +462,29 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
 
     ## absorb fnorm(X) into Y_tilde[1,], alpha, and sig_diag -----------------
     ## since dealt with sign earlier
-    Rsub <- R[cov_of_interest, cov_of_interest, drop = FALSE]
+    R22 <- R[cov_of_interest, cov_of_interest, drop = FALSE]
+    if (y2start_index > 1) {
+        R11 <- R[(1:ncol(X))[-cov_of_interest], (1:ncol(X))[-cov_of_interest], drop = FALSE]
+        R12 <- R[(1:ncol(X))[-cov_of_interest], cov_of_interest, drop = FALSE]
+    } else {
+        R11 <- NULL
+        R12 <- NULL
+    }
+
     ## this is betahat from OLS, called Y1 in CATE.
-    betahat_ols <- solve(Rsub) %*% Y2
+    betahat_ols <- solve(R22) %*% Y2
 
     ## create list for returns
     return_list             <- list()
     return_list$betahat_ols <- betahat_ols
     return_list$alpha       <- alpha
+    return_list$Z3          <- Z3
     return_list$sig_diag    <- sig_diag
-    return_list$Rsub        <- Rsub
+    return_list$Q           <- Q
+    return_list$R11         <- R11
+    return_list$R12         <- R12
+    return_list$R22         <- R22
+    return_list$Y1          <- Y1
     return_list$Y2          <- Y2
     return_list$Y3          <- Y3
     return_list$k           <- k
@@ -536,7 +497,9 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
 #' An identified QR decomposition.
 #'
 #' This just re-jiggers the output from \code{\link[base]{qr}} so that
-#' the upper triangular matrix has positive diagonal elements. This one will only work if the column dimension is less than or equal to the row dimension.
+#' the upper triangular matrix has positive diagonal elements. This
+#' one will only work if the column dimension is less than or equal to
+#' the row dimension.
 #'
 #' @param X A matrix.
 qr_ident <- function (X)
@@ -761,4 +724,120 @@ tregress_obj_wrapper <- function(lambda, Z, Y, alpha, sig_diag, nu) {
     llike <- tregress_obj(zlambda = zlambda, Y = Y, alpha = alpha,
                           sig_diag = sig_diag, nu = nu)
     return(llike)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#' RUV4's second step.
+#'
+#' This is the old version that only works for one covariate of
+#' interest. Use \code{\link{cruv4_multicov}} for the more recent
+#' version.
+#'
+#' @param betahat_ols A matrix of numerics with one column. The ols
+#'     estimates of beta.
+#' @param alpha_scaled A matrix of numerics. The estimated
+#'     coefficients of the unobserved confounders.
+#' @param sig_diag_scaled A vector of positive numerics. The estimated
+#'     standard errors of \code{betahat_ols}.
+#' @param degrees_freedom A positive numeric. The degrees of freedom
+#'     of the t-likelihood if using it.
+#' @inheritParams vicarius_ruv4
+#'
+#' @author David Gerard
+#'
+cruv4 <- function(betahat_ols, alpha_scaled, sig_diag_scaled, ctl, degrees_freedom,
+                  gls = TRUE, likelihood = "t") {
+
+    assertthat::assert_that(is.matrix(betahat_ols))
+    assertthat::assert_that(is.matrix(alpha_scaled))
+    assertthat::assert_that(is.vector(sig_diag_scaled))
+    assertthat::assert_that(all(sig_diag_scaled > 0))
+    assertthat::assert_that(is.logical(ctl))
+    assertthat::assert_that(length(degrees_freedom) == 1 | length(degrees_freedom) == ncol(betahat_ols))
+    assertthat::assert_that(all(degrees_freedom > 0))
+    assertthat::are_equal(nrow(betahat_ols), nrow(alpha_scaled))
+
+    k <- ncol(alpha_scaled)
+
+    ## Use control genes to jointly estimate Z1 and variance scaling parameter.
+    Yc <- betahat_ols[ctl, , drop = FALSE]
+    if (k != 0) {
+        alphac       <- alpha_scaled[ctl, , drop = FALSE]
+        sig_diag_inv <- 1 / sig_diag_scaled[ctl]
+        if (gls) {
+            Z1 <- crossprod(solve(crossprod(alphac, sig_diag_inv * alphac)),
+                            crossprod(alphac, sig_diag_inv * Yc))
+        } else {
+            Z1 <- crossprod(solve(crossprod(alphac, alphac)),
+                            crossprod(alphac, Yc))
+        }
+        resid_mat <- Yc - alphac %*% Z1
+        betahat <- betahat_ols - alpha_scaled %*% Z1
+    } else {
+        Z1        <- NULL
+        resid_mat <- Yc
+        betahat   <- betahat_ols
+    }
+
+    ## Gaussian MLE of variance inflation parameter.
+    multiplier <- mean(resid_mat ^ 2 / sig_diag_scaled[ctl])
+
+    ## T-likelihood regression and estimate variance inflation
+    ## parameter using control genes.
+    if (likelihood == "t") {
+        if (k != 0) {
+            if (!gls) {
+                message("gls = FALSE not supported for t-likelihood, using gls = TRUE.")
+            }
+            alphac <- alpha_scaled[ctl, , drop = FALSE]
+            tout <- tregress_em(Y = Yc, alpha = alphac,
+                                sig_diag = sig_diag_scaled[ctl],
+                                nu = degrees_freedom, lambda_init = multiplier,
+                                Z_init = Z1)
+            Z1         <- tout$Z
+            betahat    <- betahat_ols - alpha_scaled %*% Z1
+            multiplier <- tout$lambda
+        } else if (k == 0) {
+            tout <- stats::optim(par = multiplier, fn = tregress_obj_wrapper,
+                                 Z = matrix(0, nrow = 1, ncol = 1), Y = Yc,
+                                 alpha = matrix(0, nrow = nrow(Yc), ncol = 1),
+                                 sig_diag = sig_diag_scaled[ctl],
+                                 nu = degrees_freedom, method = "Brent",
+                                 lower = 0, upper = 10,
+                                 control = list(fnscale = -1))
+            multiplier <- tout$par
+        }
+    }
+
+    ## Output values
+    sebetahat <- sqrt(sig_diag_scaled * multiplier)
+
+    ruv4_out <- list()
+    ruv4_out$multiplier    <- multiplier
+    ruv4_out$betahat_ols   <- betahat_ols
+    ruv4_out$sebetahat_ols <- sqrt(sig_diag_scaled)
+    ruv4_out$betahat       <- betahat
+    ruv4_out$sebetahat     <- sebetahat
+    ruv4_out$tstats        <- betahat / sebetahat
+    ruv4_out$pvalues       <- 2 * (stats::pt(q = -abs(ruv4_out$tstats),
+                                             df = degrees_freedom))
+
+    ruv4_out$Z1            <- Z1
+
+    return(ruv4_out)
 }

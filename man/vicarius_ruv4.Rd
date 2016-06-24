@@ -59,15 +59,16 @@ using RUV4 to estimate the confounders.}
 
 \item{fa_func}{A factor analysis function. The function must have
 as inputs a numeric matrix \code{Y} and a rank (numeric scalar)
-\code{r}. It must output a numeric matrix \code{alpha} and a
-numeric vector \code{sig_diag}. \code{alpha} is the estimate of
-the coefficients of the unobserved confounders, so it must be
-an \code{r} by \code{ncol(Y)} matrix. \code{sig_diag} is the
-estimate of the column-wise variances so it must be of length
-\code{ncol(Y)}. The default is the function \code{pca_naive}
-that just uses the first \code{r} singular vectors as the
-estimate of \code{alpha}. The estimated variances are just the
-column-wise mean square.}
+\code{r}. It must output numeric matrices \code{alpha} and
+\code{Z} and a numeric vector \code{sig_diag}. \code{alpha} is
+the estimate of the coefficients of the unobserved confounders,
+so it must be an \code{r} by \code{ncol(Y)} matrix. \code{Z}
+must be an \code{r} by \code{nrow(Y)} matrix. \code{sig_diag}
+is the estimate of the column-wise variances so it must be of
+length \code{ncol(Y)}. The default is the function
+\code{pca_naive} that just uses the first \code{r} singular
+vectors as the estimate of \code{alpha}. The estimated
+variances are just the column-wise mean square.}
 
 \item{fa_args}{A list. Additional arguments you want to pass to
 fa_func.}
@@ -75,7 +76,8 @@ fa_func.}
 \value{
 A list whose elements are:
 
-    \code{multiplier} A numeric. The estimated variance inflation parameter.
+    \code{multiplier} A numeric. The estimated variance inflation
+    parameter.
 
     \code{betahat_ols} A vector of numerics. The ordinary least
     squares estimates of the coefficients of the covariate of
@@ -103,7 +105,12 @@ A list whose elements are:
     above.
 
     \code{alphahat} A matrix of numerics. The estimates of the
-    coefficients of the hidden confounders.
+    coefficients of the hidden confounders. Only identified up to a
+    rotation on the rowspace.
+
+    \code{Zhat} A matrix of numerics. The estimates of the
+    confounding variables. Only identified up to a rotation on the
+    columnspace.
 
     \code{sigma2} A vector of positive numerics. The estimates of
     the variances PRIOR to inflation.
@@ -113,17 +120,18 @@ A list whose elements are:
     \code{sigma2 * multiplier}.
 
     \code{mult_matrix} A matrix of numerics. Equal to
-    \code{solve(t(Rsub) \%*\% Rsub)}. One multiplies \code{sigma2} or
+    \code{solve(t(R22) \%*\% R22)}. One multiplies \code{sigma2} or
     \code{simga2_adjused} by the diagonal elements of
     \code{mult_matrix} to get the standard errors of
     \code{betahat}.
 
-    \code{Rsub} A matrix of numerics numeric. This is the submatrix
+    \code{R22} A matrix of numerics numeric. This is the submatrix
     of the R in the QR decomposition of X that corresponds to the
-    covariates of interest. May be removed in the future.
+    covariates of interest. This is mostly returned for debugging
+    purposes and may be removed in the future.
 
-    \code{Z1} A matrix of numerics of length 1. This is the
-    estimated confounders (after a rotation). Not useful on it is
+    \code{Z2} A matrix of numerics of length 1. This is the
+    estimated confounders (after a rotation). Not useful on it's
     own and is mostly returned for debugging purposes. It may be
     removed in the future.
 }

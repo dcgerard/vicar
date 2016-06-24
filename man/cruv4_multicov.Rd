@@ -4,7 +4,7 @@
 \alias{cruv4_multicov}
 \title{RUV4's second step.}
 \usage{
-cruv4_multicov(Y2, alpha, sig_diag, ctl, Rsub, degrees_freedom, gls = TRUE,
+cruv4_multicov(Y2, alpha, sig_diag, ctl, R22, degrees_freedom, gls = TRUE,
   likelihood = "t")
 }
 \arguments{
@@ -25,7 +25,7 @@ negative control. If \code{ctl = NULL} (the default) then ASH
 will be run on the OLS estimates and corresponding standard
 errors.}
 
-\item{Rsub}{A matrix of numerics numeric. This is the submatrix
+\item{R22}{A matrix of numerics numeric. This is the submatrix
 of the R in the QR decomposition of X that corresponds to the
 covariates of interest. May be removed in the future.}
 

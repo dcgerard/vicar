@@ -11,6 +11,8 @@ qr_ident(X)
 }
 \description{
 This just re-jiggers the output from \code{\link[base]{qr}} so that
-the upper triangular matrix has positive diagonal elements. This one will only work if the column dimension is less than or equal to the row dimension.
+the upper triangular matrix has positive diagonal elements. This
+one will only work if the column dimension is less than or equal to
+the row dimension.
 }
 

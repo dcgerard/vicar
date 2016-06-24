@@ -26,7 +26,7 @@ test_that("rotated_model same as ols when no confounders", {
 
 
     xinv <- solve(t(X) %*% X)
-    expect_equal(1 / rotate_out$Rsub[1, 1] ^ 2, xinv[cov_of_interest, cov_of_interest])
+    expect_equal(1 / rotate_out$R22[1, 1] ^ 2, xinv[cov_of_interest, cov_of_interest])
 
     betahatmat <- xinv %*% t(X) %*% Y
     expect_equal(betahatmat[cov_of_interest, ], c(rotate_out$betahat_ols))
@@ -68,7 +68,7 @@ test_that("vicarius_ruv4 same as ashr::ash_ruv", {
         expect_equal(ash_out$ruv$multiplier, ruv4_out$multiplier)
         expect_equal(ash_out$ruv$alphahat, ruv4_out$alphahat * -1)
         expect_equal(ash_out$ruv$sebetahat_ols, c(ruv4_out$sebetahat_ols))
-        expect_equal(ash_out$ruv$Z1, ruv4_out$Z1 * -1)
+        expect_equal(ash_out$ruv$Z1, ruv4_out$Z2 * -1)
     }
 }
 )
@@ -123,7 +123,7 @@ test_that("cruv4_multicov is same as RUV4 when no gls", {
     set.seed(71)
     n <- 11
     p <- 19
-    k <- 4
+    k <- 5
     cov_of_interest <- c(1, 2)
     X <- matrix(stats::rnorm(n * k), nrow = n)
     beta <- matrix(stats::rnorm(k * p), nrow = k)
@@ -132,7 +132,7 @@ test_that("cruv4_multicov is same as RUV4 when no gls", {
     E <- matrix(stats::rnorm(n * p), nrow = n)
     Y <- X %*% beta + E
 
-    num_sv <- 2
+    num_sv <- 3
     fa_args <- list()
     fa_func <- pca_naive
     limmashrink <- FALSE
@@ -168,7 +168,7 @@ test_that("cruv4_multicov is same as RUV4 when no gls", {
 
 test_that("cruv4 and cruv4_multicov give same answers", {
     load("testlist.Rd")
-    alpha_scaled    <- testlist$rotate_out$alph / testlist$rotate_out$Rsub[1, 1]
+    alpha_scaled    <- testlist$rotate_out$alpha / testlist$rotate_out$Rsub[1, 1]
     sig_diag_scaled <- testlist$rotate_out$sig_diag / testlist$rotate_out$Rsub[1, 1] ^ 2
     k               <- testlist$rotate_out$k
     uniout <- cruv4(betahat_ols = t(testlist$betahat_ols), alpha_scaled = alpha_scaled,
@@ -177,17 +177,53 @@ test_that("cruv4 and cruv4_multicov give same answers", {
                     gls = testlist$gls, likelihood = "t")
     multiout <- cruv4_multicov(Y2 = t(testlist$rotate_out$Y2), alpha = testlist$rotate_out$alpha,
                                sig_diag = testlist$rotate_out$sig_diag, ctl = testlist$ctl,
-                               Rsub = testlist$rotate_out$Rsub,
+                               R22 = testlist$rotate_out$Rsub,
                                degrees_freedom = testlist$degrees_freedom,
                                gls = testlist$gls, likelihood = "t")
 
     expect_equal(multiout$betahat, uniout$betahat)
     expect_equal(multiout$multiplier, uniout$multiplier)
     expect_equal(c(multiout$sebetahat), uniout$sebetahat)
-    expect_equal(uniout$Z1, multiout$Z1)
+    expect_equal(uniout$Z1, multiout$Z2)
     expect_equal(uniout$betahat_ols, multiout$betahat_ols)
     expect_equal(uniout$sebetahat_ols, c(multiout$sebetahat_ols))
     expect_equal(uniout$tstats, multiout$tstats)
     expect_equal(uniout$pvalues, multiout$pvalues)
+}
+)
+
+
+test_that("Zhat is approximately correct", {
+
+    if (requireNamespace("cate", quietly = TRUE)) {
+        set.seed(46)
+        n <- 11
+        p <- 19
+        k <- 5
+        cov_of_interest <- c(1, 2)
+        X <- matrix(stats::rnorm(n * k), nrow = n)
+        beta <- matrix(stats::rnorm(k * p), nrow = k)
+        beta[, 1:round(p/2)] <- 0
+        ctl <- beta[cov_of_interest[1],] == 0
+        E <- matrix(stats::rnorm(n * p), nrow = n)
+        Y <- X %*% beta + E
+        num_sv <- 3
+
+        vout <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
+                              cov_of_interest = cov_of_interest, likelihood = "normal")
+
+        cateout <- cate::cate(~ X1 + X2 | X3 + X4 + X5, X.data = data.frame(X), Y = Y, r = num_sv,
+                              fa.method = "pc", nc = ctl, adj.method = "nc")
+
+        expect_equal(c(cateout$Z), c(vout$Zhat))
+
+        vout <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
+                              cov_of_interest = 1:ncol(X), likelihood = "normal")
+
+        cateout <- cate::cate(~ X1 + X2 + X3 + X4 + X5, X.data = data.frame(X), Y = Y, r = num_sv,
+                              fa.method = "pc", nc = ctl, adj.method = "nc")
+
+        expect_equal(c(vout$Zhat), c(cateout$Z))
+    }
 }
 )

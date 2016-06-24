@@ -49,8 +49,6 @@ smell_my_p <- function(pvalues, ctl) {
 #'
 #' @export
 #'
-#' @examples
-#'
 #'
 clean_my_stats <- function(stats, ctl, qfunc, ...) {
     assertthat::assert_that(is.numeric(stats))

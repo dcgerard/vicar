@@ -17,4 +17,5 @@ Imports: ruv,
     MASS
 Suggests: testthat,
     ashr,
-    leapp
+    leapp,
+    cate

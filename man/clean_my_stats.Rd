@@ -21,10 +21,6 @@ distribution of the statistics in \code{stats}.}
 \description{
 Quantile normalize stats to their theoretical distributions.
 }
-\examples{
-
-
-}
 \author{
 David Gerard
 }

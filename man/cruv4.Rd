@@ -36,7 +36,9 @@ using RUV4 to estimate the confounders.}
 of freedom via \code{degrees_freedom}.}
 }
 \description{
-RUV4's second step.
+This is the old version that only works for one covariate of
+interest. Use \code{\link{cruv4_multicov}} for the more recent
+version.
 }
 \author{
 David Gerard

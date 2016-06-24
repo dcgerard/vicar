@@ -37,15 +37,16 @@ will be unchanged.}
 
 \item{fa_func}{A factor analysis function. The function must have
 as inputs a numeric matrix \code{Y} and a rank (numeric scalar)
-\code{r}. It must output a numeric matrix \code{alpha} and a
-numeric vector \code{sig_diag}. \code{alpha} is the estimate of
-the coefficients of the unobserved confounders, so it must be
-an \code{r} by \code{ncol(Y)} matrix. \code{sig_diag} is the
-estimate of the column-wise variances so it must be of length
-\code{ncol(Y)}. The default is the function \code{pca_naive}
-that just uses the first \code{r} singular vectors as the
-estimate of \code{alpha}. The estimated variances are just the
-column-wise mean square.}
+\code{r}. It must output numeric matrices \code{alpha} and
+\code{Z} and a numeric vector \code{sig_diag}. \code{alpha} is
+the estimate of the coefficients of the unobserved confounders,
+so it must be an \code{r} by \code{ncol(Y)} matrix. \code{Z}
+must be an \code{r} by \code{nrow(Y)} matrix. \code{sig_diag}
+is the estimate of the column-wise variances so it must be of
+length \code{ncol(Y)}. The default is the function
+\code{pca_naive} that just uses the first \code{r} singular
+vectors as the estimate of \code{alpha}. The estimated
+variances are just the column-wise mean square.}
 
 \item{fa_args}{A list. Additional arguments you want to pass to
 fa_func.}
