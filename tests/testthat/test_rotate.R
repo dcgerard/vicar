@@ -69,6 +69,18 @@ test_that("vicarius_ruv4 same as ashr::ash_ruv", {
         expect_equal(ash_out$ruv$alphahat, ruv4_out$alphahat * -1)
         expect_equal(ash_out$ruv$sebetahat_ols, c(ruv4_out$sebetahat_ols))
         expect_equal(ash_out$ruv$Z1, ruv4_out$Z2 * -1)
+
+        ruv4_out <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv,
+                                  cov_of_interest = cov_of_interest,
+                                  likelihood = "t")
+        
+        ash_out <- ashr::ash_ruv(Y = Y, X = X, ctl = ctl, k = num_sv,
+                                 cov_of_interest = cov_of_interest,
+                                 likelihood = "t", posthoc_inflate = FALSE)
+
+        expect_equal(ash_out$ruv$alphahat, ruv4_out$alphahat * -1)
+        expect_equal(ash_out$ruv$sebetahat_ols, c(ruv4_out$sebetahat_ols))
+        
     }
 }
 )
@@ -225,5 +237,59 @@ test_that("Zhat is approximately correct", {
 
         expect_equal(c(vout$Zhat), c(cateout$Z))
     }
+}
+)
+
+
+test_that("Mengyin's test data works", {
+    load("eg.Rdata")
+    vi <- vicarius_ruv4(Y, X, ctl, k = k, cov_of_interest = (1:ncol(X))[-1],
+                        limmashrink = TRUE, include_intercept = FALSE)
+    vi_norm <- vicarius_ruv4(Y, X, ctl, k = k, cov_of_interest = (1:ncol(X))[-1],
+                             limmashrink = TRUE, include_intercept = FALSE, likelihood = "normal")
+    vi_norm$Zhat
+    vi$Zhat
+    
+    vi$multiplier
+    vi_norm$multiplier
+}
+)
+
+
+
+test_that("tregress_em increases likelihood when using multivariate", {
+    set.seed(871)
+    p  <- 21
+    k  <- 5
+    nu <- 5
+    q  <- 3
+
+    alpha <- matrix(stats::rnorm(p * k), nrow = p)
+    Z     <- matrix(stats::rnorm(k * q), ncol = q)
+    sig_diag <- stats::rchisq(p, df = 2)
+    E <- matrix(stats::rt(p * q, df = nu), ncol = q) * sqrt(sig_diag)
+
+    Y <- alpha %*% Z + E
+
+    lambda_init <- 1
+    Z_init <- matrix(rep(0, length = k * q), ncol = q)
+    zlambda <- c(Z_init, lambda_init)
+
+    itermax <- 20
+    llike_vec <- rep(NA, length = itermax)
+    llike_vec[1] <- tregress_obj(zlambda = zlambda, Y = Y, alpha = alpha,
+                                 sig_diag = sig_diag, nu = nu)
+
+    for (index in 2:itermax) {
+        zlambda <- tregress_fix(zlambda = zlambda, Y = Y, alpha = alpha,
+                                sig_diag = sig_diag, nu = nu)
+        llike_vec[index] <- tregress_obj(zlambda = zlambda, Y = Y, alpha = alpha,
+                                         sig_diag = sig_diag, nu = nu)
+    }
+    expect_true(all(llike_vec[2:length(llike_vec)] >= llike_vec[1:(length(llike_vec) - 1)]))
+
+    tregress_obj(zlambda = zlambda, Y = Y, alpha = alpha, sig_diag = sig_diag, nu = nu)
+
+
 }
 )

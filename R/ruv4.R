@@ -650,10 +650,13 @@ tregress_fix <- function(zlambda, Y, alpha, sig_diag, nu) {
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(alpha))
     assertthat::assert_that(is.vector(sig_diag))
-    assertthat::are_equal(ncol(alpha), length(zlambda) - 1)
     assertthat::are_equal(nrow(alpha), nrow(Y))
     assertthat::assert_that(length(nu) == 1 | length(nu) == nrow(Y))
     assertthat::assert_that(all(nu > 0))
+    
+    if (length(nu) == nrow(Y)) {
+      nu <- matrix(rep(nu, times = ncol(Y)), nrow = nrow(Y), byrow = FALSE) 
+    }
 
     Z <- matrix(zlambda[-length(zlambda)], nrow = ncol(alpha))
     lambda <- zlambda[length(zlambda)]
@@ -662,11 +665,14 @@ tregress_fix <- function(zlambda, Y, alpha, sig_diag, nu) {
 
     wvec <- (nu + 1) / (resid_vec ^ 2 / (lambda * sig_diag) + nu)
 
-    wsig <- c(wvec / sig_diag)
-
-    Znew <- crossprod(solve(crossprod(alpha, wsig * alpha)),
-                            crossprod(alpha, wsig * Y))
-
+    wsig <- wvec / sig_diag
+    
+    Znew <- matrix(NA, nrow = nrow(Z), ncol = ncol(Z))
+    for (zindex in 1:ncol(wsig)) {
+      Znew[, zindex] <- crossprod(solve(crossprod(alpha, wsig[, zindex] * alpha)),
+                        crossprod(alpha, wsig[, zindex] * Y[, zindex]))
+    }
+    
     resid_new <- Y - alpha %*% Znew
 
     lambda_new <- mean(resid_new ^ 2 * wsig)
@@ -688,12 +694,11 @@ tregress_fix <- function(zlambda, Y, alpha, sig_diag, nu) {
 #'     \code{\link{tregress_fix}} for the fixed point iteration that
 #'     increases this objective function.
 tregress_obj <- function(zlambda, Y, alpha, sig_diag, nu) {
-
+    
     assertthat::assert_that(is.vector(zlambda))
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(alpha))
     assertthat::assert_that(is.vector(sig_diag))
-    assertthat::are_equal(ncol(alpha), length(zlambda) - 1)
     assertthat::are_equal(nrow(alpha), nrow(Y))
     assertthat::assert_that(length(nu) == 1 | length(nu) == nrow(Y))
     assertthat::assert_that(all(nu > 0))
@@ -703,8 +708,12 @@ tregress_obj <- function(zlambda, Y, alpha, sig_diag, nu) {
 
     standard_t<- (Y - alpha %*% Z) / sqrt(lambda * sig_diag)
 
-    llike <- sum(log(stats::dt(x = standard_t, df = nu))) -
-        length(sig_diag) * log(lambda) / 2 - sum(log(sig_diag)) / 2
+    if (length(nu) == nrow(Y)) {
+      nu <- matrix(rep(nu, times = ncol(Y)), nrow = nrow(Y), byrow = FALSE) 
+    }
+    
+    llike <- sum(stats::dt(x = standard_t, df = nu, log = TRUE)) -
+        prod(dim(Y)) * log(lambda) / 2 - ncol(Y) * sum(log(sig_diag)) / 2
 
     return(llike)
 }
