@@ -24,8 +24,9 @@ hidden confounders using the methods of Buja and Eyuboglu
 (1992).}
 
 \item{cov_of_interest}{A vector of positive integers. The column
-numbers of the covariates in X whose coefficients you want to
-apply ASH to.}
+numbers of the covariates in X whose coefficients you are
+interested in. The rest are considered nuisance parameters and
+are regressed out by OLS.}
 
 \item{limmashrink}{A logical. Should we apply hierarchical
 shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?}

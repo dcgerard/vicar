@@ -3,7 +3,7 @@
 \name{vicarius_ruv4}
 \alias{vicarius_ruv4}
 \title{Calibrated RUV4 where the control genes are used to estimate hidden
-confounders and variance inflation parameter.}
+confounders and a variance inflation parameter.}
 \usage{
 vicarius_ruv4(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
   likelihood = c("t", "normal"), limmashrink = FALSE,
@@ -20,9 +20,7 @@ genes.}
 
 \item{ctl}{A vector of logicals of length \code{ncol(Y)}. If
 position i is \code{TRUE} then position i is considered a
-negative control. If \code{ctl = NULL} (the default) then ASH
-will be run on the OLS estimates and corresponding standard
-errors.}
+negative control.}
 
 \item{k}{A non-negative integer.The number of unobserved
 confounders. If not specified and the R package sva is
@@ -31,8 +29,9 @@ hidden confounders using the methods of Buja and Eyuboglu
 (1992).}
 
 \item{cov_of_interest}{A vector of positive integers. The column
-numbers of the covariates in X whose coefficients you want to
-apply ASH to.}
+numbers of the covariates in X whose coefficients you are
+interested in. The rest are considered nuisance parameters and
+are regressed out by OLS.}
 
 \item{likelihood}{Either \code{"normal"} or \code{"t"}. If
 \code{likelihood = "t"}, then the user may provide the degrees
@@ -155,9 +154,7 @@ Gaussian and each column shares a common variance. The rows of
 
 This model is fit using a two-step approach proposed in
 Gagnon-Bartsch et al (2013) and described in Wang et al (2015),
-modified to include estimating a variance inflation parameter. In
-the current implementation, only the coefficients of one covariate
-can be estimated using ASH. The rest are regressed out using OLS.
+modified to include estimating a variance inflation parameter.
 }
 \author{
 David Gerard

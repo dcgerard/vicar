@@ -21,9 +21,7 @@ variances.}
 
 \item{ctl}{A vector of logicals of length \code{ncol(Y)}. If
 position i is \code{TRUE} then position i is considered a
-negative control. If \code{ctl = NULL} (the default) then ASH
-will be run on the OLS estimates and corresponding standard
-errors.}
+negative control.}
 
 \item{R22}{A matrix of numerics numeric. This is the submatrix
 of the R in the QR decomposition of X that corresponds to the

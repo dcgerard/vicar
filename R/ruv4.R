@@ -1,5 +1,5 @@
 #' Calibrated RUV4 where the control genes are used to estimate hidden
-#' confounders and variance inflation parameter.
+#' confounders and a variance inflation parameter.
 #'
 #' This function will perform a variant of Removing Unwanted Variation
 #' 4-step (RUV4) (Gagnon-Bartsch et al, 2013) where the control genes
@@ -19,9 +19,7 @@
 #'
 #' This model is fit using a two-step approach proposed in
 #' Gagnon-Bartsch et al (2013) and described in Wang et al (2015),
-#' modified to include estimating a variance inflation parameter. In
-#' the current implementation, only the coefficients of one covariate
-#' can be estimated using ASH. The rest are regressed out using OLS.
+#' modified to include estimating a variance inflation parameter.
 #'
 #' @param Y A matrix of numerics. These are the response variables
 #'     where each column has its own variance. In a gene expression
@@ -34,13 +32,12 @@
 #'     hidden confounders using the methods of Buja and Eyuboglu
 #'     (1992).
 #' @param cov_of_interest A vector of positive integers. The column
-#'     numbers of the covariates in X whose coefficients you want to
-#'     apply ASH to.
+#'     numbers of the covariates in X whose coefficients you are
+#'     interested in. The rest are considered nuisance parameters and
+#'     are regressed out by OLS.
 #' @param ctl A vector of logicals of length \code{ncol(Y)}. If
 #'     position i is \code{TRUE} then position i is considered a
-#'     negative control. If \code{ctl = NULL} (the default) then ASH
-#'     will be run on the OLS estimates and corresponding standard
-#'     errors.
+#'     negative control.
 #' @param include_intercept A logical. If \code{TRUE}, then it will
 #'     check \code{X} to see if it has an intercept term. If not, then
 #'     it will add an intercept term. If \code{FALSE}, then \code{X}

@@ -258,9 +258,9 @@ test_that("Mengyin's test data works", {
 
 
 test_that("tregress_em increases likelihood when using multivariate", {
-    set.seed(871)
+    set.seed(861)
     p  <- 21
-    k  <- 5
+    k  <- 7
     nu <- 5
     q  <- 3
 
