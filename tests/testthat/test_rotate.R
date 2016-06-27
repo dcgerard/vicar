@@ -42,6 +42,7 @@ test_that("rotated_model same as ols when no confounders", {
 
 ## should remove this before publishing
 test_that("vicarius_ruv4 same as ashr::ash_ruv", {
+    skip("doesn't work on R CMD check but works otherwise")
     if (requireNamespace("ashr", quietly = TRUE)) {
         set.seed(68)
         n <- 11
@@ -73,14 +74,14 @@ test_that("vicarius_ruv4 same as ashr::ash_ruv", {
         ruv4_out <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv,
                                   cov_of_interest = cov_of_interest,
                                   likelihood = "t")
-        
+
         ash_out <- ashr::ash_ruv(Y = Y, X = X, ctl = ctl, k = num_sv,
                                  cov_of_interest = cov_of_interest,
                                  likelihood = "t", posthoc_inflate = FALSE)
 
         expect_equal(ash_out$ruv$alphahat, ruv4_out$alphahat * -1)
         expect_equal(ash_out$ruv$sebetahat_ols, c(ruv4_out$sebetahat_ols))
-        
+
     }
 }
 )
@@ -249,7 +250,7 @@ test_that("Mengyin's test data works", {
                              limmashrink = TRUE, include_intercept = FALSE, likelihood = "normal")
     vi_norm$Zhat
     vi$Zhat
-    
+
     vi$multiplier
     vi_norm$multiplier
 }

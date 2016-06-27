@@ -38,7 +38,10 @@ are regressed out by OLS.}
 of freedom via \code{degrees_freedom}.}
 
 \item{limmashrink}{A logical. Should we apply hierarchical
-shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?}
+shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?
+If \code{degrees_freedom = NULL} and \code{limmashrink = TRUE}
+and \code{likelihood = "t"}, then we'll also use the limma
+returned degrees of freedom.}
 
 \item{degrees_freedom}{if \code{likelihood = "t"}, then this is the
 user-defined degrees of freedom for that distribution. If
@@ -123,6 +126,10 @@ A list whose elements are:
     \code{simga2_adjused} by the diagonal elements of
     \code{mult_matrix} to get the standard errors of
     \code{betahat}.
+
+    \code{degrees_freedom} The degrees of freedom. If
+    \code{likelihood = "t"}, then this was the degrees of freedom
+    used.
 
     \code{R22} A matrix of numerics numeric. This is the submatrix
     of the R in the QR decomposition of X that corresponds to the

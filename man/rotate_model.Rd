@@ -33,7 +33,10 @@ it will add an intercept term. If \code{FALSE}, then \code{X}
 will be unchanged.}
 
 \item{limmashrink}{A logical. Should we apply hierarchical
-shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?}
+shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?
+If \code{degrees_freedom = NULL} and \code{limmashrink = TRUE}
+and \code{likelihood = "t"}, then we'll also use the limma
+returned degrees of freedom.}
 
 \item{fa_func}{A factor analysis function. The function must have
 as inputs a numeric matrix \code{Y} and a rank (numeric scalar)

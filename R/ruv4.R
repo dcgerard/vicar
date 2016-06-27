@@ -56,6 +56,9 @@
 #'     minus \code{k}.
 #' @param limmashrink A logical. Should we apply hierarchical
 #'     shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?
+#'     If \code{degrees_freedom = NULL} and \code{limmashrink = TRUE}
+#'     and \code{likelihood = "t"}, then we'll also use the limma
+#'     returned degrees of freedom.
 #' @param fa_func A factor analysis function. The function must have
 #'     as inputs a numeric matrix \code{Y} and a rank (numeric scalar)
 #'     \code{r}. It must output numeric matrices \code{alpha} and
@@ -123,6 +126,10 @@
 #'     \code{mult_matrix} to get the standard errors of
 #'     \code{betahat}.
 #'
+#'     \code{degrees_freedom} The degrees of freedom. If
+#'     \code{likelihood = "t"}, then this was the degrees of freedom
+#'     used.
+#'
 #'     \code{R22} A matrix of numerics numeric. This is the submatrix
 #'     of the R in the QR decomposition of X that corresponds to the
 #'     covariates of interest. This is mostly returned for debugging
@@ -180,14 +187,7 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
     assertthat::assert_that(is.function(fa_func))
 
     likelihood <- match.arg(likelihood)
-    if (likelihood == "normal" & !is.null(degrees_freedom)) {
-        message("likelihood = \"normal\" but degrees_freedom not NULL. Ignoring degrees_freedom.")
-    }
-    if (is.null(degrees_freedom)) {
-        degrees_freedom <- nrow(X) - ncol(X) - k
-    }
-    assertthat::assert_that(length(degrees_freedom) == 1 | length(degrees_freedom) == ncol(Y))
-    assertthat::assert_that(all(degrees_freedom > 0))
+
 
     ## RUN THE ROTATED MODEL HERE -------------------------------------------
     rotate_out <- rotate_model(Y = Y, X = X, k = k,
@@ -198,20 +198,27 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
 
     betahat_ols     <- rotate_out$betahat_ols
 
+    ## Deal with degrees of freedom
+    if (likelihood == "normal") {
+        if (!is.null(degrees_freedom)) {
+            message("likelihood = \"normal\" but degrees_freedom not NULL. Setting degrees_freedom to Inf")
+        }
+        degrees_freedom <- Inf
+    }
+    if (!is.null(rotate_out$prior_df) & is.null(degrees_freedom) & likelihood == "t") {
+        degrees_freedom <- rotate_out$prior_df
+        if (degrees_freedom == Inf) {
+            message("limma estimated df = Inf . Changing likelihood to \"normal\".")
+            likelihood <- "normal"
+        }
+    } else if (is.null(degrees_freedom) & likelihood == "t") {
+        degrees_freedom <- nrow(X) - ncol(X) - k
+    }
+    assertthat::assert_that(length(degrees_freedom) == 1 | length(degrees_freedom) == ncol(Y))
+    assertthat::assert_that(all(degrees_freedom > 0))
+
+
     ## RUN RUV4 HERE ----------------------------------------------------------
-
-        ## alpha_scaled    <- rotate_out$alpha / rotate_out$R22[1, 1]
-        ## sig_diag_scaled <- rotate_out$sig_diag / rotate_out$R22[1, 1] ^ 2
-        ## k               <- rotate_out$k
-        ## ruv4_out <- cruv4(betahat_ols = t(betahat_ols), alpha_scaled = alpha_scaled,
-        ##                   sig_diag_scaled = sig_diag_scaled, ctl = ctl,
-        ##                   degrees_freedom = degrees_freedom,
-        ##                   gls = gls, likelihood = likelihood)
-
-        ## ruv4_out$alphahat <- rotate_out$alpha
-        ## ruv4_out$sigma2   <- rotate_out$sig_diag
-        ## ruv4_out$fnorm_x  <- rotate_out$R22[1, 1]
-
     Y2       <- rotate_out$Y2
     alpha    <- rotate_out$alpha
     sig_diag <- rotate_out$sig_diag
@@ -232,7 +239,6 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
         Q   <- rotate_out$Q
         beta1_ols <- solve(R11) %*% (Y1 - R12 %*% t(ruv4_out$betahat_ols))
         resid_top <- Y1 - R12 %*% t(ruv4_out$betahat) - R11 %*% beta1_ols
-
         if (gls) {
             Z1  <- solve(t(alpha) %*% diag(1 / sig_diag) %*% alpha) %*%
                 t(alpha) %*% diag(1 / sig_diag) %*% t(resid_top)
@@ -244,6 +250,8 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
         Zhat <- Q %*% rbind(t(Z2), Z3)
     }
     ruv4_out$Zhat <- Zhat
+
+    ruv4_out$degrees_freedom <- degrees_freedom
 
     return(ruv4_out)
 }
@@ -453,8 +461,11 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
         limma_out <- limma::squeezeVar(var = sig_diag,
                                        df = nrow(X) - ncol(X) - k)
         sig_diag <- limma_out$var.post
+        prior_df <- limma_out$df.prior
     } else if (!requireNamespace("limma", quietly = TRUE) & limmashrink) {
         stop("limmashrink = TRUE but limma not installed. To install limma, run in R:\n    source(\"https://bioconductor.org/biocLite.R\")\n    biocLite(\"limma\")")
+    } else {
+        prior_df <- NULL
     }
 
     ## absorb fnorm(X) into Y_tilde[1,], alpha, and sig_diag -----------------
@@ -486,6 +497,7 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
     return_list$Y3          <- Y3
     return_list$k           <- k
     return_list$X           <- X
+    return_list$prior_df    <- prior_df
 
     return(return_list)
 }
@@ -650,9 +662,9 @@ tregress_fix <- function(zlambda, Y, alpha, sig_diag, nu) {
     assertthat::are_equal(nrow(alpha), nrow(Y))
     assertthat::assert_that(length(nu) == 1 | length(nu) == nrow(Y))
     assertthat::assert_that(all(nu > 0))
-    
+
     if (length(nu) == nrow(Y)) {
-      nu <- matrix(rep(nu, times = ncol(Y)), nrow = nrow(Y), byrow = FALSE) 
+      nu <- matrix(rep(nu, times = ncol(Y)), nrow = nrow(Y), byrow = FALSE)
     }
 
     Z <- matrix(zlambda[-length(zlambda)], nrow = ncol(alpha))
@@ -663,13 +675,13 @@ tregress_fix <- function(zlambda, Y, alpha, sig_diag, nu) {
     wvec <- (nu + 1) / (resid_vec ^ 2 / (lambda * sig_diag) + nu)
 
     wsig <- wvec / sig_diag
-    
+
     Znew <- matrix(NA, nrow = nrow(Z), ncol = ncol(Z))
     for (zindex in 1:ncol(wsig)) {
       Znew[, zindex] <- crossprod(solve(crossprod(alpha, wsig[, zindex] * alpha)),
                         crossprod(alpha, wsig[, zindex] * Y[, zindex]))
     }
-    
+
     resid_new <- Y - alpha %*% Znew
 
     lambda_new <- mean(resid_new ^ 2 * wsig)
@@ -691,7 +703,7 @@ tregress_fix <- function(zlambda, Y, alpha, sig_diag, nu) {
 #'     \code{\link{tregress_fix}} for the fixed point iteration that
 #'     increases this objective function.
 tregress_obj <- function(zlambda, Y, alpha, sig_diag, nu) {
-    
+
     assertthat::assert_that(is.vector(zlambda))
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(alpha))
@@ -706,9 +718,9 @@ tregress_obj <- function(zlambda, Y, alpha, sig_diag, nu) {
     standard_t<- (Y - alpha %*% Z) / sqrt(lambda * sig_diag)
 
     if (length(nu) == nrow(Y)) {
-      nu <- matrix(rep(nu, times = ncol(Y)), nrow = nrow(Y), byrow = FALSE) 
+      nu <- matrix(rep(nu, times = ncol(Y)), nrow = nrow(Y), byrow = FALSE)
     }
-    
+
     llike <- sum(stats::dt(x = standard_t, df = nu, log = TRUE)) -
         prod(dim(Y)) * log(lambda) / 2 - ncol(Y) * sum(log(sig_diag)) / 2
 

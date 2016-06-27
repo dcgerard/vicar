@@ -29,7 +29,10 @@ interested in. The rest are considered nuisance parameters and
 are regressed out by OLS.}
 
 \item{limmashrink}{A logical. Should we apply hierarchical
-shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?}
+shrinkage to the variances (\code{TRUE}) or not (\code{FALSE})?
+If \code{degrees_freedom = NULL} and \code{limmashrink = TRUE}
+and \code{likelihood = "t"}, then we'll also use the limma
+returned degrees of freedom.}
 
 \item{include_intercept}{A logical. If \code{TRUE}, then it will
 check \code{X} to see if it has an intercept term. If not, then
