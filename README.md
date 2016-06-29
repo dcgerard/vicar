@@ -3,6 +3,8 @@
 VICAR: Variance Inflation for Confounder Adjustment in Regression
 =================================================================
 
+[![Build Status](https://travis-ci.org/dcgerard/vicar.svg?branch=master)](https://travis-ci.org/dcgerard/vicar)
+
 Description
 -----------
 
