@@ -6,7 +6,7 @@
 confounders and a variance inflation parameter.}
 \usage{
 vruv4(Y, X, ctl, k = NULL, cov_of_interest = ncol(X), likelihood = c("t",
-  "normal"), limmashrink = FALSE, degrees_freedom = NULL,
+  "normal"), limmashrink = TRUE, degrees_freedom = NULL,
   include_intercept = TRUE, gls = TRUE, fa_func = pca_naive,
   fa_args = list())
 }

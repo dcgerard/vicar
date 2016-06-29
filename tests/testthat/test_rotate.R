@@ -155,7 +155,7 @@ test_that("cruv4_multicov is same as RUV4 when no gls", {
 
     vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = FALSE,
                           cov_of_interest = cov_of_interest, likelihood = "normal",
-                          gls = FALSE)
+                          gls = FALSE, limmashrink = FALSE)
 
     ruvout <- ruv::RUV4(Y = Y, X = X[, cov_of_interest, drop = FALSE],
                         ctl = ctl, k = num_sv,
@@ -223,7 +223,8 @@ test_that("Zhat is approximately correct", {
         num_sv <- 3
 
         vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
-                      cov_of_interest = cov_of_interest, likelihood = "normal")
+                      cov_of_interest = cov_of_interest, likelihood = "normal",
+                      limmashrink = FALSE)
 
         cateout <- cate::cate(~ X1 + X2 | X3 + X4 + X5, X.data = data.frame(X), Y = Y, r = num_sv,
                               fa.method = "pc", nc = ctl, adj.method = "nc")
@@ -231,7 +232,7 @@ test_that("Zhat is approximately correct", {
         expect_equal(c(cateout$Z), c(vout$Zhat))
 
         vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
-                      cov_of_interest = 1:ncol(X), likelihood = "normal")
+                      cov_of_interest = 1:ncol(X), likelihood = "normal", limmashrink = FALSE)
 
         cateout <- cate::cate(~ X1 + X2 + X3 + X4 + X5, X.data = data.frame(X), Y = Y, r = num_sv,
                               fa.method = "pc", nc = ctl, adj.method = "nc")
