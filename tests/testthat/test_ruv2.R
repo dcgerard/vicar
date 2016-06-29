@@ -33,7 +33,9 @@ test_that("vruv2 works", {
     expect_equal(vout$betahat_ols[, !ctl], vout$betahat[, !ctl])
     expect_equal(vout$sigma2_unadjusted[!ctl], vout$sigma2_adjusted[!ctl])
 
-    expect_equal(solve(t(X) %*% X)[cov_of_interest, cov_of_interest],
+
+    expect_equal(solve(t(cbind(X, vout$Zhat)) %*%
+                       cbind(X, vout$Zhat))[cov_of_interest, cov_of_interest],
                  vout$mult_mat)
 
     if (requireNamespace("ruv", quietly = TRUE)) {

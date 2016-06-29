@@ -114,8 +114,6 @@ vruv2 <- function(Y, X, ctl, k = NULL,
     ## MLE to UMVUE inspired inflation
     multiplier <- multiplier * (nrow(X) - ncol(X)) / (nrow(X) - ncol(X) - k)
 
-    mult_matrix <- solve(t(R22) %*% R22)
-
     ## Shrink variances
     if (limmashrink) {
         limma_out <- limma::squeezeVar(var = sig_diag,
@@ -132,8 +130,7 @@ vruv2 <- function(Y, X, ctl, k = NULL,
         prior_df_unadjusted <- nrow(X) - ncol(X) - k
     }
 
-    sebetahat <- sqrt(outer(diag(mult_matrix), sig_diag * multiplier, FUN = "*"))
-    sebetahat_ols <- sqrt(outer(diag(mult_matrix), sigma2_unadjusted, FUN = "*"))
+
 
     ## Estimate rest of hidden confounders
     if (!is.null(Y1)) {
@@ -154,6 +151,14 @@ vruv2 <- function(Y, X, ctl, k = NULL,
     }
 
 
+    ## this is different mult_matrix from vruv4.
+    ## This is the way the RUV folks do it and makes more sense.
+    ## Need to think about consequences much more carefully.
+    XZ <- cbind(X, Zhat)
+    mult_matrix <- solve(t(XZ) %*% XZ)[cov_of_interest, cov_of_interest]
+
+    sebetahat <- sqrt(outer(diag(mult_matrix), sig_diag * multiplier, FUN = "*"))
+    sebetahat_ols <- sqrt(outer(diag(mult_matrix), sigma2_unadjusted, FUN = "*"))
 
     ruv2_out                   <- list()
     ruv2_out$betahat           <- betahat
