@@ -22,7 +22,7 @@ test_that("rotated_model same as ols when no confounders", {
     rotate_out <- rotate_model(Y = Y, X = X, k = num_sv,
                                cov_of_interest = cov_of_interest,
                                include_intercept = FALSE,
-                               limmashrink = FALSE, do_ols = FALSE)
+                               limmashrink = FALSE)
 
 
     xinv <- solve(t(X) %*% X)
@@ -153,7 +153,7 @@ test_that("cruv4_multicov is same as RUV4 when no gls", {
     gls <- TRUE
     likelihood <- "normal"
 
-    vout <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = FALSE,
+    vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = FALSE,
                           cov_of_interest = cov_of_interest, likelihood = "normal",
                           gls = FALSE)
 
@@ -222,16 +222,16 @@ test_that("Zhat is approximately correct", {
         Y <- X %*% beta + E
         num_sv <- 3
 
-        vout <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
-                              cov_of_interest = cov_of_interest, likelihood = "normal")
+        vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
+                      cov_of_interest = cov_of_interest, likelihood = "normal")
 
         cateout <- cate::cate(~ X1 + X2 | X3 + X4 + X5, X.data = data.frame(X), Y = Y, r = num_sv,
                               fa.method = "pc", nc = ctl, adj.method = "nc")
 
         expect_equal(c(cateout$Z), c(vout$Zhat))
 
-        vout <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
-                              cov_of_interest = 1:ncol(X), likelihood = "normal")
+        vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
+                      cov_of_interest = 1:ncol(X), likelihood = "normal")
 
         cateout <- cate::cate(~ X1 + X2 + X3 + X4 + X5, X.data = data.frame(X), Y = Y, r = num_sv,
                               fa.method = "pc", nc = ctl, adj.method = "nc")
@@ -244,10 +244,10 @@ test_that("Zhat is approximately correct", {
 
 test_that("Mengyin's test data works", {
     load("eg.Rdata")
-    vi <- vicarius_ruv4(Y, X, ctl, k = k, cov_of_interest = (1:ncol(X))[-1],
-                        limmashrink = TRUE, include_intercept = FALSE)
-    vi_norm <- vicarius_ruv4(Y, X, ctl, k = k, cov_of_interest = (1:ncol(X))[-1],
-                             limmashrink = TRUE, include_intercept = FALSE, likelihood = "normal")
+    vi <- vruv4(Y, X, ctl, k = k, cov_of_interest = (1:ncol(X))[-1],
+                limmashrink = TRUE, include_intercept = FALSE)
+    vi_norm <- vruv4(Y, X, ctl, k = k, cov_of_interest = (1:ncol(X))[-1],
+                     limmashrink = TRUE, include_intercept = FALSE, likelihood = "normal")
     vi_norm$Zhat
     vi$Zhat
 

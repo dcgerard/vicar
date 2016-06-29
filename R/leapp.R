@@ -3,7 +3,7 @@
 #'
 #' Doesn't work too well.
 #'
-#' @inheritParams vicarius_ruv4
+#' @inheritParams vruv4
 #'
 #' @author David Gerard
 #'

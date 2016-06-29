@@ -165,12 +165,12 @@
 #'     arXiv preprint arXiv:1508.04178 (2015).
 #'
 #'
-vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
-                          cov_of_interest = ncol(X),
-                          likelihood = c("t", "normal"),
-                          limmashrink = FALSE, degrees_freedom = NULL,
-                          include_intercept = TRUE, gls = TRUE,
-                          fa_func = pca_naive, fa_args = list()) {
+vruv4 <- function(Y, X, ctl, k = NULL,
+                  cov_of_interest = ncol(X),
+                  likelihood = c("t", "normal"),
+                  limmashrink = TRUE, degrees_freedom = NULL,
+                  include_intercept = TRUE, gls = TRUE,
+                  fa_func = pca_naive, fa_args = list()) {
 
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(X))
@@ -194,7 +194,7 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
                                cov_of_interest = cov_of_interest,
                                include_intercept = include_intercept,
                                limmashrink = limmashrink, fa_func = fa_func,
-                               fa_args = fa_args)
+                               fa_args = fa_args, do_factor = TRUE)
 
     betahat_ols     <- rotate_out$betahat_ols
 
@@ -256,7 +256,6 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
     return(ruv4_out)
 }
 
-
 #' RUV4's second step.
 #'
 #' @param Y2 A matrix of numerics with p rows and q columns, where q
@@ -272,7 +271,7 @@ vicarius_ruv4 <- function(Y, X, ctl, k = NULL,
 #' @param R22 A matrix of numerics numeric. This is the submatrix
 #'     of the R in the QR decomposition of X that corresponds to the
 #'     covariates of interest. May be removed in the future.
-#' @inheritParams vicarius_ruv4
+#' @inheritParams vruv4
 #'
 #' @author David Gerard
 #'
@@ -375,15 +374,18 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, R22, degrees_freedom,
 
 #' QR rotation to independent models.
 #'
-#' @inheritParams vicarius_ruv4
-#' @param do_ols A logical. Should we just do OLS?
+#' @inheritParams vruv4
+#' @param do_factor A logical. Should we do the factor analysis or just rotation?
+#'
 #'
 #' @author David Gerard
 #'
 rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
                          include_intercept = TRUE,
                          limmashrink = FALSE, fa_func = pca_naive,
-                         fa_args = list(), do_ols = FALSE) {
+                         fa_args = list(), do_factor = TRUE) {
+
+    assertthat::assert_that(is.logical(do_factor))
 
     if (include_intercept) {
         X_scaled <- apply(X, 2, function(x) {
@@ -432,44 +434,44 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
     Y3 <- Y_tilde[y3start_index:nrow(Y_tilde), , drop = FALSE]
 
 
-    ## Factor analysis using all but first row of Y_tilde
-    fa_args$Y <- Y3
-    fa_args$r <- k
-    fa_out    <- do.call(what = fa_func, args = fa_args)
-    alpha     <- fa_out$alpha
-    sig_diag  <- fa_out$sig_diag
-    Z3        <- fa_out$Z
+    if (do_factor) {
+        ## Factor analysis using all but first row of Y_tilde
+        fa_args$Y <- Y3
+        fa_args$r <- k
+        fa_out    <- do.call(what = fa_func, args = fa_args)
+        alpha     <- fa_out$alpha
+        sig_diag  <- fa_out$sig_diag
+        Z3        <- fa_out$Z
 
-    ## make sure the user didn't screw up the factor analysis.
-    assertthat::assert_that(is.vector(sig_diag))
-    assertthat::are_equal(length(sig_diag), ncol(Y))
-    assertthat::assert_that(all(sig_diag > 0))
-    if (k != 0) {
-        assertthat::assert_that(is.matrix(alpha))
-        assertthat::are_equal(ncol(alpha), k)
-        assertthat::are_equal(nrow(alpha), ncol(Y))
-        assertthat::assert_that(is.matrix(Z3))
-        assertthat::are_equal(ncol(Z3), k)
-        assertthat::are_equal(nrow(Z3), nrow(Y))
-    } else {
-        assertthat::assert_that(is.null(alpha))
-        assertthat::assert_that(is.null(Z3))
+        ## make sure the user didn't screw up the factor analysis.
+        assertthat::assert_that(is.vector(sig_diag))
+        assertthat::are_equal(length(sig_diag), ncol(Y))
+        assertthat::assert_that(all(sig_diag > 0))
+        if (k != 0) {
+            assertthat::assert_that(is.matrix(alpha))
+            assertthat::are_equal(ncol(alpha), k)
+            assertthat::are_equal(nrow(alpha), ncol(Y))
+            assertthat::assert_that(is.matrix(Z3))
+            assertthat::are_equal(ncol(Z3), k)
+            assertthat::are_equal(nrow(Z3), nrow(Y))
+        } else {
+            assertthat::assert_that(is.null(alpha))
+            assertthat::assert_that(is.null(Z3))
+        }
+
+        ## Shrink variances if desired.
+        if (requireNamespace("limma", quietly = TRUE) & limmashrink) {
+            limma_out <- limma::squeezeVar(var = sig_diag,
+                                           df = nrow(X) - ncol(X) - k)
+            sig_diag <- limma_out$var.post
+            prior_df <- limma_out$df.prior
+        } else if (!requireNamespace("limma", quietly = TRUE) & limmashrink) {
+            stop("limmashrink = TRUE but limma not installed. To install limma, run in R:\n    source(\"https://bioconductor.org/biocLite.R\")\n    biocLite(\"limma\")")
+        } else {
+            prior_df <- NULL
+        }
     }
 
-    ## Shrink variances if desired.
-    if (requireNamespace("limma", quietly = TRUE) & limmashrink) {
-        limma_out <- limma::squeezeVar(var = sig_diag,
-                                       df = nrow(X) - ncol(X) - k)
-        sig_diag <- limma_out$var.post
-        prior_df <- limma_out$df.prior
-    } else if (!requireNamespace("limma", quietly = TRUE) & limmashrink) {
-        stop("limmashrink = TRUE but limma not installed. To install limma, run in R:\n    source(\"https://bioconductor.org/biocLite.R\")\n    biocLite(\"limma\")")
-    } else {
-        prior_df <- NULL
-    }
-
-    ## absorb fnorm(X) into Y_tilde[1,], alpha, and sig_diag -----------------
-    ## since dealt with sign earlier
     R22 <- R[cov_of_interest, cov_of_interest, drop = FALSE]
     if (y2start_index > 1) {
         R11 <- R[(1:ncol(X))[-cov_of_interest], (1:ncol(X))[-cov_of_interest], drop = FALSE]
@@ -485,9 +487,12 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
     ## create list for returns
     return_list             <- list()
     return_list$betahat_ols <- betahat_ols
-    return_list$alpha       <- alpha
-    return_list$Z3          <- Z3
-    return_list$sig_diag    <- sig_diag
+    if (do_factor) {
+        return_list$alpha       <- alpha
+        return_list$Z3          <- Z3
+        return_list$sig_diag    <- sig_diag
+        return_list$prior_df    <- prior_df
+    }
     return_list$Q           <- Q
     return_list$R11         <- R11
     return_list$R12         <- R12
@@ -497,7 +502,6 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
     return_list$Y3          <- Y3
     return_list$k           <- k
     return_list$X           <- X
-    return_list$prior_df    <- prior_df
 
     return(return_list)
 }
@@ -586,6 +590,8 @@ pca_naive <- function (Y, r) {
 #'     algorithm that is passed to SQUAREM.
 #'
 #' @author David Gerard
+#'
+#' @export
 #'
 #' @references Lange, Kenneth L., Roderick JA Little, and Jeremy MG
 #'     Taylor. "Robust statistical modeling using the t distribution."
@@ -774,7 +780,7 @@ tregress_obj_wrapper <- function(lambda, Z, Y, alpha, sig_diag, nu) {
 #'     standard errors of \code{betahat_ols}.
 #' @param degrees_freedom A positive numeric. The degrees of freedom
 #'     of the t-likelihood if using it.
-#' @inheritParams vicarius_ruv4
+#' @inheritParams vruv4
 #'
 #' @author David Gerard
 #'

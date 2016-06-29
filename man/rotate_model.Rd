@@ -6,7 +6,7 @@
 \usage{
 rotate_model(Y, X, k, cov_of_interest = ncol(X), include_intercept = TRUE,
   limmashrink = FALSE, fa_func = pca_naive, fa_args = list(),
-  do_ols = FALSE)
+  do_factor = TRUE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -54,7 +54,7 @@ variances are just the column-wise mean square.}
 \item{fa_args}{A list. Additional arguments you want to pass to
 fa_func.}
 
-\item{do_ols}{A logical. Should we just do OLS?}
+\item{do_factor}{A logical. Should we do the factor analysis or just rotation?}
 }
 \description{
 QR rotation to independent models.
