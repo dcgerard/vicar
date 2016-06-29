@@ -155,7 +155,7 @@ vruv2 <- function(Y, X, ctl, k = NULL,
     ## This is the way the RUV folks do it and makes more sense.
     ## Need to think about consequences much more carefully.
     XZ <- cbind(X, Zhat)
-    mult_matrix <- solve(t(XZ) %*% XZ)[cov_of_interest, cov_of_interest]
+    mult_matrix <- solve(t(XZ) %*% XZ)[cov_of_interest, cov_of_interest, drop = FALSE]
 
     sebetahat <- sqrt(outer(diag(mult_matrix), sig_diag * multiplier, FUN = "*"))
     sebetahat_ols <- sqrt(outer(diag(mult_matrix), sigma2_unadjusted, FUN = "*"))

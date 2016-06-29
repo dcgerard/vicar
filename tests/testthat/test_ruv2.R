@@ -79,3 +79,11 @@ test_that("limmashrink works OK", {
                   limmashrink = TRUE)
 }
 )
+
+
+test_that("outlist.Rd data works", {
+    load("outlist.Rd")
+    vruv2(Y = outlist$Y, X = outlist$X, ctl = outlist$ctl, k = outlist$num_sv,
+          likelihood = "normal")
+}
+)
