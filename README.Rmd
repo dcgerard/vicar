@@ -38,6 +38,8 @@ RUV2 [@gagnon2012using], RUV4 [@gagnon2013removing], and LEAPP
 [@leek2007capturing, @leek2008general], then I'll include that as
 well.
 
+Check out [NEWS.md](NEWS.md) to see what's new with each version.
+
 ## Installation
 To install, run in R:
 

@@ -23,6 +23,8 @@ Not accounting for the hidden covariates, Z, can reduce power and result in poor
 
 There are many approaches available for estimating hidden confounders, but in practice they are not well calibrated. This package calibrates RUV2 (J. A. Gagnon-Bartsch and Speed 2012), RUV4 (J. Gagnon-Bartsch, Jacob, and Speed 2013), and LEAPP (Sun et al. 2012). If I come up with a way to calibrate SVA (Leek and Storey 2007, Leek and Storey (2008)), then I'll include that as well.
 
+Check out [NEWS.md](NEWS.md) to see what's new with each version.
+
 Installation
 ------------
 
