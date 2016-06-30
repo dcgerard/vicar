@@ -89,18 +89,18 @@
 #'     pre-inflation standard errors of \code{ruv$betahat} (NOT
 #'     \code{ruv$betahat_ols}).
 #'
-#'     \code{betahat} A vector of numerics. The ordinary least squares
+#'     \code{betahat} A matrix of numerics. The ordinary least squares
 #'     estimates of the coefficients of the covariate of interest WHEN
 #'     YOU ALSO INCLUDE THE ESTIMATES OF THE UNOBSERVED CONFOUNDERS.
 #'
-#'     \code{sebetahat} A vector of positive numerics. This is equal
+#'     \code{sebetahat} A matrix of positive numerics. This is equal
 #'     to \code{sebethat_ols * sqrt(multiplier)}. This is the
 #'     post-inflation adjusted standard errors for \code{ruv$betahat}.
 #'
 #'     \code{tstats} A vector of numerics. The t-statistics for
 #'     testing against the null hypothesis of the coefficient of the
 #'     covariate of interest being zero. This is after estimating the
-#'     variance inflation parameter but before the posthoc-inflation.
+#'     variance inflation parameter.
 #'
 #'     \code{pvalues} A vector of numerics. The p-values of said test
 #'     above.
@@ -177,6 +177,7 @@ vruv4 <- function(Y, X, ctl, k = NULL,
     assertthat::are_equal(nrow(Y), nrow(X))
     assertthat::are_equal(ncol(Y), length(ctl))
     assertthat::assert_that(is.logical(ctl))
+    assertthat::assert_that(all(abs(cov_of_interest - round(cov_of_interest)) < 10 ^ -14))
     assertthat::assert_that(all(cov_of_interest >= 1 & cov_of_interest <= ncol(X)))
     assertthat::assert_that(is.logical(gls))
     assertthat::assert_that(is.logical(include_intercept))
@@ -229,6 +230,8 @@ vruv4 <- function(Y, X, ctl, k = NULL,
                                degrees_freedom = degrees_freedom,
                                gls = gls, likelihood = likelihood)
 
+
+
     ## Estimate rest of the hidden confounders.
     Y1  <- rotate_out$Y1
     Z2  <- ruv4_out$Z2
@@ -249,8 +252,27 @@ vruv4 <- function(Y, X, ctl, k = NULL,
     } else {
         Zhat <- Q %*% rbind(t(Z2), Z3)
     }
-    ruv4_out$Zhat <- Zhat
 
+
+
+
+    ## sebetahats --- used a new mult-matrix. Hopefully this works better.
+    ## mult_matrix_old <- solve(t(R22) %*% R22)
+    XZ <- cbind(X, Zhat)
+    mult_matrix <- solve(t(XZ) %*% XZ)[cov_of_interest, cov_of_interest, drop = FALSE]
+
+    sebetahat       <- sqrt(outer(ruv4_out$sigma2_adjusted, diag(mult_matrix), FUN = "*"))
+    sebetahat_ols   <- sqrt(outer(sig_diag, diag(mult_matrix), FUN = "*"))
+    tstats          <- ruv4_out$betahat / sebetahat
+    pvalues         <- 2 * (stats::pt(q = -abs(tstats), df = degrees_freedom))
+
+    ## output list
+    ruv4_out$Zhat <- Zhat
+    ruv4_out$sebetahat <- sebetahat
+    ruv4_out$sebetahat_ols <- sebetahat_ols
+    ruv4_out$tstats <- tstats
+    ruv4_out$pvalues <- pvalues
+    ruv4_out$mult_matrix <- mult_matrix
     ruv4_out$degrees_freedom <- degrees_freedom
 
     return(ruv4_out)
@@ -344,24 +366,13 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, R22, degrees_freedom,
 
     ## Output values
     ruv4_out <- list()
-    mult_matrix       <- solve(t(R22) %*% R22)
     sig_diag_adjusted <- sig_diag * multiplier
-    sebetahat         <- sqrt(outer(sig_diag_adjusted, diag(mult_matrix), FUN = "*"))
-    sebetahat_ols     <- sqrt(outer(sig_diag, diag(mult_matrix), FUN = "*"))
     betahat_ols       <- Y2 %*% solve(t(R22))
-
-
     ruv4_out$sigma2            <- sig_diag
     ruv4_out$multiplier        <- multiplier
     ruv4_out$sigma2_adjusted   <- sig_diag_adjusted
-    ruv4_out$mult_matrix       <- mult_matrix
     ruv4_out$betahat_ols       <- betahat_ols
-    ruv4_out$sebetahat_ols     <- sebetahat_ols
     ruv4_out$betahat           <- betahat
-    ruv4_out$sebetahat         <- sebetahat
-    ruv4_out$tstats            <- betahat / sebetahat
-    ruv4_out$pvalues           <- 2 * (stats::pt(q = -abs(ruv4_out$tstats),
-                                                 df = degrees_freedom))
     ruv4_out$Z2                <- Z2
     ruv4_out$alphahat          <- alpha
     ruv4_out$R22               <- R22
