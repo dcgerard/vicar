@@ -207,7 +207,7 @@ vruv4 <- function(Y, X, ctl, k = NULL,
         degrees_freedom <- Inf
     }
     if (!is.null(rotate_out$prior_df) & is.null(degrees_freedom) & likelihood == "t") {
-        degrees_freedom <- rotate_out$prior_df
+        degrees_freedom <- rotate_out$prior_df + nrow(X) - ncol(X) - k
         if (degrees_freedom == Inf) {
             message("limma estimated df = Inf . Changing likelihood to \"normal\".")
             likelihood <- "normal"
