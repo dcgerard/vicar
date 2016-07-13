@@ -9,7 +9,7 @@ BugReports: http://github.com/dcgerard/vicar/issues
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
-Remotes: github::dcgerard/ashr
+Remotes: github::stephens999/ashr
 Imports: ruv,
     SQUAREM,
     limma,
