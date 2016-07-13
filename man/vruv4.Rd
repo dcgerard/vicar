@@ -8,7 +8,7 @@ confounders and a variance inflation parameter.}
 vruv4(Y, X, ctl, k = NULL, cov_of_interest = ncol(X), likelihood = c("t",
   "normal"), limmashrink = TRUE, degrees_freedom = NULL,
   include_intercept = TRUE, gls = TRUE, fa_func = pca_naive,
-  fa_args = list())
+  fa_args = list(), adjust_bias = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -74,6 +74,9 @@ variances are just the column-wise mean square.}
 
 \item{fa_args}{A list. Additional arguments you want to pass to
 fa_func.}
+
+\item{adjust_bias}{A logical. Should we also use the control genes
+to adjust for bias (\code{TRUE}) or not (\code{FALSE})}
 }
 \value{
 A list whose elements are:

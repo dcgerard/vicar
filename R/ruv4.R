@@ -73,6 +73,8 @@
 #'     variances are just the column-wise mean square.
 #' @param fa_args A list. Additional arguments you want to pass to
 #'     fa_func.
+#' @param adjust_bias A logical. Should we also use the control genes
+#'     to adjust for bias (\code{TRUE}) or not (\code{FALSE})
 #'
 #'
 #' @return A list whose elements are:
@@ -170,7 +172,8 @@ vruv4 <- function(Y, X, ctl, k = NULL,
                   likelihood = c("t", "normal"),
                   limmashrink = TRUE, degrees_freedom = NULL,
                   include_intercept = TRUE, gls = TRUE,
-                  fa_func = pca_naive, fa_args = list()) {
+                  fa_func = pca_naive, fa_args = list(),
+                  adjust_bias = FALSE) {
 
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(X))
@@ -222,8 +225,11 @@ vruv4 <- function(Y, X, ctl, k = NULL,
     ## RUN RUV4 HERE ----------------------------------------------------------
     Y2       <- rotate_out$Y2
     alpha    <- rotate_out$alpha
+    if (adjust_bias) {
+        alpha <- cbind(rep(1, nrow(alpha)), alpha)
+    }
     sig_diag <- rotate_out$sig_diag
-    R22     <- rotate_out$R22
+    R22      <- rotate_out$R22
     ruv4_out <- cruv4_multicov(Y2 = t(Y2), alpha = alpha,
                                sig_diag = sig_diag, ctl = ctl,
                                R22 = R22,
@@ -231,11 +237,16 @@ vruv4 <- function(Y, X, ctl, k = NULL,
                                gls = gls, likelihood = likelihood)
 
 
-
     ## Estimate rest of the hidden confounders.
     Y1  <- rotate_out$Y1
-    Z2  <- ruv4_out$Z2
-    Z3  <- rotate_out$Z3
+    if (adjust_bias) {
+        Z2 <- ruv4_out$Z2[-1, , drop = FALSE]
+        additivor <- ruv4_out$Z2[1, , drop = FALSE]
+        alpha <- alpha[, -1, drop = FALSE]
+    } else {
+        Z2 <- ruv4_out$Z2
+    }
+    Z3 <- rotate_out$Z3
     if (!is.null(Y1)) {
         R12 <- rotate_out$R12
         R11 <- rotate_out$R11
@@ -252,8 +263,6 @@ vruv4 <- function(Y, X, ctl, k = NULL,
     } else {
         Zhat <- Q %*% rbind(t(Z2), Z3)
     }
-
-
 
 
     ## sebetahats --- used a new mult-matrix. Hopefully this works better.
@@ -274,7 +283,9 @@ vruv4 <- function(Y, X, ctl, k = NULL,
     ruv4_out$pvalues <- pvalues
     ruv4_out$mult_matrix <- mult_matrix
     ruv4_out$degrees_freedom <- degrees_freedom
-
+    if (adjust_bias) {
+        ruv4_out$additivor <- additivor
+    }
     return(ruv4_out)
 }
 
