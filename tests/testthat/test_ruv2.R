@@ -87,3 +87,84 @@ test_that("outlist.Rd data works", {
           likelihood = "normal")
 }
 )
+
+
+test_that("pcaruv2_fix increases likelihood", {
+    set.seed(966)
+    n <- 11
+    p <- 53
+    r <- 5
+    vr <- 2
+    lambda <- 2
+
+    A <- matrix(stats::rnorm(n * r), nrow = n)
+    B <- matrix(stats::rnorm(r * p), ncol = p)
+    sig_diag <- stats::rchisq(p, df = 4) / 4
+    E <- matrix(stats::rnorm(n * p), nrow = n) %*% diag(sqrt(sig_diag))
+    E[1:vr, ] <- E[1:vr, ] * lambda
+
+    Y <- A %*% B + E
+
+    ## make sure objective function increases
+    resids <- E
+    R1 <- resids[1:vr, ]
+    R2 <- resids[(vr + 1): n, ]
+    r1 <- colSums(R1 ^ 2)
+    r2 <- colSums(R2 ^ 2)
+    Sigma_init <- r2 / (n - vr)
+    lambda_init <- mean(r1 / Sigma_init) / vr
+    sig_lambda <- c(Sigma_init, lambda_init)
+
+    itermax <- 20
+    llike_vec <- rep(NA, length = itermax)
+    llike_vec[1] <- pcaruv2_obj(sig_lambda = sig_lambda,
+                                r1 = r1, r2 = r2, n = n,
+                                vr = vr)
+
+    for (index in 2:itermax) {
+        sig_lambda <- pcaruv2_fix(sig_lambda = sig_lambda, r1 = r1, r2 = r2, n = n, vr = vr)
+        llike_vec[index] <- pcaruv2_obj(sig_lambda = sig_lambda,
+                                        r1 = r1, r2 = r2, n = n,
+                                        vr = vr)
+    }
+    expect_true(all(llike_vec[1:(length(llike_vec) - 1)] -
+                    llike_vec[2:length(llike_vec)] < 10 ^ -13))
+
+
+}
+)
+
+
+test_that("pca_ruv2 works", {
+    n <- 11
+    p <- 1011
+    r <- 5
+    vr <- 2
+    lambda <- 2
+
+    A <- matrix(stats::rnorm(n * r), nrow = n)
+    B <- matrix(stats::rnorm(r * p), ncol = p)
+    sig_diag <- stats::rchisq(p, df = 4) / 4
+    E <- matrix(stats::rnorm(n * p), nrow = n) %*% diag(sqrt(sig_diag))
+    E[1:vr, ] <- E[1:vr, ] * sqrt(lambda)
+
+    Y <- A %*% B + E
+
+    pc1 <- pca_ruv2(Y = Y, r = r, vr = vr, mle = FALSE)
+    pc2 <- pca_ruv2(Y = Y, r = r, vr = vr, mle = TRUE)
+    pc3 <- pca_naive(Y = Y, r = r)
+
+    ## plot(pc1$sig_diag, sig_diag)
+    ## plot(pc2$sig_diag, sig_diag)
+    ## abline(0, 1)
+    ## plot(pc3$sig_diag, sig_diag)
+    ## abline(0, 1)
+
+
+    sum((pc3$sig_diag - sig_diag) ^ 2)
+    sum((pc2$sig_diag - sig_diag) ^ 2)
+    sum((pc1$sig_diag - sig_diag) ^ 2)
+
+    pca_ruv2(E, r = 0, vr = vr)
+}
+)

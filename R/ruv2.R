@@ -177,3 +177,126 @@ vruv2 <- function(Y, X, ctl, k = NULL,
 
     return(ruv2_out)
 }
+
+
+
+#' PCA when first \code{vr} rows have a variance multiplicatively
+#' different from the rest of the rows.
+#'
+#' Modified truncated SVD. The variance estimates are just the
+#' column-wise mean-squares of the last \eqn{n - vr} rows. This form
+#' of factor analysis is mostly for variance inflation with RUV2.
+#'
+#' This doesn't work too well. I think the Z's and sigmas need to be
+#' estimated jointly.
+#'
+#'
+#' @param Y A matrix of numerics. The data.
+#' @param r the rank.
+#' @param vr The number of the first few rows whose variances differ
+#'     by a multiplicative factor.
+#' @param mle A logical. Should we run an MLE on the residuals of PCA
+#'     (\code{TRUE}) or just use a two-step estimator (\code{FALSE}).
+#'
+#' @export
+#'
+#' @author David Gerard
+pca_ruv2 <- function(Y, r, vr, mle = FALSE) {
+    assertthat::assert_that(is.matrix(Y))
+    assertthat::are_equal(length(r), 1)
+    assertthat::assert_that(r >= 0 & r < min(dim(Y)))
+    assertthat::assert_that(vr > 0 & vr < nrow(Y))
+
+    p <- ncol(Y)
+    n <- nrow(Y)
+
+    if (r == 0) {
+        Gamma <- NULL
+        Z <- NULL
+        resids <- Y
+    } else {
+        svd_Y <- svd(Y)
+        Gamma <- svd_Y$v[, 1:r, drop = FALSE] %*% diag(svd_Y$d[1:r], r, r) /
+            sqrt(n)
+        Z <- sqrt(n) * svd_Y$u[, 1:r, drop = FALSE]
+        resids <- Y - Z %*% t(Gamma)
+    }
+
+    ## MLE to find variances
+    R1 <- resids[1:vr, ]
+    R2 <- resids[(vr + 1): n, ]
+
+    r1 <- colSums(R1 ^ 2)
+    r2 <- colSums(R2 ^ 2)
+
+    Sigma_init <- r2 / (n - vr)
+    lambda_init <- mean(r1 / Sigma_init) / vr
+
+    if (mle) {
+        sqout <- SQUAREM::squarem(par = c(Sigma_init, lambda_init),
+                                  fixptfn = pcaruv2_fix,
+                                  objfn = pcaruv2_obj, r1 = r1,
+                                  r2 = r2, n = n, vr = vr)
+        sig_diag <- sqout$par[-length(sqout$par)]
+        lambda   <- sqout$par[length(sqout$par)]
+    } else {
+        sig_diag <- Sigma_init
+        lambda   <- lambda_init
+    }
+
+    return(list(alpha = Gamma, Z = Z, sig_diag = sig_diag, lambda = lambda))
+}
+
+#' Fix point for mle in pca_ruv2.
+#'
+#' This is mostly for use in SQUAREM.
+#'
+#' @param sig_lambda A vector. All but the first elements are the
+#'     current values of Sigma. The last element is the current valur
+#'     of lambda.
+#' @param r1 The sum of squares of the first vr columns of the
+#'     residuals.
+#' @param r2 The sum of squares of the last n - vr columns of the
+#'     residuals.
+#' @param n The number of samples.
+#' @param vr The number of columns where variance inflation is in
+#'     effect.
+#'
+#' @author David Gerard
+#'
+#' @seealso \code{\link{pca_ruv2}}, \code{\link{pcaruv2_obj}} for the
+#'     objective function that this maximizes.
+pcaruv2_fix <- function(sig_lambda, r1, r2, n, vr) {
+    Sigma  <- sig_lambda[-length(sig_lambda)]
+    lambda <- sig_lambda[length(sig_lambda)]
+
+    Sigma_new <- (r1 / lambda + r2) / n
+    lambda_new <- mean(r1 / Sigma_new) / vr
+
+    return(c(Sigma_new, lambda_new))
+}
+
+#' The objective function for mle in pca_ruv2.
+#'
+#' This is mostly for use in SQUAREM.
+#'
+#' @inheritParams pcaruv2_fix
+#'
+#' @author David Gerard
+#'
+#' @seealso \code{\link{pca_ruv2}} \code{\link{pcaruv2_fix}} for the
+#'     fixed point iteration that maximizes this objective function.
+pcaruv2_obj <- function(sig_lambda, r1, r2, n, vr) {
+    Sigma  <- sig_lambda[-length(sig_lambda)]
+    lambda <- sig_lambda[length(sig_lambda)]
+
+    tr1 <- sum(r1 / Sigma) / lambda
+    tr2 <- sum(r2 / Sigma)
+
+    p <- length(Sigma)
+
+    llike <- -vr * p * log(lambda) / 2 -
+        n * sum(log(Sigma)) / 2 -
+        (tr1 + tr2) / 2
+    return(llike)
+}
