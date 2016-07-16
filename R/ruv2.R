@@ -1,14 +1,10 @@
-
 #' Calibrated RUV2.
 #'
 #' This function will perform a variant of Removing Unwanted Variation
 #' 2-step (RUV2) (Gagnon-Bartsch et al, 2013), where we include a
-#' variance inflation parameter in the second step and estimate it by
-#' maximum likelihood.
+#' variance inflation parameter in the factor analysis.
 #'
 #' See \code{\link{vruv4}} for a description of the model.
-#'
-#' The variances of the non-control genes using the adjustment for RUV2 are unchanged. The variances for the control genes are the ones that are inflated. Hence, for this method to adjust the variances of the genes of interest (the non-control genes) you must use hierarchical shrinkage of the variances. That is, you must set \code{limmashrink = TRUE}.
 #'
 #'
 #' @inheritParams vruv4
@@ -30,6 +26,611 @@
 #'     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
 #'     research, 27(4):509-540, 1992.
 vruv2 <- function(Y, X, ctl, k = NULL,
+                  cov_of_interest = ncol(X),
+                  likelihood = c("t", "normal"),
+                  limmashrink = TRUE, degrees_freedom = NULL,
+                  include_intercept = TRUE, gls = TRUE,
+                  fa_func = qmle_ruv2, fa_args = list()) {
+
+    assertthat::assert_that(is.matrix(Y))
+    assertthat::assert_that(is.matrix(X))
+    assertthat::are_equal(nrow(Y), nrow(X))
+    assertthat::are_equal(ncol(Y), length(ctl))
+    assertthat::assert_that(is.logical(ctl))
+    assertthat::assert_that(all(cov_of_interest >= 1 & cov_of_interest <= ncol(X)))
+    assertthat::assert_that(is.logical(gls))
+    assertthat::assert_that(is.logical(include_intercept))
+    assertthat::assert_that(is.logical(limmashrink))
+    assertthat::assert_that(is.list(fa_args))
+    assertthat::assert_that(is.null(fa_args$Y))
+    assertthat::assert_that(is.null(fa_args$r))
+    assertthat::assert_that(is.function(fa_func))
+
+    likelihood <- match.arg(likelihood)
+
+    if (likelihood == "t") {
+        stop("t-likelihood not implemented yet for vruv2")
+    }
+
+
+    ## RUN THE ROTATED MODEL HERE -------------------------------------------
+    rotate_out <- rotate_model(Y = Y, X = X, k = k,
+                               cov_of_interest = cov_of_interest,
+                               include_intercept = include_intercept,
+                               limmashrink = limmashrink, fa_func = fa_func,
+                               fa_args = fa_args, do_factor = FALSE)
+
+
+    Y1  <- rotate_out$Y1
+    Y2  <- rotate_out$Y2
+    Y3  <- rotate_out$Y3
+    R22 <- rotate_out$R22
+    k   <- rotate_out$k
+
+    if (k == 0) {
+        stop("k = 0, so no point in running vruv2")
+    }
+
+
+    ## Do factor Analysis -----------------------------------------------------
+    Y23 <- rbind(Y2, Y3)
+    fa_args$Y <- Y23[, ctl]
+    fa_args$r <- k
+    fa_args$vr <- nrow(Y2)
+    pcout <- do.call(what = fa_func, args = fa_args)
+    sig_diag_ctl <- pcout$sig_diag
+    Z23 <- pcout$Z
+    alpha_ctl <- pcout$alpha
+    multiplier <- pcout$lambda
+
+    ## Do RUV2 here -----------------------------------------------------------
+    Z2 <- Z23[1:length(cov_of_interest), , drop = FALSE]
+    Z3 <- Z23[(length(cov_of_interest) + 1):nrow(Z23), , drop = FALSE]
+    alpha <- matrix(NA, ncol = ncol(Y), nrow = ncol(Z3))
+
+    ## RUV2 method
+    alphahat_ols <- solve(t(Z3) %*% Z3) %*% t(Z3) %*% Y3
+    sigma2_unadjusted <- colSums((Y3 - Z3 %*% alphahat_ols) ^ 2) / (nrow(X) - ncol(X) - k)
+    betahat_ols <- solve(R22) %*% (Y2 - Z2 %*% alphahat_ols)
+
+    ## New method
+    alpha[, !ctl] <- alphahat_ols[, !ctl]
+    alpha[, ctl]  <- t(alpha_ctl)
+    betahat <- solve(R22) %*% (Y2 - Z2 %*% alpha)
+
+    ## variances
+    r2 <- colSums((Y3 - Z3 %*% alpha) ^ 2) / (nrow(X) - ncol(X) - k)
+    sig_diag <- rep(NA, length = ncol(Y))
+    sig_diag[ctl] <- sig_diag_ctl
+    sig_diag[!ctl] <- r2[!ctl]
+    sig_diag <- sig_diag * multiplier
+
+    ## Shrink standard errors if desired
+    if (limmashrink) {
+        limma_out <- limma::squeezeVar(var = sig_diag,
+                                       df = nrow(X) - ncol(X) - k)
+        sig_diag <- limma_out$var.post
+        prior_df <- limma_out$df.prior
+
+        limma_out_unadjusted <- limma::squeezeVar(var = sigma2_unadjusted,
+                                                  df = nrow(X) - ncol(X) - k)
+        sigma2_unadjusted <- limma_out_unadjusted$var.post
+        prior_df_unadjusted <- limma_out_unadjusted$df.prior
+    } else {
+        prior_df <- nrow(X) - ncol(X) - k
+        prior_df_unadjusted <- nrow(X) - ncol(X) - k
+    }
+
+
+
+    ## Estimate rest of hidden confounders
+    if (!is.null(Y1)) {
+        R12 <- rotate_out$R12
+        R11 <- rotate_out$R11
+        Q   <- rotate_out$Q
+        beta1_ols <- solve(R11) %*% (Y1 - R12 %*% solve(R22) %*% Y2)
+        resid_top <- Y1 - R12 %*% betahat - R11 %*% beta1_ols
+        if (gls) {
+            Z1  <- t(solve(alpha %*% diag(1 / sig_diag) %*% t(alpha)) %*%
+                     alpha %*% diag(1 / sig_diag) %*% t(resid_top))
+        } else {
+            Z1  <- t(solve(alpha %*%  t(alpha)) %*% alpha %*% t(resid_top))
+        }
+        Zhat <- Q %*% rbind(Z1, Z2, Z3)
+    } else {
+        Zhat <- Q %*% rbind(Z2, Z3)
+    }
+
+
+    XZ <- cbind(X, Zhat)
+    mult_matrix <- solve(t(XZ) %*% XZ)[cov_of_interest, cov_of_interest, drop = FALSE]
+
+    sebetahat <- sqrt(outer(diag(mult_matrix), sig_diag, FUN = "*"))
+    sebetahat_ols <- sqrt(outer(diag(mult_matrix), sigma2_unadjusted, FUN = "*"))
+
+    ruv2_out                   <- list()
+    ruv2_out$betahat           <- betahat
+    ruv2_out$sebetahat         <- sebetahat
+    ruv2_out$betahat_ols       <- betahat_ols
+    ruv2_out$sebetahat_ols     <- sebetahat_ols
+    ruv2_out$sigma2_unadjusted <- sigma2_unadjusted
+    ruv2_out$sigma2_adjusted   <- sig_diag
+    ruv2_out$tstats            <- betahat / sebetahat
+    ruv2_out$pvalues           <- 2 * (stats::pt(q = -abs(ruv2_out$tstats),
+                                                 df = prior_df))
+    ruv2_out$alphahat          <- alpha
+    ruv2_out$Zhat              <- Zhat
+    ruv2_out$multiplier        <- multiplier
+    ruv2_out$mult_matrix       <- mult_matrix
+
+    return(ruv2_out)
+}
+
+
+
+
+#' PCA when first \code{vr} rows have a variance multiplicatively
+#' different from the rest of the rows.
+#'
+#' Modified truncated SVD. The variance estimates are just the
+#' column-wise mean-squares of the last \eqn{n - vr} rows. This form
+#' of factor analysis is mostly for variance inflation with RUV2.
+#'
+#' This doesn't work too well. I think the Z's and sigmas need to be
+#' estimated jointly.
+#'
+#'
+#' @param Y A matrix of numerics. The data.
+#' @param r the rank.
+#' @param vr The number of the first few rows whose variances differ
+#'     by a multiplicative factor.
+#' @param mle A logical. Should we run an MLE on the residuals of PCA
+#'     (\code{TRUE}) or just use a two-step estimator (\code{FALSE}).
+#'
+#' @export
+#'
+#' @author David Gerard
+pca_ruv2 <- function(Y, r, vr, mle = FALSE) {
+    assertthat::assert_that(is.matrix(Y))
+    assertthat::are_equal(length(r), 1)
+    assertthat::assert_that(r >= 0 & r < min(dim(Y)))
+    assertthat::assert_that(vr > 0 & vr < nrow(Y))
+
+    p <- ncol(Y)
+    n <- nrow(Y)
+
+    if (r == 0) {
+        Gamma <- NULL
+        Z <- NULL
+        resids <- Y
+    } else {
+        svd_Y <- svd(Y)
+        Gamma <- svd_Y$v[, 1:r, drop = FALSE] %*% diag(svd_Y$d[1:r], r, r) /
+            sqrt(n)
+        Z <- sqrt(n) * svd_Y$u[, 1:r, drop = FALSE]
+        resids <- Y - Z %*% t(Gamma)
+    }
+
+    ## MLE to find variances
+    R1 <- resids[1:vr, ]
+    R2 <- resids[(vr + 1): n, ]
+
+    r1 <- colSums(R1 ^ 2)
+    r2 <- colSums(R2 ^ 2)
+
+    Sigma_init <- r2 / (n - vr)
+    lambda_init <- mean(r1 / Sigma_init) / vr
+
+    if (mle) {
+        sqout <- SQUAREM::squarem(par = c(Sigma_init, lambda_init),
+                                  fixptfn = pcaruv2_fix,
+                                  objfn = pcaruv2_obj, r1 = r1,
+                                  r2 = r2, n = n, vr = vr)
+        sig_diag <- sqout$par[-length(sqout$par)]
+        lambda   <- sqout$par[length(sqout$par)]
+    } else {
+        sig_diag <- Sigma_init
+        lambda   <- lambda_init
+    }
+
+    return(list(alpha = Gamma, Z = Z, sig_diag = sig_diag, lambda = lambda))
+}
+
+#' Fix point for mle in pca_ruv2.
+#'
+#' This is mostly for use in SQUAREM.
+#'
+#' @param sig_lambda A vector. All but the first elements are the
+#'     current values of Sigma. The last element is the current valur
+#'     of lambda.
+#' @param r1 The sum of squares of the first vr columns of the
+#'     residuals.
+#' @param r2 The sum of squares of the last n - vr columns of the
+#'     residuals.
+#' @param n The number of samples.
+#' @param vr The number of columns where variance inflation is in
+#'     effect.
+#'
+#' @author David Gerard
+#'
+#' @seealso \code{\link{pca_ruv2}}, \code{\link{pcaruv2_obj}} for the
+#'     objective function that this maximizes.
+pcaruv2_fix <- function(sig_lambda, r1, r2, n, vr) {
+    Sigma  <- sig_lambda[-length(sig_lambda)]
+    lambda <- sig_lambda[length(sig_lambda)]
+
+    Sigma_new <- (r1 / lambda + r2) / n
+    lambda_new <- mean(r1 / Sigma_new) / vr
+
+    return(c(Sigma_new, lambda_new))
+}
+
+#' The objective function for mle in pca_ruv2.
+#'
+#' This is mostly for use in SQUAREM.
+#'
+#' @inheritParams pcaruv2_fix
+#'
+#' @author David Gerard
+#'
+#' @seealso \code{\link{pca_ruv2}} \code{\link{pcaruv2_fix}} for the
+#'     fixed point iteration that maximizes this objective function.
+pcaruv2_obj <- function(sig_lambda, r1, r2, n, vr) {
+    Sigma  <- sig_lambda[-length(sig_lambda)]
+    lambda <- sig_lambda[length(sig_lambda)]
+
+    tr1 <- sum(r1 / Sigma) / lambda
+    tr2 <- sum(r2 / Sigma)
+
+    p <- length(Sigma)
+
+    llike <- -vr * p * log(lambda) / 2 -
+        n * sum(log(Sigma)) / 2 -
+        (tr1 + tr2) / 2
+    return(llike)
+}
+
+
+#' Quasi-mle when first \code{vr} rows of \code{Y} have variances
+#' which differ by a scale factor from the rest of the rows.
+#'
+#' @inheritParams pca_ruv2
+#' @param tol The function tolerance for stopping. A positive numeric.
+#' @param maxit The maximum number of iterations to run.
+#'
+#' @return \code{alpha} A matrix of the estimated factor loadings.
+#'
+#'         \code{Z} A matrix of the estimated factors.
+#'
+#'         \code{sig_diag} A vector of the estimated column-wise
+#'         variances.
+#'
+#'         \code{lambda} A numeric scalar of the estimated variance
+#'         inflation parameter.
+#'
+#' @export
+#'
+#' @author David Gerard
+qmle_ruv2 <- function(Y, r, vr, tol = 10 ^ -3, maxit = 1000) {
+
+    assertthat::assert_that(tol > 0)
+
+    ## Get starting values using CATE's fa.em
+    cate_faout <- cate::fa.em(Y = Y, r = r)
+
+    alpha    <- t(cate_faout$Gamma)
+    sig_diag <- cate_faout$Sigma
+    lambda   <- 1
+
+    Y1 <- Y[1:vr, , drop = FALSE]
+    Y2 <- Y[(vr + 1):nrow(Y), , drop = FALSE]
+
+    llike_vec <- c()
+    llike <- qmle_obj(alpha = alpha, sig_diag = sig_diag, lambda = lambda,
+                      Y1 = Y1, Y2 = Y2)
+
+    for (index in 1:maxit) {
+        lambda_old <- lambda
+        alpha_old <- alpha
+        sig_diag_old <- sig_diag
+        llike_old <- llike
+        uout <- update_sig_alpha(alpha = alpha, sig_diag = sig_diag, lambda = lambda,
+                                 Y1 = Y1, Y2 = Y2)
+        lambda <- update_lambda(alpha = alpha, sig_diag = sig_diag, lambda = lambda,
+                                    Y1 = Y1, Y2 = Y2)
+        alpha <- uout$alpha
+        sig_diag <- uout$sig_diag
+
+        llike <- qmle_obj(alpha = alpha, sig_diag = sig_diag, lambda = lambda,
+                          Y1 = Y1, Y2 = Y2)
+        llike_vec <- c(llike_vec, llike)
+        if (abs(llike / llike_old - 1) < tol) {
+            break
+        }
+    }
+
+
+    ## Slow old way to get Z
+    ## Z <- Y %*% diag(1 / sig_diag) %*% t(alpha) %*%
+    ##     solve(alpha %*% diag(1 / sig_diag) %*% t(alpha))
+
+    ## New fast way to get G
+    sig_inv <- 1 / sig_diag
+    asig <- sweep(alpha, MARGIN = 2, sig_inv, `*`)
+    asiga <- tcrossprod(alpha, asig)
+    eigenAsiga <- eigen(asiga, symmetric = TRUE)
+    YSA <- tcrossprod(Y, asig)
+    Z <- tcrossprod(YSA, tcrossprod(eigenAsiga$vectors,
+                                    sweep(eigenAsiga$vectors,
+                                          MARGIN = 2,
+                                          1 / eigenAsiga$values,
+                                          FUN = `*`)))
+
+    return(list(alpha = alpha, sig_diag = sig_diag, lambda = lambda, Z = Z))
+}
+
+#' Wrapper for \code{\link[stats]{optim}} and \code{\link{qmle_obj}}.
+#'
+#' Uses Brent's method to obtimize the variance inflation parameter
+#' given sig_diag and alpha.
+#'
+#' @inheritParams qmle_obj
+#' @param maxit The number of iterations to run. Shouldn't be too
+#'     large since this is only an intermediate step.
+#'
+#' @author David Gerard
+update_lambda <- function(alpha, sig_diag, lambda, Y1, Y2, maxit = 10) {
+    oout <- stats::optim(par = lambda, fn = qmle_obj, method = "Brent",
+                         lower = 0, upper = 10, control = list(fnscale = -1, maxit = maxit),
+                         alpha = alpha, sig_diag = sig_diag, Y1 = Y1, Y2 = Y2)
+    return(oout$par)
+}
+
+
+#' Basic no optimized code update for sig_diag and alpha.
+#'
+#' @inheritParams qmle_obj
+#'
+#' @author David Gerard
+update_sig_alpha_basic <- function(alpha, sig_diag, lambda, Y1, Y2) {
+    r <- nrow(alpha)
+    m <- nrow(Y1)
+    n <- nrow(Y2)
+    p <- ncol(Y1)
+    assertthat::are_equal(ncol(Y1), ncol(Y2))
+    assertthat::are_equal(length(sig_diag), ncol(Y2))
+    assertthat::are_equal(ncol(alpha), ncol(Y2))
+
+    if(p > 200) {
+        stop("this won't work for large p")
+    }
+
+    Sigma1 <- diag(sig_diag * lambda)
+
+    Sigma2 <- diag(sig_diag)
+
+    del1 <- solve(Sigma1 + t(alpha) %*% alpha) %*% t(alpha)
+    capdel1 <- diag(r) - alpha %*% del1
+    ezz1 <- t(del1) %*% t(Y1) %*% Y1 %*% del1 + capdel1 * m
+
+    del2 <- solve(Sigma2 + t(alpha) %*% alpha) %*% t(alpha)
+    capdel2 <- diag(r) - alpha %*% del2
+    ezz2 <- t(del2) %*% t(Y2) %*% Y2 %*% del2 + capdel2 * n
+
+    A <- t(Y1) %*% Y1 %*% del1 / lambda + t(Y2) %*% Y2 %*% del2
+    B <- ezz1 / lambda + ezz2
+
+    alpha_new <- solve(B) %*% t(A)
+
+    t1 <- colSums(Y1 ^ 2) / lambda + colSums(Y2 ^ 2)
+    t2 <- colSums(t(A) * alpha)
+    t3 <- rowSums(crossprod(alpha, B) * t(alpha))
+    sig_diag_new <- (t1 - 2 * t2 + t3) / (n + m)
+    return(list(alpha = alpha_new, sig_diag = sig_diag_new))
+}
+
+#' Fast update for sig_diag and alpha.
+#'
+#' @inheritParams qmle_obj
+#'
+#' @author David Gerard
+update_sig_alpha <- function(alpha, sig_diag, lambda, Y1, Y2) {
+    r <- nrow(alpha)
+    m <- nrow(Y1)
+    n <- nrow(Y2)
+    p <- ncol(Y1)
+    assertthat::are_equal(ncol(Y1), ncol(Y2))
+    assertthat::are_equal(length(sig_diag), ncol(Y2))
+    assertthat::are_equal(ncol(alpha), ncol(Y2))
+
+    sig_inv <- 1 / sig_diag
+    asig <- sweep(alpha, MARGIN = 2, sig_inv, `*`)
+    asiga <- tcrossprod(alpha, asig)
+    M2 <- diag(r) + asiga
+    eigenM2 <- eigen(M2, symmetric = TRUE)
+    capdel2 <- tcrossprod(sweep(eigenM2$vectors, MARGIN = 2, 1 / eigenM2$values, `*`),
+                          eigenM2$vectors)
+    del2 <- crossprod(asig, capdel2)
+    Ydel2 <- Y2 %*% del2
+    ezz2 <- crossprod(Ydel2, Ydel2) + capdel2 * n
+
+    M1 <- diag(r) + asiga / lambda
+    eigenM1 <- eigen(M1, symmetric = TRUE)
+    capdel1 <- tcrossprod(sweep(eigenM1$vectors, MARGIN = 2, 1 / eigenM1$values, `*`),
+                          eigenM1$vectors)
+    del1 <- crossprod(asig, capdel1) / lambda
+    Ydel1 <- Y1 %*% del1
+    ezz1 <- crossprod(Ydel1, Ydel1) + capdel1 * m
+
+    A <- crossprod(Y1, Ydel1) / lambda + crossprod(Y2, Ydel2)
+    B <- ezz1 / lambda + ezz2
+    eigenB <- eigen(B, symmetric = TRUE)
+    Binv <- tcrossprod(sweep(eigenB$vectors, MARGIN = 2, 1 / eigenB$values, `*`),
+                       eigenB$vectors)
+    alpha_new <- tcrossprod(Binv, A)
+
+    t1 <- colSums(Y1 ^ 2) / lambda + colSums(Y2 ^ 2)
+    t2 <- colSums(t(A) * alpha)
+    t3 <- rowSums(crossprod(alpha, B) * t(alpha))
+
+    ## implementation checks
+    ## t1p <- diag(t(Y1) %*% Y1 / lambda + t(Y2) %*% Y2)
+    ## plot(t1p, t1); abline(0, 1)
+    ## t2p <- diag(A %*% alpha)
+    ## plot(t2p, t2); abline(0, 1)
+    ## t3p <- diag(t(alpha) %*% B %*% alpha)
+    ## plot(t3, t3p); abline(0, 1)
+
+    sig_diag_new <- (t1 - 2 * t2 + t3) / (n + m)
+
+    return(list(alpha = alpha_new, sig_diag = sig_diag_new))
+}
+
+#' Objective function for quasi-mle approach.
+#'
+#' This isn't really the log-likelihood, but the log-likelihood plus
+#' some constant.
+#'
+#' For separate parts of hte likelihood, this code borrows heavily
+#' from the function \code{\link[cate]{fa.em}}.
+#'
+#' @param alpha The current factor loadings
+#' @param sig_diag A vector of the current variances
+#' @param lambda The current inflation parameter for Y1
+#' @param Y1 The first part of the observations.
+#' @param Y2 The second part of the observations.
+qmle_obj <- function(alpha, sig_diag, lambda, Y1, Y2) {
+    r <- nrow(alpha)
+    m <- nrow(Y1)
+    n <- nrow(Y2)
+    p <- ncol(Y1)
+    assertthat::are_equal(ncol(Y1), ncol(Y2))
+    assertthat::are_equal(length(sig_diag), ncol(Y2))
+    assertthat::are_equal(ncol(alpha), ncol(Y2))
+
+    ## Fast way, courtasy of CATE ------------------------------------
+    sample_var2 <- colMeans(Y2 ^ 2)
+    sig_inv <- 1 / sig_diag
+    asig <- sweep(alpha, MARGIN = 2, sig_inv, `*`)
+    asiga <- tcrossprod(alpha, asig)
+    M2 <- diag(r) + asiga
+    eigenM2 <- eigen(M2, symmetric = TRUE)
+    Y2SG <- tcrossprod(Y2, asig)
+    B2 <- (1 / sqrt(eigenM2$values)) * tcrossprod(t(eigenM2$vectors), Y2SG)
+    tr2 <- -sum(B2 ^ 2) / n + sum(sample_var2 * sig_inv)
+    logdet2 <- sum(log(eigenM2$values)) + sum(log(sig_diag))
+    llike2 <- -tr2 - logdet2
+
+    sample_var1 <- colMeans(Y1 ^ 2)
+    M1 <- diag(r) + asiga / lambda
+    eigenM1 <- eigen(M1, symmetric = TRUE)
+    Y1SG <- tcrossprod(Y1, asig) / lambda
+    B1 <- (1 / sqrt(eigenM1$values)) * tcrossprod(t(eigenM1$vectors), Y1SG)
+    tr1 <- -sum(B1 ^ 2) / m + sum(sample_var1 * sig_inv / lambda)
+    logdet1 <- sum(log(eigenM1$values)) + sum(log(sig_diag * lambda))
+    llike1 <- -tr1 - logdet1
+
+    llike <- (llike1 * m + llike2 * n) / (n + m)
+
+    return(llike)
+}
+
+
+#' Basic no optimized code objective function.
+#'
+#' @inheritParams qmle_obj
+#'
+#' @author David Gerard
+qmle_obj_basic <- function(alpha, sig_diag, lambda, Y1, Y2) {
+    r <- nrow(alpha)
+    m <- nrow(Y1)
+    n <- nrow(Y2)
+    p <- ncol(Y1)
+    assertthat::are_equal(ncol(Y1), ncol(Y2))
+    assertthat::are_equal(length(sig_diag), ncol(Y2))
+    assertthat::are_equal(ncol(alpha), ncol(Y2))
+
+    if(p > 200) {
+        stop("this won't work for large p")
+    }
+
+    Sigma_inv <- diag(1 / sig_diag)
+    ## cov_inv1b <- Sigma_inv / lambda - Sigma_inv %*% t(alpha) %*%
+    ##     solve(diag(r) + alpha %*% Sigma_inv %*% t(alpha) / lambda) %*%
+    ##     alpha %*% Sigma_inv / lambda ^ 2
+    cov_inv1 <- solve(t(alpha) %*% alpha + diag(sig_diag) * lambda)
+
+
+    ## cov_inv2b <- Sigma_inv - Sigma_inv %*% t(alpha) %*%
+    ##     solve(diag(r) + alpha %*% Sigma_inv %*% t(alpha)) %*%
+    ##     alpha %*% Sigma_inv
+    cov_inv2 <-solve(t(alpha) %*% alpha + diag(sig_diag))
+
+    siginv1_evals <- eigen(cov_inv1, symmetric = TRUE, only.values = TRUE)$values
+
+    siginv2_evals <- eigen(cov_inv2, symmetric = TRUE, only.values = TRUE)$values
+
+
+    llike1 <- sum(log(siginv1_evals)) * m - sum(diag(Y1 %*% cov_inv1 %*% t(Y1)))
+    llike2 <- sum(log(siginv2_evals)) * n - sum(diag(Y2 %*% cov_inv2 %*% t(Y2)))
+
+    llike <- (llike1 + llike2) / (n + m)
+
+    return(llike)
+}
+
+
+trim <- function(x, tol = 10 ^ -13) {
+    x[abs(x) < tol] <- 0
+    return(x)
+}
+
+
+
+
+
+
+
+
+
+
+
+#' Old version of Calibrated RUV2 that doesn't really work.
+#'
+#' This function will perform a variant of Removing Unwanted Variation
+#' 2-step (RUV2) (Gagnon-Bartsch et al, 2013), where we include a
+#' variance inflation parameter in the second step and estimate it by
+#' maximum likelihood.
+#'
+#' See \code{\link{vruv4}} for a description of the model.
+#'
+#' The variances of the non-control genes using the adjustment for
+#' RUV2 are unchanged. The variances for the control genes are the
+#' ones that are inflated. Hence, for this method to adjust the
+#' variances of the genes of interest (the non-control genes) you must
+#' use hierarchical shrinkage of the variances. That is, you must set
+#' \code{limmashrink = TRUE}.
+#'
+#'
+#' @inheritParams vruv4
+#' @param gls A logical. Should we estimate the part of the
+#'     confounders associated with the nuisance parameters with gls
+#'     (\code{TRUE}) or with ols (\code{FALSE}).
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+#' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
+#'     P. Speed. "Removing unwanted variation from high dimensional
+#'     data with negative controls."
+#'     Berkeley: Department of Statistics. University of California
+#'     (2013).
+#'
+#'     Andreas Buja and Nermin
+#'     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
+#'     research, 27(4):509-540, 1992.
+vruv2_old <- function(Y, X, ctl, k = NULL,
                   cov_of_interest = ncol(X),
                   likelihood = c("t", "normal"),
                   limmashrink = TRUE, degrees_freedom = NULL,
@@ -176,127 +777,4 @@ vruv2 <- function(Y, X, ctl, k = NULL,
     ruv2_out$mult_matrix       <- mult_matrix
 
     return(ruv2_out)
-}
-
-
-
-#' PCA when first \code{vr} rows have a variance multiplicatively
-#' different from the rest of the rows.
-#'
-#' Modified truncated SVD. The variance estimates are just the
-#' column-wise mean-squares of the last \eqn{n - vr} rows. This form
-#' of factor analysis is mostly for variance inflation with RUV2.
-#'
-#' This doesn't work too well. I think the Z's and sigmas need to be
-#' estimated jointly.
-#'
-#'
-#' @param Y A matrix of numerics. The data.
-#' @param r the rank.
-#' @param vr The number of the first few rows whose variances differ
-#'     by a multiplicative factor.
-#' @param mle A logical. Should we run an MLE on the residuals of PCA
-#'     (\code{TRUE}) or just use a two-step estimator (\code{FALSE}).
-#'
-#' @export
-#'
-#' @author David Gerard
-pca_ruv2 <- function(Y, r, vr, mle = FALSE) {
-    assertthat::assert_that(is.matrix(Y))
-    assertthat::are_equal(length(r), 1)
-    assertthat::assert_that(r >= 0 & r < min(dim(Y)))
-    assertthat::assert_that(vr > 0 & vr < nrow(Y))
-
-    p <- ncol(Y)
-    n <- nrow(Y)
-
-    if (r == 0) {
-        Gamma <- NULL
-        Z <- NULL
-        resids <- Y
-    } else {
-        svd_Y <- svd(Y)
-        Gamma <- svd_Y$v[, 1:r, drop = FALSE] %*% diag(svd_Y$d[1:r], r, r) /
-            sqrt(n)
-        Z <- sqrt(n) * svd_Y$u[, 1:r, drop = FALSE]
-        resids <- Y - Z %*% t(Gamma)
-    }
-
-    ## MLE to find variances
-    R1 <- resids[1:vr, ]
-    R2 <- resids[(vr + 1): n, ]
-
-    r1 <- colSums(R1 ^ 2)
-    r2 <- colSums(R2 ^ 2)
-
-    Sigma_init <- r2 / (n - vr)
-    lambda_init <- mean(r1 / Sigma_init) / vr
-
-    if (mle) {
-        sqout <- SQUAREM::squarem(par = c(Sigma_init, lambda_init),
-                                  fixptfn = pcaruv2_fix,
-                                  objfn = pcaruv2_obj, r1 = r1,
-                                  r2 = r2, n = n, vr = vr)
-        sig_diag <- sqout$par[-length(sqout$par)]
-        lambda   <- sqout$par[length(sqout$par)]
-    } else {
-        sig_diag <- Sigma_init
-        lambda   <- lambda_init
-    }
-
-    return(list(alpha = Gamma, Z = Z, sig_diag = sig_diag, lambda = lambda))
-}
-
-#' Fix point for mle in pca_ruv2.
-#'
-#' This is mostly for use in SQUAREM.
-#'
-#' @param sig_lambda A vector. All but the first elements are the
-#'     current values of Sigma. The last element is the current valur
-#'     of lambda.
-#' @param r1 The sum of squares of the first vr columns of the
-#'     residuals.
-#' @param r2 The sum of squares of the last n - vr columns of the
-#'     residuals.
-#' @param n The number of samples.
-#' @param vr The number of columns where variance inflation is in
-#'     effect.
-#'
-#' @author David Gerard
-#'
-#' @seealso \code{\link{pca_ruv2}}, \code{\link{pcaruv2_obj}} for the
-#'     objective function that this maximizes.
-pcaruv2_fix <- function(sig_lambda, r1, r2, n, vr) {
-    Sigma  <- sig_lambda[-length(sig_lambda)]
-    lambda <- sig_lambda[length(sig_lambda)]
-
-    Sigma_new <- (r1 / lambda + r2) / n
-    lambda_new <- mean(r1 / Sigma_new) / vr
-
-    return(c(Sigma_new, lambda_new))
-}
-
-#' The objective function for mle in pca_ruv2.
-#'
-#' This is mostly for use in SQUAREM.
-#'
-#' @inheritParams pcaruv2_fix
-#'
-#' @author David Gerard
-#'
-#' @seealso \code{\link{pca_ruv2}} \code{\link{pcaruv2_fix}} for the
-#'     fixed point iteration that maximizes this objective function.
-pcaruv2_obj <- function(sig_lambda, r1, r2, n, vr) {
-    Sigma  <- sig_lambda[-length(sig_lambda)]
-    lambda <- sig_lambda[length(sig_lambda)]
-
-    tr1 <- sum(r1 / Sigma) / lambda
-    tr2 <- sum(r2 / Sigma)
-
-    p <- length(Sigma)
-
-    llike <- -vr * p * log(lambda) / 2 -
-        n * sum(log(Sigma)) / 2 -
-        (tr1 + tr2) / 2
-    return(llike)
 }

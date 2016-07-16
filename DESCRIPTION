@@ -15,8 +15,8 @@ Imports: ruv,
     limma,
     sva,
     assertthat,
-    MASS
+    MASS,
+    cate
 Suggests: testthat,
     ashr,
-    leapp,
-    cate
+    leapp

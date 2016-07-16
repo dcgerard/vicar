@@ -18,17 +18,17 @@ test_that("vruv2 works", {
 
     num_sv <- 1
     fa_args <- list()
-    fa_func <- pca_naive
+    fa_func <- qmle_ruv2
     limmashrink <- FALSE
     include_intercept <- FALSE
     gls <- TRUE
     likelihood <- "normal"
 
-    expect_warning(vout <- vruv2(Y = Y, X = X, ctl = ctl, k = num_sv,
-                                 cov_of_interest = cov_of_interest,
-                                 likelihood = likelihood,
-                                 include_intercept = FALSE,
-                                 limmashrink = FALSE))
+    expect_warning(vout <- vruv2_old(Y = Y, X = X, ctl = ctl, k = num_sv,
+                                     cov_of_interest = cov_of_interest,
+                                     likelihood = likelihood,
+                                     include_intercept = FALSE,
+                                     limmashrink = FALSE))
 
     expect_equal(vout$betahat_ols[, !ctl], vout$betahat[, !ctl])
     expect_equal(vout$sigma2_unadjusted[!ctl], vout$sigma2_adjusted[!ctl])
@@ -166,5 +166,75 @@ test_that("pca_ruv2 works", {
     sum((pc1$sig_diag - sig_diag) ^ 2)
 
     pca_ruv2(E, r = 0, vr = vr)
+}
+)
+
+
+
+test_that("update_sig_alpha increases qmle_obj", {
+    set.seed(98)
+    n <- 11
+    p <- 41
+    r <- 5
+    vr <- 2
+    lambda <- 2
+
+    A <- matrix(stats::rnorm(n * r), nrow = n)
+    B <- matrix(stats::rnorm(r * p), ncol = p)
+    sig_diag <- stats::rchisq(p, df = 4) / 4
+    E <- matrix(stats::rnorm(n * p), nrow = n) %*% diag(sqrt(sig_diag))
+    E[1:vr, ] <- E[1:vr, ] * sqrt(lambda)
+
+    Y <- A %*% B + E
+
+    Y1 <- Y[1:vr, ]
+    Y2 <- Y[(vr + 1):n, ]
+
+    alpha <- B
+
+
+    uout1 <- update_sig_alpha(alpha = alpha, sig_diag = sig_diag, lambda = lambda,
+                              Y1 = Y1, Y2 = Y2)
+    uout2 <- update_sig_alpha_basic(alpha = alpha, sig_diag = sig_diag, lambda = lambda,
+                                    Y1 = Y1, Y2 = Y2)
+
+    expect_equal(uout1, uout2)
+
+    llike1 <- qmle_obj(alpha = alpha, sig_diag = sig_diag,
+                       lambda = 2, Y1 = Y1, Y2 = Y2)
+    llike2 <- qmle_obj_basic(alpha = alpha, sig_diag = sig_diag,
+                       lambda = 2, Y1 = Y1, Y2 = Y2)
+
+    expect_equal(llike1, llike2)
+
+    itermax <- 10
+    llike_vec1 <- rep(NA, itermax)
+    llike_vec2 <- rep(NA, itermax)
+    llike_vec1[1] <- qmle_obj(alpha = alpha, sig_diag = sig_diag,
+                              lambda = 2, Y1 = Y1, Y2 = Y2)
+    llike_vec2[1] <- qmle_obj_basic(alpha = alpha,
+                                    sig_diag = sig_diag, lambda = 2,
+                                    Y1 = Y1, Y2 = Y2)
+    for (index in 2:itermax) {
+        uout <- update_sig_alpha_basic(alpha = alpha, sig_diag = sig_diag,
+                                 lambda = lambda, Y1 = Y1, Y2 = Y2)
+        alpha <- uout$alpha
+        sig_diag <- uout$sig_diag
+        llike_vec1[index] <- qmle_obj(alpha = alpha, sig_diag = sig_diag,
+                                     lambda = 2, Y1 = Y1, Y2 = Y2)
+        llike_vec2[index] <- qmle_obj_basic(alpha = alpha, sig_diag = sig_diag,
+                                     lambda = 2, Y1 = Y1, Y2 = Y2)
+    }
+
+    expect_true(all(llike_vec2[1:(itermax - 1)] - llike_vec2[2:itermax] < 10 ^ -14))
+    expect_true(all(llike_vec1[1:(itermax - 1)] - llike_vec1[2:itermax] < 10 ^ -14))
+    expect_equal(llike_vec1, llike_vec2)
+
+    qout <- qmle_ruv2(Y = Y, r = r, vr = vr)
+
+    Zclassic <- Y %*% diag(1 / qout$sig_diag) %*% t(qout$alpha) %*%
+        solve(qout$alpha %*% diag(1 / qout$sig_diag) %*% t(qout$alpha))
+
+    expect_equal(Zclassic, qout$Z)
 }
 )
