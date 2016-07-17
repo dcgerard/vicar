@@ -44,7 +44,7 @@
 #'
 #' @return Except for the list \code{ruv4}, the values returned are
 #'     the exact same as in \code{\link[ashr]{ash.workhorse}}. See that
-#'     function for more details. Elements in the \code{ruv} are the
+#'     function for more details. Elements in the \code{ruv4} are the
 #'     exact same as returned in \code{\link{vruv4}}.
 #'
 #' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
@@ -104,6 +104,93 @@ ash_ruv4 <- function(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
     ashout <- do.call(what = ashr::ash.workhorse, args = ash_args)
 
     ashout$ruv4 <- vout
+
+    return(ashout)
+}
+
+
+
+
+
+#' Use control genes to estimate hidden confounders and variance
+#' inflation parameter, then run ASH.
+#'
+#' This model is fit using a two-step approach proposed in
+#' Gagnon-Bartsch et al (2013) modified to include estimating a
+#' variance inflation parameter. Rather than use OLS in the second
+#' step of this two-step procedure, we estimate the coefficients using
+#' Adaptive SHrinkage (ASH) (Stephens, 2016). In the current
+#' implementation, only the coefficients of one covariate can be
+#' estimated using ASH. The rest are regressed out using OLS.
+#'
+#' @inheritParams vruv4
+#' @inheritParams vruv2
+#' @param ash_args A list of arguments to pass to ash. See
+#'     \code{\link[ashr]{ash.workhorse}} for details.
+#' @param cov_of_interest A positive integer. The column number of the
+#'     covariate in X whose coefficients you are interested in. The
+#'     rest are considered nuiszance parameters and are regressed out
+#'     by OLS. \code{ash_ruv2} only works with one covariate of
+#'     interest right now.
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+#' @seealso \code{\link{vruv2}} for the variance inflation in RUV2 and
+#'     \code{\link[ashr]{ash.workhorse}} for the adaptive shrinkage
+#'     method.
+#'
+#' @return Except for the list \code{ruv2}, the values returned are
+#'     the exact same as in \code{\link[ashr]{ash.workhorse}}. See that
+#'     function for more details. Elements in the \code{ruv2} are the
+#'     exact same as returned in \code{\link{vruv2}}.
+#'
+#' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
+#'     P. Speed. "Removing unwanted variation from high dimensional
+#'     data with negative controls."
+#'     Berkeley: Department of Statistics. University of California
+#'     (2013).
+#'
+#'     Andreas Buja and Nermin
+#'     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
+#'     research, 27(4):509-540, 1992.
+ash_ruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
+                     likelihood = c("t", "normal"), ash_args = list(),
+                     limmashrink = TRUE, degrees_freedom = NULL,
+                     include_intercept = TRUE, gls = TRUE,
+                     fa_func = pca_2step, fa_args = list(),
+                     use_factor = FALSE) {
+
+    if (!requireNamespace("ashr", quietly = TRUE)) {
+        stop("ashr must be installed to run ash_ruv2. To install, run in R:\n    install.packages(\"devtools\")\n    devtools::install_github(\"stephens999/ashr\")")
+    }
+    
+    likelihood <- match.arg(likelihood)
+    
+    if (length(cov_of_interest) != 1) {
+        stop("cov_of_interest must contain only one number")
+    }
+    
+    vout <- vruv2(Y = Y, X = X, ctl = ctl, k = k,
+                  cov_of_interest = cov_of_interest,
+                  likelihood = likelihood, limmashrink = limmashrink,
+                  degrees_freedom = degrees_freedom,
+                  include_intercept = include_intercept, gls = gls,
+                  fa_func = fa_func, fa_args = fa_args)
+
+    betahat   <- c(vout$betahat)
+    sebetahat <- c(vout$sebetahat)
+    df        <- vout$degrees_freedom
+    
+    ash_args$betahat   <- betahat
+    ash_args$sebetahat <- sebetahat
+    if (likelihood == "t") {
+        ash_args$df <- df
+    }
+    ashout <- do.call(what = ashr::ash.workhorse, args = ash_args)
+
+    ashout$ruv2 <- vout
 
     return(ashout)
 }

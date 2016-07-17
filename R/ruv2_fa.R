@@ -582,7 +582,7 @@ pca_2step <- function(Y, r, vr) {
     alpha <- t(svd_Y2$v[, 1:r, drop = FALSE] %*% diag(svd_Y2$d[1:r], r, r)) /
         sqrt(n)
     Z2 <- sqrt(n) * svd_Y2$u[, 1:r, drop = FALSE]
-    sig_diag <- colSums((Y2 - Z2 %*% alpha) ^ 2) / (n - vr)
+    sig_diag <- colSums((Y2 - Z2 %*% alpha) ^ 2) / (n - vr - r)
 
     Z1 <- Y1 %*% diag(sig_diag) %*% t(alpha) %*%
         solve(alpha %*% diag(sig_diag) %*% t(alpha))
