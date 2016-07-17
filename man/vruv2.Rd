@@ -6,8 +6,8 @@
 \usage{
 vruv2(Y, X, ctl, k = NULL, cov_of_interest = ncol(X), likelihood = c("t",
   "normal"), limmashrink = TRUE, degrees_freedom = NULL,
-  include_intercept = TRUE, gls = TRUE, fa_func = qmle_ruv2,
-  fa_args = list())
+  include_intercept = TRUE, gls = TRUE, fa_func = pca_2step,
+  fa_args = list(), use_factor = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -57,21 +57,70 @@ will be unchanged.}
 confounders associated with the nuisance parameters with gls
 (\code{TRUE}) or with ols (\code{FALSE}).}
 
-\item{fa_func}{A factor analysis function. The function must have
-as inputs a numeric matrix \code{Y} and a rank (numeric scalar)
-\code{r}. It must output numeric matrices \code{alpha} and
-\code{Z} and a numeric vector \code{sig_diag}. \code{alpha} is
-the estimate of the coefficients of the unobserved confounders,
-so it must be an \code{r} by \code{ncol(Y)} matrix. \code{Z}
-must be an \code{r} by \code{nrow(Y)} matrix. \code{sig_diag}
-is the estimate of the column-wise variances so it must be of
-length \code{ncol(Y)}. The default is the function
-\code{pca_naive} that just uses the first \code{r} singular
-vectors as the estimate of \code{alpha}. The estimated
-variances are just the column-wise mean square.}
+\item{fa_func}{A factor analysis function. It must take parameters:
+\code{Y} a data matrix of numerics, \code{r} a positive integer
+for the rank, and \code{vr} a positive integer for the number
+of the first rows that have a different variance than the last
+rows. It must return: \code{alpha} a matrix for the factor
+loadings, \code{Z} a matrix for the factors, \code{sig_diag} a
+vector of the column-wise variances, and \code{lambda} a
+numeric for the variance inflation of the first \code{vr} rows
+of \code{Y}. The default function is \code{\link{pca_2step}},
+which is the main difference between RUV2 and this version.}
 
 \item{fa_args}{A list. Additional arguments you want to pass to
 fa_func.}
+
+\item{use_factor}{A logical. Should we use the estimates of
+\code{alpha} and \code{sig_diag} from the factor analysis
+(\code{TRUE}), or re-estimate these using OLS as RUV2 does it
+(\code{FALSE})?}
+}
+\value{
+A list whose elements are:
+
+    \code{betahat} A matrix of numerics. The ordinary least
+    squares estimates of the coefficients of the covariate of
+    interest WHEN YOU ALSO INCLUDE THE ESTIMATES OF THE UNOBSERVED
+    CONFOUNDERS.
+
+    \code{sebetahat} A matrix of positive numerics. This is the
+    post-inflation adjusted standard errors for \code{ruv$betahat}.
+
+    \code{tstats} A vector of numerics. The t-statistics for
+    testing against the null hypothesis of the coefficient of the
+    covariate of interest being zero. This is after estimating the
+    variance inflation parameter.
+
+    \code{pvalues} A vector of numerics. The p-values of said test
+    above.
+
+    \code{alphahat} A matrix of numerics. The estimates of the
+    coefficients of the hidden confounders. Only identified up to a
+    rotation on the rowspace.
+
+    \code{Zhat} A matrix of numerics. The estimates of the
+    confounding variables. Only identified up to a rotation on the
+    columnspace.
+
+    \code{sigma2} A vector of positive numerics. The estimates of
+    the variances PRIOR to inflation.
+
+    \code{sigma2_adjusted} A vector of positive numerics. The
+    estimates of the variances AFTER to inflation. This is equal to
+    \code{sigma2 * multiplier}.
+
+    \code{multiplier} A numeric. The estimated variance inflation
+    parameter.
+
+    \code{mult_matrix} A matrix of numerics. Equal to
+    \code{solve(t(cbind(X, Zhat)) \%*\% cbind(X, Zhat))}. One
+    multiplies \code{sigma2} or \code{simga2_adjused} by the
+    diagonal elements of \code{mult_matrix} to get the standard
+    errors of \code{betahat}.
+
+    \code{degrees_freedom} The degrees of freedom of the t-
+    statistics.
 }
 \description{
 This function will perform a variant of Removing Unwanted Variation
@@ -80,6 +129,10 @@ variance inflation parameter in the factor analysis.
 }
 \details{
 See \code{\link{vruv4}} for a description of the model.
+
+You can provide your own factor analysis, but it must include an
+estimate for the variance inflation parameter. This turns out to be
+pretty hard. The way I do it now seems to work OK.
 }
 \author{
 David Gerard
@@ -94,5 +147,9 @@ Gagnon-Bartsch, J., Laurent Jacob, and Terence
     Andreas Buja and Nermin
     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
     research, 27(4):509-540, 1992.
+}
+\seealso{
+\code{\link{pca_2step}} for the special factor analysis
+    that results in variance inflation in RUV2.
 }
 

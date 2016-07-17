@@ -238,3 +238,54 @@ test_that("update_sig_alpha increases qmle_obj", {
     expect_equal(Zclassic, qout$Z)
 }
 )
+
+
+test_that("qmle_ruv2_lambda_grid works", {
+    set.seed(8)
+    n <- 13
+    p <- 1001
+    r <- 5
+    vr <- 2
+    lambda <- 2
+
+    A <- matrix(stats::rnorm(n * r), nrow = n)
+    B <- matrix(stats::rnorm(r * p), ncol = p)
+    sig_diag <- stats::rchisq(p, df = 4) / 4
+    E <- matrix(stats::rnorm(n * p), nrow = n) %*% diag(sqrt(sig_diag))
+    E[1:vr, ] <- E[1:vr, ] * sqrt(lambda)
+
+    Y <- A %*% B + E
+    gridlow <- 0.5
+    gridhigh <- 10
+    gridsize <- 20
+    tol <- 10 ^ -3
+    maxit <- 1000
+
+    qout1 <- qmle_ruv2_lambda_grid(Y = Y, r = r, vr = vr)
+
+    qout2 <- qmle_ruv2(Y = Y, r = r, vr = vr)
+
+    qout1$lambda
+    qout2$lambda
+}
+)
+
+
+test_that("pca_2step works", {
+    set.seed(1919)
+    n <- 13
+    p <- 1001
+    r <- 5
+    vr <- 2
+    lambda <- 2
+
+    A <- matrix(stats::rnorm(n * r), nrow = n)
+    B <- matrix(stats::rnorm(r * p), ncol = p)
+    sig_diag <- stats::rchisq(p, df = 4) / 4
+    E <- matrix(stats::rnorm(n * p), nrow = n) %*% diag(sqrt(sig_diag))
+    E[1:vr, ] <- E[1:vr, ] * sqrt(lambda)
+
+    Y <- A %*% B + E
+
+}
+)
