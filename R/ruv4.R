@@ -887,3 +887,50 @@ cruv4 <- function(betahat_ols, alpha_scaled, sig_diag_scaled, ctl, degrees_freed
 
     return(ruv4_out)
 }
+
+
+
+#' Variance inflated RUV-inverse.
+#'
+#' RUV-inverse as described in Gagnon-Bartsch et al (2013) is just
+#' RUV4 using the maximum number of confounders allowed by the model,
+#' followed by estimating the variances using a method-of-moments type
+#' approach. \code{vruvinv} is similar in spirit to this by using the
+#' maximum number of confounders allowed by the model, but we still
+#' estimate the variance inflation using the confounders. We force
+#' \code{limmashrink = TRUE}, otherwise there is only one degree of
+#' freedom to estimate the variance.
+#'
+#' Hence, this is just a wrapper for \code{\link{vruv4}}, but with a
+#' special choice for the number of confounders and forcing
+#' \code{limmashrink = TRUE}.
+#'
+#' @inheritParams vruv4
+#'
+#' @return See \code{\link{vruv4}} for the elements returned.
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+#' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
+#'     P. Speed. "Removing unwanted variation from high dimensional
+#'     data with negative controls."
+#'     Berkeley: Department of Statistics. University of California
+#'     (2013).
+vruvinv <- function(Y, X, ctl, cov_of_interest = ncol(X),
+                    likelihood = c("t", "normal"),
+                    include_intercept = TRUE, fa_func = pca_naive,
+                    fa_args = list(), adjust_bias = FALSE) {
+
+    k1 <- sum(ctl) - ncol(X) - include_intercept - adjust_bias - 1
+    k2 <- nrow(X) - ncol(X) - include_intercept - adjust_bias - 1
+    k <- min(k1, k2)
+    assertthat::assert_that(k > 0)
+    likelihood <- match.arg(likelihood)
+    vout <- vruv4(Y = Y, X = X, ctl = ctl, k = k, likelihood = likelihood, limmashrink = TRUE,
+                  include_intercept = include_intercept, gls = TRUE, fa_func = fa_func,
+                  fa_args = fa_args, adjust_bias = adjust_bias)
+
+    return(vout)
+}

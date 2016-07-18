@@ -314,9 +314,29 @@ test_that("adjust_bias works", {
     Y <- X %*% beta + E
     num_sv <- 3
 
-    vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, adjust_bias = TRUE, cov_of_interest = cov_of_interest)
+    vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv,
+                  adjust_bias = TRUE,
+                  cov_of_interest = cov_of_interest)
 
     expect_equal(ncol(vout$additivor), length(cov_of_interest))
+
+}
+)
+
+test_that("vruvinv works", {
+    set.seed(70)
+    n <- 11
+    p <- 1001
+    k <- 5
+    cov_of_interest <- c(1, 2)
+    X <- matrix(stats::rnorm(n * k), nrow = n)
+    beta <- matrix(stats::rnorm(k * p), nrow = k)
+    beta[, 1:round(p/2)] <- 0
+    ctl <- beta[cov_of_interest[1],] == 0
+    E <- matrix(stats::rnorm(n * p), nrow = n)
+    Y <- X %*% beta + E
+
+    vout <- vruvinv(Y = Y, X = X, ctl = ctl)
 
 }
 )

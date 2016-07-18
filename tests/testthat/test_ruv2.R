@@ -77,6 +77,13 @@ test_that("limmashrink works OK", {
                   likelihood = likelihood,
                   include_intercept = FALSE,
                   limmashrink = TRUE)
+
+    ## can't use all of limmashrink, use_factor, and fa_limmashrink
+    expect_warning(vout <- vruv2(Y = Y, X = X, ctl = ctl, k = num_sv,
+                                 cov_of_interest = cov_of_interest,
+                                 limmashrink = TRUE, use_factor = TRUE,
+                                 fa_limmashrink = TRUE))
+
 }
 )
 
@@ -292,7 +299,7 @@ test_that("pca_2step works", {
     pcout3 <- pca_2step(Y = Y, r = r, vr = vr, likelihood = "normal", limmashrink = TRUE)
     pcout4 <- pca_2step(Y = Y, r = r, vr = vr, likelihood = "normal", limmashrink = FALSE)
 
-    pcout1$lambdax
+    pcout1$lambda
     pcout2$lambda
     pcout3$lambda
     pcout4$lambda
