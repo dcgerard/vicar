@@ -82,9 +82,10 @@ fa_func.}
 \item{use_factor}{A logical. Should we use the estimates of
 \code{alpha} and \code{sig_diag} from the factor analysis
 (\code{TRUE}), or re-estimate these using OLS as RUV2 does it
-(\code{FALSE})? Right now it's probably a bad idea to set this
-to \code{TRUE} since then the variance estimates of the control
-genes are being shrunk twice.}
+(\code{FALSE})? Right now it's probably a bad idea to have the
+settings \code{use_factor = TRUE, fa_limmashrink = TRUE,
+limmashrink = TRUE} since then the variance estimates of the
+control genes are being shrunk twice.}
 }
 \value{
 Except for the list \code{ruv2}, the values returned are

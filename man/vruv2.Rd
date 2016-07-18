@@ -7,7 +7,8 @@
 vruv2(Y, X, ctl, k = NULL, cov_of_interest = ncol(X), likelihood = c("t",
   "normal"), limmashrink = TRUE, degrees_freedom = NULL,
   include_intercept = TRUE, gls = TRUE, fa_func = pca_2step,
-  fa_args = list(), use_factor = FALSE, force_check = TRUE)
+  fa_args = list(), use_factor = FALSE, force_check = TRUE,
+  fa_limmashrink = TRUE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -74,13 +75,18 @@ fa_func.}
 \item{use_factor}{A logical. Should we use the estimates of
 \code{alpha} and \code{sig_diag} from the factor analysis
 (\code{TRUE}), or re-estimate these using OLS as RUV2 does it
-(\code{FALSE})? Right now it's probably a bad idea to set this
-to \code{TRUE} since then the variance estimates of the control
-genes are being shrunk twice.}
+(\code{FALSE})? Right now it's probably a bad idea to have the
+settings \code{use_factor = TRUE, fa_limmashrink = TRUE,
+limmashrink = TRUE} since then the variance estimates of the
+control genes are being shrunk twice.}
 
 \item{force_check}{A logical. Are you REALLY sure you want to use
 another fa_func (\code{FALSE}) or should I ask you again
 (\code{TRUE})?}
+
+\item{fa_limmashrink}{A logical. Should we shrink the variances
+during the factor analysis step (\code{TRUE}) or not
+(\code{FALSE})?}
 }
 \value{
 A list whose elements are:
