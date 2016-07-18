@@ -1,7 +1,7 @@
 Package: vicar
 Type: Package
 Title: Variance Inflation for Confounder Adjustment in Regression
-Version: 0.1.1
+Version: 0.1.2
 Authors@R: person("David", "Gerard", email = "dcgerard@uchicago.edu", role = c("aut", "cre"))
 Description: Calibrates popular confounder adjustment methods.
 URL: https://github.com/dcgerard/vicar

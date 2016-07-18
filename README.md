@@ -23,9 +23,9 @@ for
 
 Not accounting for the hidden covariates, Z, can reduce power and result in poor control of false discovery rate.
 
-There are many approaches available for estimating hidden confounders, but in practice they are not well calibrated. This package calibrates RUV2 (J. A. Gagnon-Bartsch and Speed 2012), RUV4 (J. Gagnon-Bartsch, Jacob, and Speed 2013), and LEAPP (Sun et al. 2012). If I come up with a way to calibrate SVA (Leek and Storey 2007, Leek and Storey (2008)), then I'll include that as well.
+There are many approaches available for estimating hidden confounders, but in practice they are not well calibrated. This package calibrates RUV2 (J. A. Gagnon-Bartsch and Speed 2012) and RUV4 (J. Gagnon-Bartsch, Jacob, and Speed 2013).
 
-The calibration for RUV2 and LEAPP don't work very well right now. But the calibration for RUV4 seems to work really well.
+Even though I have a version of LEAPP (Sun et al. 2012), it doesn't work well yet. If I come up with a way to calibrate SVA (Leek and Storey 2007, Leek and Storey (2008)), then I'll include that as well.
 
 Check out [NEWS.md](NEWS.md) to see what's new with each version.
 

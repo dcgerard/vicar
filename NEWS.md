@@ -1,3 +1,10 @@
+# vicar 0.1.2
+
+* `vruv2` now works pretty well and is recommended for use. This is a very different way to do variance inflation in RUV2 than what was previously implemented.
+* The previous implementation is now in the function `vruv2_old`, but it may be removed at any time.
+* I included `ash_ruv2` that is a wrapper for `vruv2` and `ashr::ash.workhorse`.
+* Some new factor analyses are available under the hood, but none of them are recommended for general use: `pca_ruv2`, `qmle_ruv2`, and `pca_2step`. In the future, I plan on only saving `pca_2step`.
+
 # vicar 0.1.1
 
 * Added `vruv2`, a variance-inflated version of RUV2, but it doesn't work too well yet.
