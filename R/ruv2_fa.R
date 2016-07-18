@@ -562,11 +562,14 @@ trim <- function(x, tol = 10 ^ -13) {
 #' @param r the rank.
 #' @param vr The number of the first few rows whose variances differ
 #'     by a multiplicative factor.
+#' @param limmashrink A logical. Should we shrink the variance
+#'     estimates prior to performing gls to get Z1 (\code{TRUE}) or
+#'     not (\code{FALSE})?
 #'
 #' @export
 #'
 #' @author David Gerard
-pca_2step <- function(Y, r, vr) {
+pca_2step <- function(Y, r, vr, limmashrink = TRUE) {
     assertthat::assert_that(is.matrix(Y))
     assertthat::are_equal(length(r), 1)
     assertthat::assert_that(r > 0 & r < min(dim(Y)))
@@ -583,6 +586,13 @@ pca_2step <- function(Y, r, vr) {
         sqrt(n)
     Z2 <- sqrt(n) * svd_Y2$u[, 1:r, drop = FALSE]
     sig_diag <- colSums((Y2 - Z2 %*% alpha) ^ 2) / (n - vr - r)
+
+    if (limmashrink) {
+        limma_out <- limma::squeezeVar(var = sig_diag,
+                                       df = n - vr - r)
+        sig_diag <- limma_out$var.post
+        prior_df <- limma_out$df.prior
+    }
 
     Z1 <- Y1 %*% diag(1 / sig_diag) %*% t(alpha) %*%
         solve(alpha %*% diag(1 / sig_diag) %*% t(alpha))
