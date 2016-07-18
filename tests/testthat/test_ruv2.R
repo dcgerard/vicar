@@ -287,5 +287,14 @@ test_that("pca_2step works", {
 
     Y <- A %*% B + E
 
+    pcout1 <- pca_2step(Y = Y, r = r, vr = vr, likelihood = "t", limmashrink = TRUE)
+    pcout2 <- pca_2step(Y = Y, r = r, vr = vr, likelihood = "t", limmashrink = FALSE)
+    pcout3 <- pca_2step(Y = Y, r = r, vr = vr, likelihood = "normal", limmashrink = TRUE)
+    pcout4 <- pca_2step(Y = Y, r = r, vr = vr, likelihood = "normal", limmashrink = FALSE)
+
+    pcout1$lambdax
+    pcout2$lambda
+    pcout3$lambda
+    pcout4$lambda
 }
 )

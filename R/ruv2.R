@@ -28,8 +28,13 @@
 #' @param use_factor A logical. Should we use the estimates of
 #'     \code{alpha} and \code{sig_diag} from the factor analysis
 #'     (\code{TRUE}), or re-estimate these using OLS as RUV2 does it
-#'     (\code{FALSE})?
-#' 
+#'     (\code{FALSE})? Right now it's probably a bad idea to set this
+#'     to \code{TRUE} since then the variance estimates of the control
+#'     genes are being shrunk twice.
+#' @param force_check A logical. Are you REALLY sure you want to use
+#'     another fa_func (\code{FALSE}) or should I ask you again
+#'     (\code{TRUE})?
+#'
 #' @author David Gerard
 #'
 #' @seealso \code{\link{pca_2step}} for the special factor analysis
@@ -63,7 +68,7 @@
 #'
 #'     \code{sigma2} A vector of positive numerics. The estimates of
 #'     the variances PRIOR to inflation.
-#' 
+#'
 #'     \code{sigma2_adjusted} A vector of positive numerics. The
 #'     estimates of the variances AFTER to inflation. This is equal to
 #'     \code{sigma2 * multiplier}.
@@ -97,7 +102,7 @@ vruv2 <- function(Y, X, ctl, k = NULL,
                   limmashrink = TRUE, degrees_freedom = NULL,
                   include_intercept = TRUE, gls = TRUE,
                   fa_func = pca_2step, fa_args = list(),
-                  use_factor = FALSE) {
+                  use_factor = FALSE, force_check = TRUE) {
 
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(X))
@@ -115,10 +120,23 @@ vruv2 <- function(Y, X, ctl, k = NULL,
 
     likelihood <- match.arg(likelihood)
 
-    if (likelihood == "t") {
-        stop("t-likelihood not implemented yet for vruv2")
+    if (!identical(fa_func, pca_2step) & !force_check) {
+        cat ("vruv2 mostly works because of the special factor analysis used.\nAre you sure you want to use another FA function (Y/N)?\n")
+        line <- readline()
+        if (line == "N") {
+            return()
+        } else if (line != "Y") {
+            cat("Input Y or N\n")
+        }
+        while (line != "N" & line != "Y") {
+            line <- readline()
+            if (line == "N") {
+                return()
+            } else if (line != "Y") {
+                cat("Input Y or N\n")
+            }
+        }
     }
-
 
     ## RUN THE ROTATED MODEL HERE -------------------------------------------
     rotate_out <- rotate_model(Y = Y, X = X, k = k,
@@ -144,6 +162,7 @@ vruv2 <- function(Y, X, ctl, k = NULL,
     fa_args$Y <- Y23[, ctl]
     fa_args$r <- k
     fa_args$vr <- nrow(Y2)
+    fa_args$likelihood <- likelihood
     pcout <- do.call(what = fa_func, args = fa_args)
     sig_diag_ctl <- pcout$sig_diag
     Z23 <- pcout$Z
@@ -164,7 +183,7 @@ vruv2 <- function(Y, X, ctl, k = NULL,
         alpha[, !ctl] <- alphahat_ruv2[, !ctl]
         alpha[, ctl]  <- t(alpha_ctl)
         betahat <- solve(R22) %*% (Y2 - Z2 %*% alpha)
-        
+
         ## variances
         r2 <- colSums((Y3 - Z3 %*% alpha) ^ 2) / (nrow(X) - ncol(X) - k)
         sig_diag <- rep(NA, length = ncol(Y))
@@ -434,7 +453,3 @@ vruv2_old <- function(Y, X, ctl, k = NULL,
 
     return(ruv2_out)
 }
-
-
-
-

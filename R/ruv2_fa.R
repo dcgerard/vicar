@@ -565,15 +565,19 @@ trim <- function(x, tol = 10 ^ -13) {
 #' @param limmashrink A logical. Should we shrink the variance
 #'     estimates prior to performing gls to get Z1 (\code{TRUE}) or
 #'     not (\code{FALSE})?
+#' @param likelihood What should the likelihood be when we estimate
+#'     Z1? Options are \code{"t"} and \code{"normal"}.
 #'
 #' @export
 #'
 #' @author David Gerard
-pca_2step <- function(Y, r, vr, limmashrink = TRUE) {
+pca_2step <- function(Y, r, vr, limmashrink = TRUE, likelihood = c("t", "normal")) {
     assertthat::assert_that(is.matrix(Y))
     assertthat::are_equal(length(r), 1)
     assertthat::assert_that(r > 0 & r < min(dim(Y)))
     assertthat::assert_that(vr > 0 & vr < nrow(Y))
+
+    likelihood <- match.arg(likelihood)
 
     p <- ncol(Y)
     n <- nrow(Y)
@@ -592,16 +596,27 @@ pca_2step <- function(Y, r, vr, limmashrink = TRUE) {
                                        df = n - vr - r)
         sig_diag <- limma_out$var.post
         prior_df <- limma_out$df.prior
+        degrees_freedom <- prior_df + n - vr - r
+    } else {
+        degrees_freedom <- n - vr - r
     }
 
-    Z1 <- Y1 %*% diag(1 / sig_diag) %*% t(alpha) %*%
-        solve(alpha %*% diag(1 / sig_diag) %*% t(alpha))
+    ## estimate Z1 either using a normal or a t likelihood.
+    if (likelihood == "normal") {
+        Z1     <- Y1 %*% diag(1 / sig_diag) %*% t(alpha) %*%
+            solve(alpha %*% diag(1 / sig_diag) %*% t(alpha))
+        r1     <- colMeans((Y1 - Z1 %*% alpha) ^ 2)
+        Z1 <- t(Z1)
+        lambda <- mean(r1 / sig_diag)
+    } else if (likelihood == "t") {
+        tout   <- tregress_em(Y = t(Y1), alpha = t(alpha),
+                              sig_diag = sig_diag,
+                              nu = degrees_freedom)
+        Z1     <- tout$Z
+        lambda <- tout$lambda
+    }
 
-    r1 <- colMeans((Y1 - Z1 %*% alpha) ^ 2)
-
-    lambda <- mean(r1 / sig_diag)
-
-    Z <- rbind(Z1, Z2)
+    Z <- rbind(t(Z1), Z2)
 
     return(list(alpha = alpha, Z = Z, sig_diag = sig_diag, lambda = lambda))
 }

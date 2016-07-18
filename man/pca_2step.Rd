@@ -5,7 +5,7 @@
 \title{PCA when first \code{vr} rows have a variance multiplicatively
 different from the rest of the rows.}
 \usage{
-pca_2step(Y, r, vr, limmashrink = TRUE)
+pca_2step(Y, r, vr, limmashrink = TRUE, likelihood = c("t", "normal"))
 }
 \arguments{
 \item{Y}{A matrix of numerics. The data.}
@@ -18,6 +18,9 @@ by a multiplicative factor.}
 \item{limmashrink}{A logical. Should we shrink the variance
 estimates prior to performing gls to get Z1 (\code{TRUE}) or
 not (\code{FALSE})?}
+
+\item{likelihood}{What should the likelihood be when we estimate
+Z1? Options are \code{"t"} and \code{"normal"}.}
 }
 \description{
 Modified truncated SVD. The variance estimates are just the
