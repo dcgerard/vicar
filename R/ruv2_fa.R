@@ -584,8 +584,8 @@ pca_2step <- function(Y, r, vr) {
     Z2 <- sqrt(n) * svd_Y2$u[, 1:r, drop = FALSE]
     sig_diag <- colSums((Y2 - Z2 %*% alpha) ^ 2) / (n - vr - r)
 
-    Z1 <- Y1 %*% diag(sig_diag) %*% t(alpha) %*%
-        solve(alpha %*% diag(sig_diag) %*% t(alpha))
+    Z1 <- Y1 %*% diag(1 / sig_diag) %*% t(alpha) %*%
+        solve(alpha %*% diag(1 / sig_diag) %*% t(alpha))
 
     r1 <- colMeans((Y1 - Z1 %*% alpha) ^ 2)
 
