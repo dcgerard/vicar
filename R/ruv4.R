@@ -261,6 +261,7 @@ vruv4 <- function(Y, X, ctl, k = NULL,
         }
         Zhat <- Q %*% rbind(t(Z1), t(Z2), Z3)
     } else {
+        Q   <- rotate_out$Q
         Zhat <- Q %*% rbind(t(Z2), Z3)
     }
 
