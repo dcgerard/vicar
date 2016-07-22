@@ -75,20 +75,20 @@ test_that("ruvimpute works ok", {
     sout <- ruvimpute(Y = Y, X = X, ctl = ctl,
                       impute_func = impute_func,
                       cov_of_interest = cov_of_interest)
-    sout2 <- ruvimpute(Y = Y, X = X, ctl = ctl,
-                       impute_func = flashr_wrapper,
-                       impute_args = list(max_rank = n - k - q - 1),
-                       cov_of_interest = cov_of_interest)
+    ## sout2 <- ruvimpute(Y = Y, X = X, ctl = ctl,
+    ##                    impute_func = flashr_wrapper,
+    ##                    impute_args = list(max_rank = n - k - q - 1),
+    ##                    cov_of_interest = cov_of_interest)
 
     ruv3out <- ruv3(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = cov_of_interest)
     ruv4out <- vruv4(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = cov_of_interest)
     ruv2out <- vruv2(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = cov_of_interest)
-    plot(sout$beta2hat, sout2$beta2hat)
+    ## plot(sout$beta2hat, sout2$beta2hat)
 
     mean((beta[cov_of_interest, !ctl] - ruv3out$betahat[, !ctl]) ^ 2)
     mean((beta[cov_of_interest, !ctl] - ruv2out$betahat[, !ctl]) ^ 2)
     mean((beta[cov_of_interest, !ctl] - t(ruv4out$betahat[!ctl, ])) ^ 2)
-    mean((beta[cov_of_interest, !ctl] - sout2$beta2hat) ^ 2)
+    ## mean((beta[cov_of_interest, !ctl] - sout2$beta2hat) ^ 2)
     mean((beta[cov_of_interest, !ctl] - sout$beta2hat) ^ 2)
 
 }

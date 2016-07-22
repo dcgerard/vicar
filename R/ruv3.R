@@ -380,12 +380,12 @@ softimpute_wrapper <- function(Y) {
     return(cout)
 }
 
-flashr_wrapper <- function(Y, max_rank) {
-    if (!requireNamespace("flashr", quietly = TRUE)) {
-        stop("Sorry, flashr needs to be installed to use flashr_wrapper.")
-    }
-    trash <- utils::capture.output(gout <- flashr::greedy(Y = Y, K = max_rank,
-                                                   flash_para = list(partype = "var_col")))
-    Yhat <- gout$l %*% t(gout$f)
-    return(Yhat)
-}
+## flashr_wrapper <- function(Y, max_rank) {
+##     if (!requireNamespace("flashr", quietly = TRUE)) {
+##         stop("Sorry, flashr needs to be installed to use flashr_wrapper.")
+##     }
+##     trash <- utils::capture.output(gout <- flashr::greedy(Y = Y, K = max_rank,
+##                                                    flash_para = list(partype = "var_col")))
+##     Yhat <- gout$l %*% t(gout$f)
+##     return(Yhat)
+## }

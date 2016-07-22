@@ -20,5 +20,4 @@ Imports: ruv,
 Suggests: testthat,
     ashr,
     leapp,
-    softImpute,
-    flashr
+    softImpute
