@@ -5,7 +5,8 @@
 \title{General imputation framework.}
 \usage{
 ruvimpute(Y, X, ctl, impute_func, impute_args = list(),
-  cov_of_interest = ncol(X), include_intercept = TRUE)
+  cov_of_interest = ncol(X), include_intercept = TRUE,
+  do_variance = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -19,12 +20,15 @@ genes.}
 position i is \code{TRUE} then position i is considered a
 negative control.}
 
-\item{impute_func}{A function that takes as inputes matrices
-\code{Y21}, \code{Y22}, and \code{Y31}, and outputs \code{Y32}
-and \code{sig_diag}. Additional arguments may be passed through
-\code{impute_args}.}
+\item{impute_func}{A function that takes as input a matrix names
+\code{Y} that has missing values and returns a matrix called
+\code{Yhat} of the same dimension of \code{Y} with the missing
+values filled in. If \code{do_variance = TRUE}, then
+\code{impute_func} should also return \code{sig_diag} --- a
+vector of column-specific variance estimates.}
 
-\item{impute_args}{A list of additional parameters to pass to \code{impute_func}.}
+\item{impute_args}{A list of additional parameters to pass to
+\code{impute_func}.}
 
 \item{cov_of_interest}{A vector of positive integers. The column
 numbers of the covariates in X whose coefficients you are
@@ -35,6 +39,22 @@ are regressed out by OLS.}
 check \code{X} to see if it has an intercept term. If not, then
 it will add an intercept term. If \code{FALSE}, then \code{X}
 will be unchanged.}
+
+\item{do_variance}{A logical. Does \code{impute_func} also return
+estimates of the column-specific variances?}
+}
+\value{
+\code{beta2hat} The estimates of the coefficients of the
+    covariates of interest that do not correspond to control genes.
+
+    \code{sebetahat} If \code{do_variance = TRUE}, then these are
+    the "standard errors" of \code{beta2hat} (but not really).
+
+    \code{tstats} If \code{do_variance = TRUE}, then these are
+    the "t-statistics" of \code{beta2hat} (but not really).
+
+    \code{pvalues} If \code{do_variance = TRUE}, then these are
+    the "p-values" of \code{tstats} (but not really).
 }
 \description{
 General imputation framework.

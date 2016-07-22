@@ -60,6 +60,9 @@
 #'     \code{degrees_freedom} The degrees of freedom used when
 #'     calculating the p-values.
 #'
+#'     \code{debuglist} A list of elements that aren't really useful
+#'     except for unit testing and debugging.
+#'
 #' @export
 #'
 #' @author David Gerard
@@ -92,10 +95,10 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 
     degrees_freedom <- nrow(X) - ncol(X) - k
 
-    Y21 <- rotate_out$Y2[, ctl]
-    Y22 <- rotate_out$Y2[, !ctl]
-    Y31 <- rotate_out$Y3[, ctl]
-    Y32 <- rotate_out$Y3[, !ctl]
+    Y21 <- rotate_out$Y2[, ctl, drop = FALSE]
+    Y22 <- rotate_out$Y2[, !ctl, drop = FALSE]
+    Y31 <- rotate_out$Y3[, ctl, drop = FALSE]
+    Y32 <- rotate_out$Y3[, !ctl, drop = FALSE]
     R22 <- rotate_out$R22
 
     ## Factor analysis on Y31 ------------------------------------------------
@@ -128,14 +131,14 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     beta2hat <- solve(R22) %*% (Y22 - Z2 %*% alpha2)
     beta2_ols <- rotate_out$betahat_ols
 
-    betahat_long <- matrix(0, nrow = nrow(beta2hat), ncol = ncol(Y))
+    betahat_long         <- matrix(0, nrow = nrow(beta2hat), ncol = ncol(Y))
     betahat_long[, !ctl] <- beta2hat
-    alpha_long <- matrix(NA, nrow = nrow(alpha2), ncol = ncol(Y))
-    alpha_long[, ctl] <- alpha1
-    alpha_long[, !ctl] <- alpha2
-    sig_diag_long <- rep(NA, length = ncol(Y))
-    sig_diag_long[ctl] <- sig_diag1
-    sig_diag_long[!ctl] <- sig_diag2
+    alpha_long           <- matrix(NA, nrow = nrow(alpha2), ncol = ncol(Y))
+    alpha_long[, ctl]    <- alpha1
+    alpha_long[, !ctl]   <- alpha2
+    sig_diag_long        <- rep(NA, length = ncol(Y))
+    sig_diag_long[ctl]   <- sig_diag1
+    sig_diag_long[!ctl]  <- sig_diag2
 
     ## Shrink variances if desired.
     if (limmashrink) {
@@ -203,7 +206,12 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     return_list$multiplier           <- multiplier
     return_list$mult_matrix          <- mult_matrix
     return_list$mult_matrix_ols      <- mult_matrix_ols
-    degrees_freedom                  <- degrees_freedom
+    return_list$degrees_freedom      <- degrees_freedom
+    return_list$debuglist            <- list()
+    return_list$debuglist$Z1         <- Z1
+    return_list$debuglist$Z2         <- Z2
+    return_list$debuglist$Z3         <- Z3
+
     return(return_list)
 }
 
@@ -211,18 +219,173 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #' General imputation framework.
 #'
 #' @inheritParams vruv4
-#' @param impute_func A function that takes as inputes matrices
-#'     \code{Y21}, \code{Y22}, and \code{Y31}, and outputs \code{Y32}
-#'     and \code{sig_diag}. Additional arguments may be passed through
-#'     \code{impute_args}.
-#' @param impute_args A list of additional parameters to pass to \code{impute_func}.
+#' @param impute_func A function that takes as input a matrix names
+#'     \code{Y} that has missing values and returns a matrix called
+#'     \code{Yhat} of the same dimension of \code{Y} with the missing
+#'     values filled in. If \code{do_variance = TRUE}, then
+#'     \code{impute_func} should also return \code{sig_diag} --- a
+#'     vector of column-specific variance estimates.
+#' @param impute_args A list of additional parameters to pass to
+#'     \code{impute_func}.
+#' @param do_variance A logical. Does \code{impute_func} also return
+#'     estimates of the column-specific variances?
+#'
+#' @return \code{beta2hat} The estimates of the coefficients of the
+#'     covariates of interest that do not correspond to control genes.
+#'
+#'     \code{sebetahat} If \code{do_variance = TRUE}, then these are
+#'     the "standard errors" of \code{beta2hat} (but not really).
+#'
+#'     \code{tstats} If \code{do_variance = TRUE}, then these are
+#'     the "t-statistics" of \code{beta2hat} (but not really).
+#'
+#'     \code{pvalues} If \code{do_variance = TRUE}, then these are
+#'     the "p-values" of \code{tstats} (but not really).
+#'
 #'
 #' @author David Gerard
 #'
 #' @export
 ruvimpute <- function(Y, X, ctl, impute_func, impute_args = list(),
                       cov_of_interest = ncol(X),
-                      include_intercept = TRUE) {
+                      include_intercept = TRUE,
+                      do_variance = FALSE) {
+
+    assertthat::assert_that(is.matrix(Y))
+    assertthat::assert_that(is.numeric(Y))
+    assertthat::assert_that(is.matrix(X))
+    assertthat::assert_that(is.numeric(X))
+    assertthat::assert_that(is.vector(ctl))
+    assertthat::assert_that(is.logical(ctl))
+    assertthat::are_equal(ncol(Y), length(ctl))
+    assertthat::are_equal(nrow(Y), nrow(X))
+    assertthat::assert_that(all(cov_of_interest >= 1 & cov_of_interest <= ncol(X)))
+    assertthat::assert_that(is.logical(include_intercept))
+    assertthat::assert_that(is.function(impute_func))
+    assertthat::assert_that(is.list(impute_args))
+    assertthat::assert_that(is.null(impute_args$Y21))
+    assertthat::assert_that(is.null(impute_args$Y31))
+    assertthat::assert_that(is.null(impute_args$Y32))
+    assertthat::assert_that(is.logical(do_variance))
 
 
+    rotate_out <- rotate_model(Y = Y, X = X, k = 0, cov_of_interest =
+                               cov_of_interest, include_intercept =
+                               include_intercept, limmashrink = FALSE,
+                               do_factor = FALSE)
+
+    Y21 <- rotate_out$Y2[, ctl, drop = FALSE]
+    Y22 <- rotate_out$Y2[, !ctl, drop = FALSE]
+    Y31 <- rotate_out$Y3[, ctl, drop = FALSE]
+    Y32 <- rotate_out$Y3[, !ctl, drop = FALSE]
+    R22 <- rotate_out$R22
+
+    impout <- impute_block(Y21 = Y21, Y31 = Y31, Y32 = Y32, impute_func = impute_func,
+                           impute_args = impute_args, do_variance = do_variance)
+
+    Y22hat   <- impout$Y22hat
+    sig_diag <- impout$sig_diag
+
+
+    R22inv <- backsolve(R22, diag(nrow(R22)))
+    beta2hat <- R22inv %*% (Y22 - Y22hat)
+
+    return_list <- list()
+    return_list$beta2hat <- beta2hat
+
+
+    if (do_variance) {
+        mult_matrix <- solve(t(X) %*% X)[cov_of_interest, cov_of_interest, drop = FALSE]
+        sebetahat <- sqrt(outer(diag(mult_matrix), sig_diag))
+        tstats <- beta2hat / sebetahat
+        pvalues <- 2 * (stats::pt(q = -abs(tstats), df = nrow(X) - ncol(X)))
+
+        return_list$sebetahat <- sebetahat
+        return_list$tstats    <- tstats
+        return_list$pvalues   <- pvalues
+    }
+
+    return(return_list)
+}
+
+
+#' Constructs an overall matrix, then applies a given imputation function.
+#'
+#' @param Y21 A matrix of size k by m
+#' @param Y31 A matrix of size (n - k) by m
+#' @param Y32 A matrix of size (n - k) by (p - m)
+#' @inheritParams ruvimpute
+#'
+#' @return \code{Y22} A matrix of size k by (p - m). This is the
+#'     imputed submatrix.
+#'
+#'     \code{sig_diag} If \code{do_variance = FALSE}, then this is
+#'     \code{NULL}. Else, it is a vector of column-specific variance
+#'     estimates.
+#'
+#' @author David Gerard
+impute_block <- function(Y21, Y31, Y32, impute_func,
+                         impute_args = list(), do_variance = FALSE) {
+    assertthat::assert_that(is.matrix(Y21))
+    assertthat::assert_that(is.matrix(Y31))
+    assertthat::assert_that(is.matrix(Y32))
+    assertthat::are_equal(nrow(Y31), nrow(Y32))
+    assertthat::are_equal(ncol(Y21), ncol(Y31))
+    assertthat::assert_that(is.function(impute_func))
+    assertthat::assert_that(is.list(impute_args))
+    assertthat::assert_that(is.null(impute_args$Y))
+    assertthat::assert_that(is.logical(do_variance))
+
+    p <- ncol(Y31) + ncol(Y32)
+    n <- nrow(Y21) + nrow(Y31)
+    m <- ncol(Y21)
+    k <- nrow(Y21)
+
+    Y                       <- matrix(NA, nrow = n, ncol = p)
+    Y[1:k, 1:m]             <- Y21
+    Y[(k + 1):n, 1:m]       <- Y31
+    Y[(k + 1):n, (m + 1):p] <- Y32
+
+    impute_args$Y <- Y
+    impout <- do.call(what = impute_func, args = impute_args)
+
+    if (do_variance) {
+        Yhat <- impout$Yhat
+        sig_diag <- impout$sig_diag
+    } else {
+        Yhat <- impout
+        sig_diag <- NULL
+    }
+
+    assertthat::assert_that(is.matrix(Yhat))
+    assertthat::are_equal(dim(Yhat), dim(Y))
+
+    Y22hat <- Yhat[1:k, (m + 1):p, drop = FALSE]
+    return(list(Y22hat = Y22hat, sig_diag = sig_diag))
+}
+
+#' A wrapper for using the softImpute function from the softImpute package.
+#'
+#' @param Y A matrix with missing values.
+#'
+#' @return A matrix with the missing values imputed.
+#'
+#' @author David Gerard
+softimpute_wrapper <- function(Y) {
+    if (!requireNamespace("softImpute", quietly = TRUE)) {
+        stop("softImpute needs to be installed to use it as a matrix imputation procedure.\nTo install softImpute, run in R:\n    install.packages(\"softImpute\")")
+    }
+    softout <- softImpute::softImpute(x = Y)
+    cout <- softImpute::complete(x = Y, object = softout)
+    return(cout)
+}
+
+flashr_wrapper <- function(Y, max_rank) {
+    if (!requireNamespace("flashr", quietly = TRUE)) {
+        stop("Sorry, flashr needs to be installed to use flashr_wrapper.")
+    }
+    trash <- utils::capture.output(gout <- flashr::greedy(Y = Y, K = max_rank,
+                                                   flash_para = list(partype = "var_col")))
+    Yhat <- gout$l %*% t(gout$f)
+    return(Yhat)
 }

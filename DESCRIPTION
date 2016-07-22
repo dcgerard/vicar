@@ -19,4 +19,6 @@ Imports: ruv,
     cate
 Suggests: testthat,
     ashr,
-    leapp
+    leapp,
+    softImpute,
+    flashr

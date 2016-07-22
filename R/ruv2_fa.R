@@ -587,8 +587,8 @@ pca_2step <- function(Y, r, vr, limmashrink = TRUE, likelihood = c("t", "normal"
 
     svd_Y2 <- svd(Y2)
     alpha <- t(svd_Y2$v[, 1:r, drop = FALSE] %*% diag(svd_Y2$d[1:r], r, r)) /
-        sqrt(n)
-    Z2 <- sqrt(n) * svd_Y2$u[, 1:r, drop = FALSE]
+        sqrt(n - vr)
+    Z2 <- sqrt(n - vr) * svd_Y2$u[, 1:r, drop = FALSE]
     sig_diag <- colSums((Y2 - Z2 %*% alpha) ^ 2) / (n - vr - r)
 
     if (limmashrink) {

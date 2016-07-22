@@ -261,6 +261,10 @@ vruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     ruv2_out$Zhat              <- Zhat
     ruv2_out$multiplier        <- multiplier
     ruv2_out$mult_matrix       <- mult_matrix
+    ruv2_out$debuglist         <- list()
+    ruv2_out$debuglist$Z1      <- Z1
+    ruv2_out$debuglist$Z2      <- Z2
+    ruv2_out$debuglist$Z3      <- Z3
 
     return(ruv2_out)
 }

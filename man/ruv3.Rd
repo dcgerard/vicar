@@ -119,6 +119,9 @@ fa_func.}
 
     \code{degrees_freedom} The degrees of freedom used when
     calculating the p-values.
+
+    \code{debuglist} A list of elements that aren't really useful
+    except for unit testing and debugging.
 }
 \description{
 This can be viewed both as a version of RUV2 and a version of RUV4.
