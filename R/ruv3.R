@@ -232,7 +232,12 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #'     values filled in. If \code{do_variance = TRUE}, then
 #'     \code{impute_func} should also return \code{sig_diag} --- a
 #'     vector of column-specific variance estimates. The default is a
-#'     wrapper for \code{\link[softImpute]{softImpute}}.
+#'     wrapper for \code{\link[softImpute]{softImpute}}.  I provide a
+#'     few functions in this package. \code{\link{knn_wrapper}}
+#'     performs k-nearest-neighbors
+#'     imputation. \code{\link{missforest_wrapper}} performs random
+#'     forest imputation. \code{\link{softimpute_wrapper}} performs
+#'     nuclear norm minimization imputation.
 #' @param impute_args A list of additional parameters to pass to
 #'     \code{impute_func}.
 #' @param do_variance A logical. Does \code{impute_func} also return
@@ -257,7 +262,7 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #' @author David Gerard
 #'
 #' @export
-ruvimpute <- function(Y, X, ctl, impute_func = missforest_wrapper,
+ruvimpute <- function(Y, X, ctl, impute_func = softimpute_wrapper,
                       impute_args = list(), cov_of_interest = ncol(X),
                       include_intercept = TRUE, do_variance = FALSE) {
 
@@ -381,17 +386,21 @@ impute_block <- function(Y21, Y31, Y32, impute_func,
 #' A wrapper for using the softImpute function from the softImpute package.
 #'
 #' @param Y A matrix with missing values.
+#' @param max_rank The same as the \code{max.rank} option in
+#'     \code{\link[softImpute]{softImpute}}.
 #'
 #' @return A matrix with the missing values imputed.
 #'
 #' @export
 #'
 #' @author David Gerard
-softimpute_wrapper <- function(Y) {
-    if (!requireNamespace("softImpute", quietly = TRUE)) {
-        stop("softImpute needs to be installed to use it as a matrix imputation procedure.\nTo install softImpute, run in R:\n    install.packages(\"softImpute\")")
-    }
-    softout <- softImpute::softImpute(x = Y)
+#'
+#' @seealso \code{\link[softImpute]{softImpute}}
+softimpute_wrapper <- function(Y, max_rank = min(dim(Y)) - 1) {
+    lout <- softImpute::lambda0(x = Y)
+    softout <- softImpute::softImpute(x = Y, rank.max = max_rank,
+                                      lambda = lout, maxit = 1000)
+    ##dbout <- softImpute::deBias(x = Y, svdObject = softout)
     cout <- softImpute::complete(x = Y, object = softout)
     return(cout)
 }
@@ -412,6 +421,28 @@ missforest_wrapper <- function(Y) {
     return(impout$ximp)
 }
 
+#' Wrapper for impute.knn
+#'
+#' @param Y A matirx with missing values.
+#'
+#' @return A matrix with the missing values imputed.
+#'
+#' @seealso \code{\link[impute]{impute.knn}}
+#'
+#' @author David Gerard
+#'
+#' @export
+knn_wrapper <- function(Y) {
+    impout <- impute::impute.knn(data = Y, colmax = 1, rowmax = 1)
+    return(impout$data)
+}
+
+## mice_wrapper <- function(Y) {
+##     library(mice)
+##     mout <- mice::mice(data = Y)
+##     mcomplete <- mice::complete(mout)
+##     return(mcomplete)
+## }
 
 ## Throws error in CRAN checks when used.
 ## flashr_wrapper <- function(Y, max_rank) {

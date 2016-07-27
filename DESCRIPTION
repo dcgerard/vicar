@@ -17,8 +17,9 @@ Imports: ruv,
     assertthat,
     MASS,
     cate,
-    missForest
+    missForest,
+    impute,
+    softImpute
 Suggests: testthat,
     ashr,
-    leapp,
-    softImpute
+    leapp

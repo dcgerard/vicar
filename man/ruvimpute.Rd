@@ -4,7 +4,7 @@
 \alias{ruvimpute}
 \title{General imputation framework.}
 \usage{
-ruvimpute(Y, X, ctl, impute_func = missforest_wrapper, impute_args = list(),
+ruvimpute(Y, X, ctl, impute_func = softimpute_wrapper, impute_args = list(),
   cov_of_interest = ncol(X), include_intercept = TRUE,
   do_variance = FALSE)
 }
@@ -26,7 +26,12 @@ negative control.}
 values filled in. If \code{do_variance = TRUE}, then
 \code{impute_func} should also return \code{sig_diag} --- a
 vector of column-specific variance estimates. The default is a
-wrapper for \code{\link[softImpute]{softImpute}}.}
+wrapper for \code{\link[softImpute]{softImpute}}.  I provide a
+few functions in this package. \code{\link{knn_wrapper}}
+performs k-nearest-neighbors
+imputation. \code{\link{missforest_wrapper}} performs random
+forest imputation. \code{\link{softimpute_wrapper}} performs
+nuclear norm minimization imputation.}
 
 \item{impute_args}{A list of additional parameters to pass to
 \code{impute_func}.}

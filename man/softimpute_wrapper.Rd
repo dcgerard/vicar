@@ -4,10 +4,13 @@
 \alias{softimpute_wrapper}
 \title{A wrapper for using the softImpute function from the softImpute package.}
 \usage{
-softimpute_wrapper(Y)
+softimpute_wrapper(Y, max_rank = min(dim(Y)) - 1)
 }
 \arguments{
 \item{Y}{A matrix with missing values.}
+
+\item{max_rank}{The same as the \code{max.rank} option in
+\code{\link[softImpute]{softImpute}}.}
 }
 \value{
 A matrix with the missing values imputed.
@@ -17,5 +20,8 @@ A wrapper for using the softImpute function from the softImpute package.
 }
 \author{
 David Gerard
+}
+\seealso{
+\code{\link[softImpute]{softImpute}}
 }
 
