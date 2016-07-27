@@ -4,9 +4,9 @@
 \alias{ruvimpute}
 \title{General imputation framework.}
 \usage{
-ruvimpute(Y, X, ctl, impute_func = softimpute_wrapper, impute_args = list(),
-  cov_of_interest = ncol(X), include_intercept = TRUE,
-  do_variance = FALSE)
+ruvimpute(Y, X, ctl, k = NULL, impute_func = hard_impute,
+  impute_args = list(), cov_of_interest = ncol(X),
+  include_intercept = TRUE, do_variance = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -19,6 +19,11 @@ genes.}
 \item{ctl}{A vector of logicals of length \code{ncol(Y)}. If
 position i is \code{TRUE} then position i is considered a
 negative control.}
+
+\item{k}{The rank of the underlying matrix. Used by
+\code{\link{hard_impute}} if that is the value of
+\code{impute_func}. If not provided, will be estimated
+by \code{\link[sva]{num.sv}}.}
 
 \item{impute_func}{A function that takes as input a matrix names
 \code{Y} that has missing values and returns a matrix called

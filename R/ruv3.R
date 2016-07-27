@@ -242,7 +242,10 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #'     \code{impute_func}.
 #' @param do_variance A logical. Does \code{impute_func} also return
 #'     estimates of the column-specific variances?
-#'
+#' @param k The rank of the underlying matrix. Used by
+#'     \code{\link{hard_impute}} if that is the value of
+#'     \code{impute_func}. If not provided, will be estimated
+#'     by \code{\link[sva]{num.sv}}.
 #' @return \code{beta2hat} The estimates of the coefficients of the
 #'     covariates of interest that do not correspond to control genes.
 #'
@@ -262,7 +265,7 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #' @author David Gerard
 #'
 #' @export
-ruvimpute <- function(Y, X, ctl, impute_func = softimpute_wrapper,
+ruvimpute <- function(Y, X, ctl, k = NULL, impute_func = hard_impute,
                       impute_args = list(), cov_of_interest = ncol(X),
                       include_intercept = TRUE, do_variance = FALSE) {
 
@@ -284,10 +287,12 @@ ruvimpute <- function(Y, X, ctl, impute_func = softimpute_wrapper,
     assertthat::assert_that(is.logical(do_variance))
 
 
-    rotate_out <- rotate_model(Y = Y, X = X, k = 0, cov_of_interest =
+    rotate_out <- rotate_model(Y = Y, X = X, k = k, cov_of_interest =
                                cov_of_interest, include_intercept =
                                include_intercept, limmashrink = FALSE,
                                do_factor = FALSE)
+
+    k <- rotate_out$k
 
     Y21 <- rotate_out$Y2[, ctl, drop = FALSE]
     Y22 <- rotate_out$Y2[, !ctl, drop = FALSE]
@@ -295,12 +300,14 @@ ruvimpute <- function(Y, X, ctl, impute_func = softimpute_wrapper,
     Y32 <- rotate_out$Y3[, !ctl, drop = FALSE]
     R22 <- rotate_out$R22
 
-    impout <- impute_block(Y21 = Y21, Y31 = Y31, Y32 = Y32, impute_func = impute_func,
-                           impute_args = impute_args, do_variance = do_variance)
-
-    Y22hat   <- impout$Y22hat
-    sig_diag <- impout$sig_diag
-
+    if (identical(impute_func, hard_impute)) {
+        Y22hat <- impout <- hard_impute(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k)
+    } else {
+        impout <- impute_block(Y21 = Y21, Y31 = Y31, Y32 = Y32, impute_func = impute_func,
+                               impute_args = impute_args, do_variance = do_variance)
+        Y22hat   <- impout$Y22hat
+        sig_diag <- impout$sig_diag
+    }
 
     R22inv <- backsolve(R22, diag(nrow(R22)))
     beta2hat <- R22inv %*% (Y22 - Y22hat)
@@ -396,12 +403,13 @@ impute_block <- function(Y21, Y31, Y32, impute_func,
 #' @author David Gerard
 #'
 #' @seealso \code{\link[softImpute]{softImpute}}
-softimpute_wrapper <- function(Y, max_rank = min(dim(Y)) - 1) {
-    lout <- softImpute::lambda0(x = Y)
+softimpute_wrapper <- function(Y, max_rank) {
+    ## lout <- softImpute::lambda0(x = Y)
     softout <- softImpute::softImpute(x = Y, rank.max = max_rank,
-                                      lambda = lout, maxit = 1000)
-    ##dbout <- softImpute::deBias(x = Y, svdObject = softout)
-    cout <- softImpute::complete(x = Y, object = softout)
+                                      lambda = 0, maxit = 1000,
+                                      type = "svd")
+    dbout <- softImpute::deBias(x = Y, svdObject = softout)
+    cout <- softImpute::complete(x = Y, object = dbout)
     return(cout)
 }
 
@@ -436,6 +444,92 @@ knn_wrapper <- function(Y) {
     impout <- impute::impute.knn(data = Y, colmax = 1, rowmax = 1)
     return(impout$data)
 }
+
+
+
+#' My version of hard imputation that begins at the ruv estimates
+#'
+#' @author David Gerard
+#'
+#' @param Y21 Top left of matrix.
+#' @param Y31 Bottom left of matrix.
+#' @param Y32 Top right of matrix.
+#' @param tol The tolerance for stopping.
+#' @param maxit The maximum number of iterations to run.
+#' @param init_type Which version of RUV should we start?
+#'     \code{"ruv3"} or \code{"ruv4"}?
+#' @param k The rank of the mean matrix.
+#'
+#' @return The top right of the matrix.
+#'
+#' @export
+hard_impute <- function(Y21, Y31, Y32, k, tol = 10 ^ -5, maxit = 1000,
+                           init_type = c("ruv4", "ruv3")) {
+
+    init_type <- match.arg(init_type)
+    m <- ncol(Y21)
+    k <- nrow(Y21)
+    n <- nrow(Y21) + nrow(Y31)
+    p <- ncol(Y31) + ncol(Y32)
+    degrees_freedom <- nrow(Y31) - k
+
+
+    ## Factor analysis on Y31 ------------------------------------------------
+
+    if (init_type == "ruv3") {
+        pcout <- pca_naive(Y = Y31, r = k)
+        alpha1 <- t(pcout$alpha)
+        Z3 <- pcout$Z
+        sig_diag1 <- pcout$sig_diag
+
+        ## Regression to get alpha2 ----------------------------------------------
+        alpha2 <- solve(t(Z3) %*% Z3) %*% t(Z3) %*% Y32
+        sig_diag2 <- colSums((Y32 - Z3 %*% alpha2) ^ 2) / degrees_freedom
+    } else if (init_type == "ruv4") {
+        pcout <- pca_naive(cbind(Y31, Y32), r = k)
+        alpha1 <- t(pcout$alpha[1:m, , drop = FALSE])
+        alpha2 <- t(pcout$alpha[(m + 1):p, , drop = FALSE])
+        Z3 <- pcout$Z
+        sig_diag1 <- pcout$sig_diag[1:m]
+    }
+
+    ## Regression to get Z2 --------------------------------------------------
+    limma_out1 <- limma::squeezeVar(var = sig_diag1,
+                                    df = degrees_freedom)
+    sig_diag1_temp <- limma_out1$var.post
+    Z2 <- Y21 %*% diag(1 / sig_diag1_temp) %*% t(alpha1) %*%
+        solve(alpha1 %*% diag(1 / sig_diag1_temp) %*% t(alpha1))
+
+    ## get inital values for Y22
+    Y22init <- Z2 %*% alpha2
+    Y22new <- Y22init
+
+    Y2 <- cbind(Y21, Y22init)
+    Y3 <- cbind(Y31, Y32)
+    Ycomp <- rbind(Y2, Y3)
+
+    ismiss <- matrix(FALSE, nrow = n, ncol = p)
+    ismiss[1:k, (m + 1):p] <- TRUE
+
+    iter_index <- 1
+    err <- tol + 1
+    while(err > tol & iter_index < maxit) {
+        Y22old <- Y22new
+        svout <- irlba::irlba(Ycomp, nv = k)
+        ## svout$u %*% diag(x = svout$d, nrow = length(svout$d), ncol = length(svout$d)) %*%
+        ##     t(svout$v)
+        ## lowrank_est <- tcrossprod(sweep(svout$u, 2, svout$d, `*`), svout$v)
+        Y22new <- tcrossprod(sweep(svout$u[1:k, , drop = FALSE], 2, svout$d, `*`),
+                             svout$v[(m + 1):p, , drop = FALSE])
+        Ycomp[1:k, (m + 1):p] <- Y22new
+        err <- sum((Y22old - Y22new) ^ 2)
+        iter_index <- iter_index + 1
+        ## cat(err, "\n")
+    }
+    return(Y22new)
+}
+
+
 
 ## mice_wrapper <- function(Y) {
 ##     library(mice)

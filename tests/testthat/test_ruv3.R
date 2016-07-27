@@ -69,10 +69,8 @@ test_that("ruvimpute works ok", {
     include_intercept <- FALSE
     cov_of_interest <- 2
     do_variance <- FALSE
-    impute_func <- softimpute_wrapper
 
     sout <- ruvimpute(Y = Y, X = X, ctl = ctl,
-                      impute_func = impute_func,
                       cov_of_interest = cov_of_interest,
                       include_intercept = FALSE)
     ## sout2 <- ruvimpute(Y = Y, X = X, ctl = ctl,

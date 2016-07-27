@@ -4,7 +4,7 @@
 \alias{softimpute_wrapper}
 \title{A wrapper for using the softImpute function from the softImpute package.}
 \usage{
-softimpute_wrapper(Y, max_rank = min(dim(Y)) - 1)
+softimpute_wrapper(Y, max_rank)
 }
 \arguments{
 \item{Y}{A matrix with missing values.}

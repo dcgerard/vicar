@@ -19,7 +19,8 @@ Imports: ruv,
     cate,
     missForest,
     impute,
-    softImpute
+    softImpute,
+    irlba
 Suggests: testthat,
     ashr,
     leapp
