@@ -68,12 +68,9 @@ test_that("ruvimpute works ok", {
     ctl[1:13] <- TRUE
     include_intercept <- FALSE
     cov_of_interest <- 2:3
-    impute_func <- softimpute_wrapper
-    impute_args <- list()
-    do_variance <- TRUE
+    do_variance <- FALSE
 
     sout <- ruvimpute(Y = Y, X = X, ctl = ctl,
-                      impute_func = impute_func,
                       cov_of_interest = cov_of_interest)
     ## sout2 <- ruvimpute(Y = Y, X = X, ctl = ctl,
     ##                    impute_func = flashr_wrapper,

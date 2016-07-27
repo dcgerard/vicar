@@ -16,7 +16,8 @@ Imports: ruv,
     sva,
     assertthat,
     MASS,
-    cate
+    cate,
+    missForest
 Suggests: testthat,
     ashr,
     leapp,

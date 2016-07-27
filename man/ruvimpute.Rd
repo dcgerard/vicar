@@ -4,7 +4,7 @@
 \alias{ruvimpute}
 \title{General imputation framework.}
 \usage{
-ruvimpute(Y, X, ctl, impute_func = softimpute_wrapper, impute_args = list(),
+ruvimpute(Y, X, ctl, impute_func = missforest_wrapper, impute_args = list(),
   cov_of_interest = ncol(X), include_intercept = TRUE,
   do_variance = FALSE)
 }

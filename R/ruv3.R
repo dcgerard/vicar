@@ -257,7 +257,7 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #' @author David Gerard
 #'
 #' @export
-ruvimpute <- function(Y, X, ctl, impute_func = softimpute_wrapper,
+ruvimpute <- function(Y, X, ctl, impute_func = missforest_wrapper,
                       impute_args = list(), cov_of_interest = ncol(X),
                       include_intercept = TRUE, do_variance = FALSE) {
 
@@ -395,6 +395,23 @@ softimpute_wrapper <- function(Y) {
     cout <- softImpute::complete(x = Y, object = softout)
     return(cout)
 }
+
+#' Wrapper for missForest package.
+#'
+#' @param Y A matirx with missing values.
+#'
+#' @return A matrix with the missing values imputed.
+#'
+#' @seealso \code{\link[missForest]{missForest}}
+#'
+#' @author David Gerard
+#'
+#' @export
+missforest_wrapper <- function(Y) {
+    trash <- utils::capture.output(impout <- missForest::missForest(xmis = Y))
+    return(impout$ximp)
+}
+
 
 ## Throws error in CRAN checks when used.
 ## flashr_wrapper <- function(Y, max_rank) {
