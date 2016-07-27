@@ -33,14 +33,37 @@ for
 
 Not accounting for the hidden covariates, Z, can reduce power and result in poor control of false discovery rate.
 
-There are many approaches available for estimating hidden confounders,
-but in practice they are not well calibrated. This package calibrates
-RUV2 [@gagnon2012using] and RUV4 [@gagnon2013removing].
+There are many approaches available for estimating hidden
+confounders. This package is among those that use control genes to
+account to hidden confounding.  Other such methods include RUV2
+[@gagnon2012using], RUV4 [@gagnon2013removing], and CATE
+[@wang2015confounder]. This package adds to this field by
 
-Even though I have a version of LEAPP [@sun2012multiple], it doesn't
-work well yet. If I come up with a way to calibrate SVA
-[@leek2007capturing, @leek2008general], then I'll include that as
-well.
+1. Implementing a version of CATE that is calibrated using control genes similarly to the method in @gagnon2013removing. The function is called `vruv4`.
+2. Introduces RUV3, a version of RUV that can be considered both RUV2 and RUV4. The function is called `ruv3`.
+3. Introduces RUV-impute, a more general framework for accounting for hidden confounders in regression. The function is called `ruvimpute`
+4. Introduces RUV-Bayes, a Bayesian version of RUV. The function is called `ruvb`.
+
+Please cite this package as:
+
+> Gerard, David. 2016. *vicar: Variance Inflation for Confounder Adjustment in Regression*. [https://github.com/dcgerard/vicar](https://github.com/dcgerard/vicar).
+
+Or, using BibTex:
+``` tex
+@Manual{gerard2016vicar,
+    title = {{vicar}: Variance Inflation for Confounder Adjustment in Regression},
+    author = {David Gerard},
+    year = {2016},
+    note = {R package version 0.1.2},
+    url = {https://github.com/dcgerard/vicar},
+}
+```
+
+See also the related R packages
+[`cate`](https://cran.r-project.org/web/packages/cate/index.html)
+[@wang2015cate] and
+[`ruv`](https://cran.r-project.org/web/packages/ruv/index.html)
+[@bartsch2015ruv].
 
 Check out [NEWS.md](NEWS.md) to see what's new with each version.
 

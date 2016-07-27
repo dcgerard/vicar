@@ -112,8 +112,15 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 
     ## Regression to get Z2 --------------------------------------------------
     if (gls) {
-        Z2 <- Y21 %*% diag(1 / sig_diag1) %*% t(alpha1) %*%
-            solve(alpha1 %*% diag(1 / sig_diag1) %*% t(alpha1))
+        if (limmashrink) {
+            limma_out1 <- limma::squeezeVar(var = sig_diag1,
+                                            df = degrees_freedom)
+            sig_diag1_temp <- limma_out1$var.post
+        } else {
+            sig_diag1_temp <- sig_diag1
+        }
+        Z2 <- Y21 %*% diag(1 / sig_diag1_temp) %*% t(alpha1) %*%
+            solve(alpha1 %*% diag(1 / sig_diag1_temp) %*% t(alpha1))
     } else {
         Z2 <- Y21 %*% t(alpha1) %*%
             solve(alpha1 %*% t(alpha1))
@@ -224,7 +231,8 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #'     \code{Yhat} of the same dimension of \code{Y} with the missing
 #'     values filled in. If \code{do_variance = TRUE}, then
 #'     \code{impute_func} should also return \code{sig_diag} --- a
-#'     vector of column-specific variance estimates.
+#'     vector of column-specific variance estimates. The default is a
+#'     wrapper for \code{\link[softImpute]{softImpute}}.
 #' @param impute_args A list of additional parameters to pass to
 #'     \code{impute_func}.
 #' @param do_variance A logical. Does \code{impute_func} also return
@@ -232,6 +240,9 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #'
 #' @return \code{beta2hat} The estimates of the coefficients of the
 #'     covariates of interest that do not correspond to control genes.
+#'
+#'     \code{betahat_long} The estimates of the coefficients. Those
+#'     corresponding to control genes are set to 0.
 #'
 #'     \code{sebetahat} If \code{do_variance = TRUE}, then these are
 #'     the "standard errors" of \code{beta2hat} (but not really).
@@ -246,10 +257,9 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #' @author David Gerard
 #'
 #' @export
-ruvimpute <- function(Y, X, ctl, impute_func, impute_args = list(),
-                      cov_of_interest = ncol(X),
-                      include_intercept = TRUE,
-                      do_variance = FALSE) {
+ruvimpute <- function(Y, X, ctl, impute_func = softimpute_wrapper,
+                      impute_args = list(), cov_of_interest = ncol(X),
+                      include_intercept = TRUE, do_variance = FALSE) {
 
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.numeric(Y))
@@ -292,6 +302,10 @@ ruvimpute <- function(Y, X, ctl, impute_func, impute_args = list(),
 
     return_list <- list()
     return_list$beta2hat <- beta2hat
+
+    betahat_long <- matrix(0, nrow = nrow(beta2hat), ncol = ncol(Y))
+    betahat_long[, !ctl] <- beta2hat
+    return_list$betahat_long <- betahat_long
 
 
     if (do_variance) {
@@ -370,6 +384,8 @@ impute_block <- function(Y21, Y31, Y32, impute_func,
 #'
 #' @return A matrix with the missing values imputed.
 #'
+#' @export
+#'
 #' @author David Gerard
 softimpute_wrapper <- function(Y) {
     if (!requireNamespace("softImpute", quietly = TRUE)) {
@@ -380,6 +396,7 @@ softimpute_wrapper <- function(Y) {
     return(cout)
 }
 
+## Throws error in CRAN checks when used.
 ## flashr_wrapper <- function(Y, max_rank) {
 ##     if (!requireNamespace("flashr", quietly = TRUE)) {
 ##         stop("Sorry, flashr needs to be installed to use flashr_wrapper.")

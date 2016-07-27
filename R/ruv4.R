@@ -525,7 +525,7 @@ rotate_model <- function(Y, X, k, cov_of_interest = ncol(X),
     return_list$Y3          <- Y3
     return_list$k           <- k
     return_list$X           <- X
-
+    return_list$Ytilde      <- Y_tilde ## the rotated response
     return(return_list)
 }
 

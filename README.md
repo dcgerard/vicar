@@ -23,9 +23,30 @@ for
 
 Not accounting for the hidden covariates, Z, can reduce power and result in poor control of false discovery rate.
 
-There are many approaches available for estimating hidden confounders, but in practice they are not well calibrated. This package calibrates RUV2 (J. A. Gagnon-Bartsch and Speed 2012) and RUV4 (J. Gagnon-Bartsch, Jacob, and Speed 2013).
+There are many approaches available for estimating hidden confounders. This package is among those that use control genes to account to hidden confounding. Other such methods include RUV2 (J. A. Gagnon-Bartsch and Speed 2012), RUV4 (J Gagnon-Bartsch, Jacob, and Speed 2013), and CATE (Wang et al. 2015). This package adds to this field by
 
-Even though I have a version of LEAPP (Sun et al. 2012), it doesn't work well yet. If I come up with a way to calibrate SVA (Leek and Storey 2007, Leek and Storey (2008)), then I'll include that as well.
+1.  Implementing a version of CATE that is calibrated using control genes similarly to the method in J Gagnon-Bartsch, Jacob, and Speed (2013). The function is called `vruv4`.
+2.  Introduces RUV3, a version of RUV that can be considered both RUV2 and RUV4. The function is called `ruv3`.
+3.  Introduces RUV-impute, a more general framework for accounting for hidden confounders in regression. The function is called `ruvimpute`
+4.  Introduces RUV-Bayes, a Bayesian version of RUV. The function is called `ruvb`.
+
+Please cite this package as:
+
+> Gerard, David. 2016. *vicar: Variance Inflation for Confounder Adjustment in Regression*. <https://github.com/dcgerard/vicar>.
+
+Or, using BibTex:
+
+``` tex
+@Manual{gerard2016vicar,
+    title = {{vicar}: Variance Inflation for Confounder Adjustment in Regression},
+    author = {David Gerard},
+    year = {2016},
+    note = {R package version 0.1.2},
+    url = {https://github.com/dcgerard/vicar},
+}
+```
+
+See also the related R packages [`cate`](https://cran.r-project.org/web/packages/cate/index.html) (Wang and Zhao 2015) and [`ruv`](https://cran.r-project.org/web/packages/ruv/index.html) (Johann Gagnon-Bartsch 2015).
 
 Check out [NEWS.md](NEWS.md) to see what's new with each version.
 
@@ -44,10 +65,10 @@ References
 
 Gagnon-Bartsch, J, L Jacob, and TP Speed. 2013. “Removing Unwanted Variation from High Dimensional Data with Negative Controls.” Technical Report 820, Department of Statistics, University of California, Berkeley.
 
+Gagnon-Bartsch, Johann. 2015. *ruv: Detect and Remove Unwanted Variation Using Negative Controls*. <https://CRAN.R-project.org/package=ruv>.
+
 Gagnon-Bartsch, Johann A, and Terence P Speed. 2012. “Using Control Genes to Correct for Unwanted Variation in Microarray Data.” *Biostatistics* 13 (3). Biometrika Trust: 539–52.
 
-Leek, Jeffrey T, and John D Storey. 2007. “Capturing Heterogeneity in Gene Expression Studies by Surrogate Variable Analysis.” *PLoS Genet* 3 (9): 1724–35.
+Wang, Jingshu, and Qingyuan Zhao. 2015. *cate: High Dimensional Factor Analysis and Confounder Adjusted Testing and Estimation*. <https://CRAN.R-project.org/package=cate>.
 
-———. 2008. “A General Framework for Multiple Testing Dependence.” *Proceedings of the National Academy of Sciences* 105 (48). National Acad Sciences: 18718–23.
-
-Sun, Yunting, Nancy R Zhang, Art B Owen, and others. 2012. “Multiple Hypothesis Testing Adjusted for Latent Variables, with an Application to the Agemap Gene Expression Data.” *The Annals of Applied Statistics* 6 (4). Institute of Mathematical Statistics: 1664–88.
+Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B Owen. 2015. “Confounder Adjustment in Multiple Hypotheses Testing.” *ArXiv Preprint ArXiv:1508.04178*.

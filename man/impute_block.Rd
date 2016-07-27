@@ -19,7 +19,8 @@ impute_block(Y21, Y31, Y32, impute_func, impute_args = list(),
 \code{Yhat} of the same dimension of \code{Y} with the missing
 values filled in. If \code{do_variance = TRUE}, then
 \code{impute_func} should also return \code{sig_diag} --- a
-vector of column-specific variance estimates.}
+vector of column-specific variance estimates. The default is a
+wrapper for \code{\link[softImpute]{softImpute}}.}
 
 \item{impute_args}{A list of additional parameters to pass to
 \code{impute_func}.}
