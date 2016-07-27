@@ -128,7 +128,7 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 
     ## find variance adjustment ----------------------------------------------
     resid_mat <- Y21 - Z2 %*% alpha1
-    multiplier <- mean(resid_mat ^ 2 / sig_diag1)
+    multiplier <- mean(resid_mat ^ 2 %*% (1 / sig_diag1))
 
     ## Regression to get alpha2 ----------------------------------------------
     alpha2 <- solve(t(Z3) %*% Z3) %*% t(Z3) %*% Y32
