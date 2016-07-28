@@ -51,7 +51,7 @@ test_that("See if RUV3 returns correct OLS estimates and matches vruv2", {
 )
 
 
-test_that("ruvimpute works ok", {
+test_that("ruvimpute returns RUV2, RUV3, and RUV4", {
     set.seed(24)
     n <- 17
     p <- 103
@@ -66,31 +66,54 @@ test_that("ruvimpute works ok", {
     Y <- X %*% beta + Z %*% alpha + E
     ctl <- rep(FALSE, length = p)
     ctl[1:13] <- TRUE
-    include_intercept <- FALSE
     cov_of_interest <- 2
-    do_variance <- FALSE
 
-    sout <- ruvimpute(Y = Y, X = X, ctl = ctl,
+    imp2 <- ruvimpute(Y = Y, X = X, ctl = ctl, k = k,
+                      impute_func = impute_ruv_reproduce,
+                      impute_args = list(impute_type = "ruv2"),
                       cov_of_interest = cov_of_interest,
                       include_intercept = FALSE)
-    ## sout2 <- ruvimpute(Y = Y, X = X, ctl = ctl,
-    ##                    impute_func = flashr_wrapper,
-    ##                    impute_args = list(max_rank = n - k - q - 1),
-    ##                    cov_of_interest = cov_of_interest)
+    imp3 <- ruvimpute(Y = Y, X = X, ctl = ctl, k = k,
+                      impute_func = impute_ruv_reproduce,
+                      impute_args = list(impute_type = "ruv3"),
+                      cov_of_interest = cov_of_interest,
+                      include_intercept = FALSE)
+    imp4 <- ruvimpute(Y = Y, X = X, ctl = ctl, k = k,
+                      impute_func = impute_ruv_reproduce,
+                      impute_args = list(impute_type = "ruv4"),
+                      cov_of_interest = cov_of_interest,
+                      include_intercept = FALSE)
+
+    impouthard <- ruvimpute(Y = Y, X = X, ctl = ctl, k = k,
+                      impute_func = hard_impute,
+                      cov_of_interest = cov_of_interest,
+                      include_intercept = FALSE)
 
     ruv3out <- ruv3(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = cov_of_interest,
-                    include_intercept = FALSE)
-    ruv4out <- vruv4(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = cov_of_interest,
-                     include_intercept = FALSE)
-    ruv2out <- vruv2(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = cov_of_interest,
-                     include_intercept = FALSE)
+                    include_intercept = FALSE, gls = FALSE)
+    ruv4out <- ruv::RUV4(Y = Y, X = X[, cov_of_interest, drop = FALSE], ctl = ctl,
+                         k = k, Z = X[, -cov_of_interest, drop = FALSE])
+    ruv2out <- ruv::RUV2(Y = Y, X = X[, cov_of_interest, drop = FALSE], ctl = ctl,
+                         k = k, Z = X[, -cov_of_interest, drop = FALSE])
+
+    my_ruv4out <- vruv4(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = cov_of_interest,
+                        likelihood = "normal", limmashrink = FALSE, include_intercept = FALSE,
+                        gls = FALSE)
+
+    expect_equal(c(imp2$beta2hat), ruv2out$betahat[, !ctl])
+    expect_equal(c(imp3$beta2hat), ruv3out$betahat[, !ctl])
+    expect_equal(c(imp4$beta2hat), ruv4out$betahat[, !ctl])
+    expect_equal(c(my_ruv4out$betahat)[!ctl], ruv4out$betahat[, !ctl])
+
+
     ## plot(sout$beta2hat, sout2$beta2hat)
 
     mean((beta[cov_of_interest, !ctl] - ruv3out$betahat[, !ctl]) ^ 2)
     mean((beta[cov_of_interest, !ctl] - ruv2out$betahat[, !ctl]) ^ 2)
-    mean((beta[cov_of_interest, !ctl] - t(ruv4out$betahat[!ctl, ])) ^ 2)
+    mean((beta[cov_of_interest, !ctl] - t(ruv4out$betahat[, !ctl ])) ^ 2)
+    mean((beta[cov_of_interest, !ctl] - impouthard$beta2hat) ^ 2)
     ## mean((beta[cov_of_interest, !ctl] - sout2$beta2hat) ^ 2)
-    mean((beta[cov_of_interest, !ctl] - sout$beta2hat) ^ 2)
+
 
 }
 )

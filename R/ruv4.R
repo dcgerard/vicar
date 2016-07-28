@@ -377,17 +377,17 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, R22, degrees_freedom,
     }
 
     ## Output values
-    ruv4_out <- list()
-    sig_diag_adjusted <- sig_diag * multiplier
-    betahat_ols       <- Y2 %*% solve(t(R22))
-    ruv4_out$sigma2            <- sig_diag
-    ruv4_out$multiplier        <- multiplier
-    ruv4_out$sigma2_adjusted   <- sig_diag_adjusted
-    ruv4_out$betahat_ols       <- betahat_ols
-    ruv4_out$betahat           <- betahat
-    ruv4_out$Z2                <- Z2
-    ruv4_out$alphahat          <- alpha
-    ruv4_out$R22               <- R22
+    ruv4_out                 <- list()
+    sig_diag_adjusted        <- sig_diag * multiplier
+    betahat_ols              <- Y2 %*% solve(t(R22))
+    ruv4_out$sigma2          <- sig_diag
+    ruv4_out$multiplier      <- multiplier
+    ruv4_out$sigma2_adjusted <- sig_diag_adjusted
+    ruv4_out$betahat_ols     <- betahat_ols
+    ruv4_out$betahat         <- betahat
+    ruv4_out$Z2              <- Z2
+    ruv4_out$alphahat        <- alpha
+    ruv4_out$R22             <- R22
     return(ruv4_out)
 }
 
