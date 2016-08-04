@@ -39,54 +39,6 @@ test_that("rotated_model same as ols when no confounders", {
 }
 )
 
-
-## should remove this before publishing
-test_that("vicarius_ruv4 same as ashr::ash_ruv", {
-    skip("doesn't work on R CMD check but works otherwise")
-    if (requireNamespace("ashr", quietly = TRUE)) {
-        set.seed(68)
-        n <- 11
-        p <- 19
-        k <- 3
-        cov_of_interest <- k
-        X <- matrix(stats::rnorm(n * k), nrow = n)
-        beta <- matrix(stats::rnorm(k * p), nrow = k)
-        beta[, 1:round(p/2)] <- 0
-        ctl <- beta[cov_of_interest, ] == 0
-        E <- matrix(stats::rnorm(n * p), nrow = n)
-        Y <- X %*% beta + E
-
-        num_sv <- 2
-
-        ruv4_out <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv,
-                                  cov_of_interest = cov_of_interest,
-                                  likelihood = "normal")
-
-        ash_out <- ashr::ash_ruv(Y = Y, X = X, ctl = ctl, k = num_sv,
-                                 cov_of_interest = cov_of_interest,
-                                 likelihood = "normal", posthoc_inflate = FALSE)
-
-        expect_equal(ash_out$ruv$multiplier, ruv4_out$multiplier)
-        expect_equal(ash_out$ruv$alphahat, ruv4_out$alphahat * -1)
-        expect_equal(ash_out$ruv$sebetahat_ols, c(ruv4_out$sebetahat_ols))
-        expect_equal(ash_out$ruv$Z1, ruv4_out$Z2 * -1)
-
-        ruv4_out <- vicarius_ruv4(Y = Y, X = X, ctl = ctl, k = num_sv,
-                                  cov_of_interest = cov_of_interest,
-                                  likelihood = "t")
-
-        ash_out <- ashr::ash_ruv(Y = Y, X = X, ctl = ctl, k = num_sv,
-                                 cov_of_interest = cov_of_interest,
-                                 likelihood = "t", posthoc_inflate = FALSE)
-
-        expect_equal(ash_out$ruv$alphahat, ruv4_out$alphahat * -1)
-        expect_equal(ash_out$ruv$sebetahat_ols, c(ruv4_out$sebetahat_ols))
-
-    }
-}
-)
-
-
 test_that("tregress_em increases likelihood", {
     set.seed(871)
     p  <- 21
