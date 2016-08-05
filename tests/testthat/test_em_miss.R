@@ -183,7 +183,7 @@ test_that("em_miss_fix_fast has same update as em_miss_fix", {
     plot(llike_vec, type = "l")
     expect_true(all(llike_vec[1:(itermax - 1)] <= llike_vec[2:itermax]))
 
-    suppressWarnings(emout <- em_miss(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k))
+    emout <- em_miss(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k)
 
     llike_final <- em_miss_obj_fast(alpha_sigma = c(c(emout$alpha), emout$sig_diag), Y21 = Y21,
                                     Y31 = Y31, Y32 = Y32, k = k)

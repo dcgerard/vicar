@@ -215,7 +215,9 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     return_list$mult_matrix_ols      <- mult_matrix_ols
     return_list$degrees_freedom      <- degrees_freedom
     return_list$debuglist            <- list()
-    return_list$debuglist$Z1         <- Z1
+    if (!is.null(rotate_out$Y1)) {
+        return_list$debuglist$Z1         <- Z1
+    }
     return_list$debuglist$Z2         <- Z2
     return_list$debuglist$Z3         <- Z3
 

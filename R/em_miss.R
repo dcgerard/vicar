@@ -37,7 +37,7 @@ em_miss <- function(Y21, Y31, Y32, k, gls = TRUE) {
     sqout <- SQUAREM::squarem(par = alpha_sigma_init, fixptfn = em_miss_fix_fast,
                               objfn = em_miss_obj_fast,
                               Y21 = Y21, Y31 = Y31,
-                              Y32 = Y32, k = k, control = list(tol = 10 ^ -5))
+                              Y32 = Y32, k = k, control = list(tol = 10 ^ -6))
 
     ## em_miss_obj_fast(alpha_sigma = sqout$par, Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k)
 

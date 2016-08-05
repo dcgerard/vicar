@@ -115,5 +115,9 @@ test_that("ruvimpute returns RUV2, RUV3, and RUV4", {
     ## mean((beta[cov_of_interest, !ctl] - sout2$beta2hat) ^ 2)
 
 
+    ruv3out <- ruv3(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = 1:ncol(X),
+                    include_intercept = FALSE, gls = FALSE)
+
+
 }
 )
