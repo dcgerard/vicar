@@ -49,14 +49,14 @@ em_miss <- function(Y21, Y31, Y32, k, gls = TRUE) {
     alpha_nc <- alpha_final[, (ncol(Y21) + 1):ncol(alpha_final)]
     sig_diag_c <- sig_diag_final[1:ncol(Y21)]
     if (gls) {
-        ## Zhat <- Y21 %*% diag(sig_diag_c) %*% t(alpha_c) %*%
-        ##     solve(alpha_c %*% diag(sig_diag_c) %*% t(alpha_c))
+        ## Zhat <- Y21 %*% diag(1 / sig_diag_c) %*% t(alpha_c) %*%
+        ##     solve(alpha_c %*% diag(1 / sig_diag_c) %*% t(alpha_c))
 
-        Zhat <- tcrossprod(sweep(Y21, 2, sig_diag_c, `*`), alpha_c) %*%
-            solve(tcrossprod(sweep(alpha_c, 2, sig_diag_c, `*`), alpha_c))
+        Zhat <- tcrossprod(sweep(Y21, 2, 1 / sig_diag_c, `*`), alpha_c) %*%
+            solve(tcrossprod(sweep(alpha_c, 2, 1 / sig_diag_c, `*`), alpha_c))
     } else {
-        Zhat <- tcrossprod(sweep(Y21, 2, sig_diag_c, `*`), alpha_c) %*%
-            solve(tcrossprod(sweep(alpha_c, 2, sig_diag_c, `*`), alpha_c) + diag(k))
+        Zhat <- tcrossprod(sweep(Y21, 2, 1 / sig_diag_c, `*`), alpha_c) %*%
+            solve(tcrossprod(sweep(alpha_c, 2, 1 / sig_diag_c, `*`), alpha_c) + diag(k))
     }
 
     Y22hat <- Zhat %*% alpha_nc
@@ -188,6 +188,11 @@ em_miss_obj_fast <- function(alpha_sigma, Y21, Y31, Y32, k) {
     sig_diag_c <- sig_diag[1:ncontrols]
     sig_diag_nc <- sig_diag[(ncontrols + 1):p]
 
+    ## this is mostly so that SQUAREM doesn't overshoot variances
+    if (any(sig_diag <= 0)) {
+        return(-Inf)
+    }
+    
     Y3 <- cbind(Y31, Y32)
 
 

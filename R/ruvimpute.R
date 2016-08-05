@@ -81,7 +81,7 @@ ruvimpute <- function(Y, X, ctl, k = NULL, impute_func = em_miss,
         impute_args$Y31 <- Y31
         impute_args$Y32 <- Y32
         impute_args$k   <- k
-        impute_args$gls <- FALSE
+        impute_args$gls <- TRUE
         emout <- do.call(what = em_miss, args = impute_args)
         Y22hat <- emout$Y22hat
     } else if (identical(impute_func, hard_impute)) {
