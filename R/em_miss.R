@@ -10,12 +10,17 @@
 #' @param gls A logical. Should we estimate Z by generalized least
 #'     squares (\code{TRUE}) or by a multivariate normality assumption
 #'     (\code{FALSE})?
+#' @param init_type A string. Should we initialize using PCA on
+#'     \code{cbind(Y31, Y32)} (\code{"pca"}) or using maximum
+#'     likelihood on \code{cbind(Y31, Y32)} (\code{"ml"})?
 #' @return The top right of the matrix.
 #'
 #' @export
-em_miss <- function(Y21, Y31, Y32, k, gls = TRUE) {
+em_miss <- function(Y21, Y31, Y32, k, gls = TRUE, init_type = c("ml", "pca")) {
 
     p <- ncol(Y31) + ncol(Y32)
+    
+    init_type <- match.arg(init_type)
 
     if (is.null(Y21)) {
         cout <- cate::fa.em(Y = cbind(Y31, Y32), r = k)
@@ -28,9 +33,15 @@ em_miss <- function(Y21, Y31, Y32, k, gls = TRUE) {
     assertthat::are_equal(nrow(Y31), nrow(Y32))
 
     ## Get initial values -------------------------------------------------
-    pcout <- pca_naive(cbind(Y31, Y32), r = k)
-    alpha_init <- t(pcout$alpha)
-    sig_diag_init <- pcout$sig_diag
+    if (init_type == "pca") {
+        pcout <- pca_naive(cbind(Y31, Y32), r = k)
+        alpha_init <- t(pcout$alpha)
+        sig_diag_init <- pcout$sig_diag
+    } else if (init_type == "ml") {
+        mlout <- cate::fa.em(Y = cbind(Y31, Y32), r = k)
+        alpha_init <- t(mlout$Gamma)
+        sig_diag_init <- mlout$Sigma
+    }
     alpha_sigma_init <- c(c(alpha_init), sig_diag_init)
 
     ## Run SQUAREM --------------------------------------------------------

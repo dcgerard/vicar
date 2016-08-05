@@ -4,7 +4,7 @@
 \alias{em_miss}
 \title{EM algorithm for factor analysis with missing block matrix.}
 \usage{
-em_miss(Y21, Y31, Y32, k, gls = TRUE)
+em_miss(Y21, Y31, Y32, k, gls = TRUE, init_type = c("ml", "pca"))
 }
 \arguments{
 \item{Y21}{Top left of matrix.}
@@ -18,6 +18,10 @@ em_miss(Y21, Y31, Y32, k, gls = TRUE)
 \item{gls}{A logical. Should we estimate Z by generalized least
 squares (\code{TRUE}) or by a multivariate normality assumption
 (\code{FALSE})?}
+
+\item{init_type}{A string. Should we initialize using PCA on
+\code{cbind(Y31, Y32)} (\code{"pca"}) or using maximum
+likelihood on \code{cbind(Y31, Y32)} (\code{"ml"})?}
 }
 \value{
 The top right of the matrix.

@@ -188,6 +188,11 @@ test_that("em_miss_fix_fast has same update as em_miss_fix", {
     llike_final <- em_miss_obj_fast(alpha_sigma = c(c(emout$alpha), emout$sig_diag), Y21 = Y21,
                                     Y31 = Y31, Y32 = Y32, k = k)
 
+    llike_final
+    max(llike_vec)
+
     expect_true(max(llike_vec) <= llike_final)
 }
 )
+
+
