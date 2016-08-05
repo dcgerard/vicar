@@ -4,7 +4,7 @@
 \alias{em_miss}
 \title{EM algorithm for factor analysis with missing block matrix.}
 \usage{
-em_miss(Y21, Y31, Y32, k)
+em_miss(Y21, Y31, Y32, k, gls = TRUE)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}
@@ -14,6 +14,10 @@ em_miss(Y21, Y31, Y32, k)
 \item{Y32}{Top right of matrix.}
 
 \item{k}{The rank of the mean matrix.}
+
+\item{gls}{A logical. Should we estimate Z by generalized least
+squares (\code{TRUE}) or by a multivariate normality assumption
+(\code{FALSE})?}
 }
 \value{
 The top right of the matrix.

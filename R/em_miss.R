@@ -7,11 +7,13 @@
 #' @param Y31 Bottom left of matrix.
 #' @param Y32 Top right of matrix.
 #' @param k The rank of the mean matrix.
-#'
+#' @param gls A logical. Should we estimate Z by generalized least
+#'     squares (\code{TRUE}) or by a multivariate normality assumption
+#'     (\code{FALSE})?
 #' @return The top right of the matrix.
 #'
 #' @export
-em_miss <- function(Y21, Y31, Y32, k) {
+em_miss <- function(Y21, Y31, Y32, k, gls = TRUE) {
 
     p <- ncol(Y31) + ncol(Y32)
 
@@ -33,13 +35,33 @@ em_miss <- function(Y21, Y31, Y32, k) {
 
     ## Run SQUAREM --------------------------------------------------------
     sqout <- SQUAREM::squarem(par = alpha_sigma_init, fixptfn = em_miss_fix_fast,
-                              objfn = em_miss_obj_fast, Y21 = Y21, Y31 = Y31,
+                              objfn = em_miss_obj_fast,
+                              Y21 = Y21, Y31 = Y31,
                               Y32 = Y32, k = k, control = list(tol = 10 ^ -5))
+
+    ## em_miss_obj_fast(alpha_sigma = sqout$par, Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k)
 
     sig_diag_final <- sqout$par[((k * p) + 1):length(sqout$par)]
     alpha_final <- matrix(sqout$par[1:(k * p)], nrow = k, ncol = p)
 
-    return(list(alpha = alpha_final, sig_diag = sig_diag_final))
+    ## Estimate Z --------------------------------------------------------
+    alpha_c <- alpha_final[, 1:ncol(Y21)]
+    alpha_nc <- alpha_final[, (ncol(Y21) + 1):ncol(alpha_final)]
+    sig_diag_c <- sig_diag_final[1:ncol(Y21)]
+    if (gls) {
+        ## Zhat <- Y21 %*% diag(sig_diag_c) %*% t(alpha_c) %*%
+        ##     solve(alpha_c %*% diag(sig_diag_c) %*% t(alpha_c))
+
+        Zhat <- tcrossprod(sweep(Y21, 2, sig_diag_c, `*`), alpha_c) %*%
+            solve(tcrossprod(sweep(alpha_c, 2, sig_diag_c, `*`), alpha_c))
+    } else {
+        Zhat <- tcrossprod(sweep(Y21, 2, sig_diag_c, `*`), alpha_c) %*%
+            solve(tcrossprod(sweep(alpha_c, 2, sig_diag_c, `*`), alpha_c) + diag(k))
+    }
+
+    Y22hat <- Zhat %*% alpha_nc
+
+    return(list(alpha = alpha_final, sig_diag = sig_diag_final, Z = Zhat, Y22hat = Y22hat))
 }
 
 

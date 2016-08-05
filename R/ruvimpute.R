@@ -41,7 +41,7 @@
 #' @author David Gerard
 #'
 #' @export
-ruvimpute <- function(Y, X, ctl, k = NULL, impute_func = hard_impute,
+ruvimpute <- function(Y, X, ctl, k = NULL, impute_func = em_miss,
                       impute_args = list(), cov_of_interest = ncol(X),
                       include_intercept = TRUE, do_variance = FALSE) {
 
@@ -76,17 +76,25 @@ ruvimpute <- function(Y, X, ctl, k = NULL, impute_func = hard_impute,
     Y32 <- rotate_out$Y3[, !ctl, drop = FALSE]
     R22 <- rotate_out$R22
 
-    if (identical(impute_func, hard_impute)) {
+    if (identical(impute_func, em_miss)) {
         impute_args$Y21 <- Y21
         impute_args$Y31 <- Y31
         impute_args$Y32 <- Y32
-        impute_args$k <- k
+        impute_args$k   <- k
+        impute_args$gls <- FALSE
+        emout <- do.call(what = em_miss, args = impute_args)
+        Y22hat <- emout$Y22hat
+    } else if (identical(impute_func, hard_impute)) {
+        impute_args$Y21 <- Y21
+        impute_args$Y31 <- Y31
+        impute_args$Y32 <- Y32
+        impute_args$k   <- k
         Y22hat <- do.call(what = hard_impute, args = impute_args)
     } else if (identical(impute_func, impute_ruv_reproduce) ) {
         impute_args$Y21 <- Y21
         impute_args$Y31 <- Y31
         impute_args$Y32 <- Y32
-        impute_args$k <- k
+        impute_args$k   <- k
         Y22hat <- do.call(what = impute_ruv_reproduce, args = impute_args)
     } else {
         impout <- impute_block(Y21 = Y21, Y31 = Y31, Y32 = Y32, impute_func = impute_func,

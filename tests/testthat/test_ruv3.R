@@ -84,8 +84,8 @@ test_that("ruvimpute returns RUV2, RUV3, and RUV4", {
                       cov_of_interest = cov_of_interest,
                       include_intercept = FALSE)
 
-    impouthard <- ruvimpute(Y = Y, X = X, ctl = ctl, k = k,
-                      impute_func = hard_impute,
+    impout_miss <- ruvimpute(Y = Y, X = X, ctl = ctl, k = k,
+                      impute_func = em_miss,
                       cov_of_interest = cov_of_interest,
                       include_intercept = FALSE)
 
@@ -111,7 +111,7 @@ test_that("ruvimpute returns RUV2, RUV3, and RUV4", {
     mean((beta[cov_of_interest, !ctl] - ruv3out$betahat[, !ctl]) ^ 2)
     mean((beta[cov_of_interest, !ctl] - ruv2out$betahat[, !ctl]) ^ 2)
     mean((beta[cov_of_interest, !ctl] - t(ruv4out$betahat[, !ctl ])) ^ 2)
-    mean((beta[cov_of_interest, !ctl] - impouthard$beta2hat) ^ 2)
+    mean((beta[cov_of_interest, !ctl] - impout_miss$beta2hat) ^ 2)
     ## mean((beta[cov_of_interest, !ctl] - sout2$beta2hat) ^ 2)
 
 
