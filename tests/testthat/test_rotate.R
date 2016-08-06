@@ -292,3 +292,19 @@ test_that("vruvinv works", {
 
 }
 )
+
+
+test_that("fa_ml and pca_naive work ok", {
+    n <- 11
+    p <- 73
+    Y <- matrix(rnorm(n * p), nrow = n)
+    r <- 2
+
+    pcout <- pca_naive(Y = Y, r = r)
+    cout  <- fa_ml(Y = Y, r = r)
+
+    expect_equal(dim(pcout$alpha), dim(cout$alpha))
+    expect_equal(dim(pcout$Z), dim(cout$Z))
+    expect_equal(length(pcout$sig_diag), length(cout$sig_diag))
+}
+)

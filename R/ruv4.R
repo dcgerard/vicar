@@ -585,6 +585,36 @@ pca_naive <- function (Y, r) {
     return(list(alpha = Gamma, Z = Z, sig_diag = Sigma))
 }
 
+#' Wrapper for cate's fa.em function.
+#'
+#' @inheritParams pca_naive
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+#' @references Jingshu Wang and Qingyuan Zhao (2015). cate: High
+#'     Dimensional Factor Analysis and Confounder Adjusted Testing and
+#'     Estimation. R package version
+#'     1.0.4. https://CRAN.R-project.org/package=cate
+fa_ml <- function(Y, r) {
+    assertthat::assert_that(is.matrix(Y))
+    assertthat::are_equal(length(r), 1)
+    assertthat::assert_that(r >= 0 & r < min(dim(Y)))
+
+    if (r == 0) {
+        Gamma <- NULL
+        Z <- NULL
+        Sigma <- apply(Y, 2, function(x) mean(x ^ 2))
+    } else {
+        cout <- cate::fa.em(Y = Y, r = r)
+        alpha <- cout$Gamma
+        Z <- cout$Z
+        sig_diag <- cout$Sigma
+    }
+    return(list(alpha = alpha, Z = Z, sig_diag = sig_diag))
+}
+
 #' EM algorithm to find regression coefficients using t-likelihood
 #' when variances are known up to scale.
 #'
