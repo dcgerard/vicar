@@ -20,7 +20,9 @@ Imports: ruv,
     missForest,
     impute,
     softImpute,
-    irlba
+    irlba,
+    coda,
+    rstiefel
 Suggests: testthat,
     ashr,
     leapp
