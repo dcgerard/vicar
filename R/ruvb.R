@@ -1,10 +1,14 @@
 #' Bayesian version of Removing Unwanted Variation.
 #'
+#' Right now, this only allows you to use a uniform prior on the
+#' beta's. I plan on the future to allow you to input a function
+#' that's the prior.
+#'
 #' @inheritParams vruv4
-#' @param fa_func A function that takes as input a matrix names
-#'     \code{Y} that has missing values and returns a list of matrices
-#'     called \code{Yhat} where each matrix is the same dimension of
-#'     \code{Y} with the missing values filled in.
+#' @param fa_func A function that takes as input matrices named
+#'     \code{Y21}, \code{Y31}, \code{Y32}, and \code{k} and returns a
+#'     list, one of whose elements is called \code{Y22_array}. See
+#'     \code{\link{bsvd}} for an example function.
 #' @param fa_args A list of additional parameters to pass to
 #'     \code{fa_func}.
 #'
@@ -26,8 +30,10 @@
 #'
 #' @author David Gerard
 #'
+#' @seealso \code{\link{bsvd}}
+#'
 #' @export
-ruvb <- function(Y, X, ctl, k = NULL, fa_func, fa_args = list(),
+ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfl, fa_args = list(),
                  cov_of_interest = ncol(X), include_intercept = TRUE) {
 
     assertthat::assert_that(is.matrix(Y))
@@ -62,18 +68,39 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func, fa_args = list(),
     ncontrols <- sum(ctl)
     ncovariates <- length(cov_of_interest)
 
-    Ytilde <- matrix(NA, nrow = nrow(Y21) + nrow(Y31), ncol = ncol(Y21) + ncol(Y22))
-    Ytilde[1:ncovariates, 1:ncontrols] <- Y21
-    Ytilde[(ncovariates + 1):nrow(Ytilde), 1:ncontrols] <- Y31
-    Ytilde[(ncovariates + 1):nrow(Ytilde), (ncontrols + 1):ncol(Ytilde)] <- Y32
+
+    fa_args$Y21 <- Y21
+    fa_args$Y31 <- Y31
+    fa_args$Y32 <- Y32
+    fa_args$k   <- k
+    faout <- do.call(what = fa_func, args = fa_args)
 
     R22inv <- backsolve(R22, diag(nrow(R22)))
 
+    betahat_post <- array(NA, dim = dim(faout$Y22_array))
+    for (index in 1:dim(betahat_post)[3]) {
+        betahat_post[, , index] <- R22inv %*% (Y22 - faout$Y22_array[, , index])
+    }
 
-
-    return()
+    return_list <- list()
+    return_list$posterior_means   <- apply(betahat_post, c(1, 2), mean)
+    return_list$posterior_medians <- apply(betahat_post, c(1, 2), stats::median)
+    return_list$posterior_upper   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.975))
+    return_list$posterior_lower   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.025))
+    return_list$lfsr              <- apply(betahat_post, c(1, 2), calc_lfsr)
+    return(return_list)
 }
 
+#' Empirical estimate of lfsr based on posterior samples.
+#'
+#' @param y A vector of posterior draws.
+#'
+#' @author David Gerard
+calc_lfsr <- function(y) {
+    nless <- sum(y < 0)
+    lfsr <- min(nless, length(y) - nless) / length(y)
+    return(lfsr)
+}
 
 #' Gibbs sampler for Bayesian SVD.
 #'
@@ -176,30 +203,39 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 
     ## Run the Gibbs sampler --------------------------------------------------
 
-    Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, round(nsamp / keep) + 1))
-    Y22_array[, , 1] <- Y22_current
-    keep_index <- 2
-    mu_psi_phi <- matrix(NA, nrow = round(nsamp / keep) + 1, ncol = 3)
-    mu_psi_phi[1, ] <- c(mu_current, psi_current, phi_current)
-    plot_iters <- round(seq(0, 1, by = 0.01) * nsamp)
+    Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, floor((nsamp - burnin) / keep)))
+    keep_index <- 1
+    mu_psi_phi <- matrix(NA, nrow = floor((nsamp - burnin) / keep), ncol = 3)
+    plot_iters <- round(seq(0.01, 1, by = 0.01) * nsamp)
     if (print_update) {
         cat("Progress:\n")
         pb <- utils::txtProgressBar(style = 3)
     }
     for (gindex in 1:nsamp) {
+
         if (print_update) {
             utils::setTxtProgressBar(pb = pb, value = gindex / nsamp)
         }
-        ## Update U --------------------------------------
-        Cmat <- Yxi %*% sweep(v_current, 2, delta_current, `*`)
-        u_current <- rstiefel::rmf.matrix.gibbs(M = Cmat, X = u_current)
 
-        ## Update V --------------------------------------
-        Cmat <- crossprod(Yxi, sweep(u_current, 2, delta_current, `*`))
-        v_current <- rstiefel::rbmf.matrix.gibbs(A = diag(xi_current),
-                                                 B = diag(-delta_current / 2),
-                                                 C = Cmat,
-                                                 X = v_current)
+
+        ## skip the first few iterations so that we can get to something more stable.
+        if (gindex >= nsamp / 10) {
+            ## Update U --------------------------------------
+            Cmat <- Yxi %*% sweep(v_current, 2, delta_current, `*`)
+            u_current <- rstiefel::rmf.matrix.gibbs(M = Cmat, X = u_current)
+
+
+            ## Update V --------------------------------------
+            Cmat <- crossprod(Yxi, sweep(u_current, 2, delta_current, `*`))
+            dmax <- max(delta_current ^ 2) / 2
+            ximax <- max(xi_current)
+            new_mult <- sqrt(abs(dmax) * ximax)
+            v_current <- rstiefel::rbmf.matrix.gibbs(A = diag(xi_current * (new_mult / ximax)),
+                                                     B = diag(-(abs(delta_current) ^ 2) *
+                                                              (new_mult / (2 * dmax))),
+                                                     C = Cmat,
+                                                     X = v_current)
+        }
 
         ## Update delta ----------------------------------
         for (rindex in 1:k) {
@@ -226,8 +262,8 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
         phi_current <- stats::rgamma(n = 1, shape = phi_shape, rate = phi_rate)
 
         ## Update psi ------------------------------------
-        psi_rate    <- (k + eta_0) / 2
-        psi_shape   <- (eta_0 * tau_0 + sum((delta_current - mu_current) ^ 2)) / 2
+        psi_shape   <- (k + eta_0) / 2
+        psi_rate    <- (eta_0 * tau_0 + sum((delta_current - mu_current) ^ 2)) / 2
         psi_current <- stats::rgamma(n = 1, shape = psi_shape, rate = psi_rate)
 
         ## Update mu -------------------------------------
@@ -241,7 +277,9 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
                            1 / sqrt(xi_current[(ncontrols + 1):p]), `*`)
         Y22_current <- Y22_mean + Y22_error
 
-        if (gindex %% keep == 0) {
+        Y_current[1:ncovs, (ncontrols + 1):p] <- Y22_current
+
+        if ((gindex - burnin) %% keep == 0 & gindex > burnin) {
             Y22_array[, , keep_index] <- Y22_current
             mu_psi_phi[keep_index, 1] <- mu_current
             mu_psi_phi[keep_index, 2] <- psi_current
@@ -250,7 +288,7 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
         }
 
         if (gindex %in% plot_iters) {
-            if (plot_update) {
+            if (plot_update & gindex > burnin + keep) {
                 graphics::par(mfrow = c(3, 1))
                 graphics::plot(mu_psi_phi[, 1], type = "l", ylab = expression(mu))
                 graphics::plot(mu_psi_phi[, 2], type = "l", ylab = expression(psi))
@@ -263,9 +301,178 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
         cat("\nComplete!\n")
     }
 
-
     nmpp <- apply(mu_psi_phi, 2, coda::effectiveSize)
     ny22 <- apply(Y22_array, c(1, 2), coda::effectiveSize)
     return(list(Y22_array = Y22_array, mu_psi_phi = mu_psi_phi, neff_y22 = ny22,
                 neff_mu_psi_phi = nmpp))
+}
+
+#' Simple Bayesian low rank matrix decomposition.
+#'
+#' "bfl" = "Bayesian factor loading"
+#'
+#' This is as simple as they come. I put normal priors on the loadings
+#' and factors and gamma priors on the precisions.
+#'
+#' @inheritParams em_miss
+#' @param nsamp A positive integer. The number of samples to draw.
+#' @param burnin A positive integer. The number of early samples to
+#'     discard.
+#' @param keep A positive integer. We will same the updates of
+#'     \code{Y22} every \code{keep} iteration of the Gibbs sampler.
+#' @param print_update A logical. Should we print a text progress bar
+#'     to keep track of the Gibbs sampler (\code{TRUE}) or not
+#'     (\code{FALSE})?
+#' @param plot_update A logical. Should we make some plots to keep
+#'     track of the Gibbs sampler (\code{TRUE}) or not (\code{FALSE})?
+#'
+#' @export
+#'
+#' @author David Gerard
+#'
+bfl <- function(Y21, Y31, Y32, k, nsamp = 10000,
+                 burnin = round(nsamp / 4), keep = 20,
+                 print_update = TRUE,
+                 plot_update = FALSE) {
+
+    assertthat::are_equal(ncol(Y21), ncol(Y31))
+    assertthat::are_equal(nrow(Y31), nrow(Y32))
+    ncovs <- nrow(Y21)
+    ncontrols <- ncol(Y21)
+    n <- nrow(Y21) + nrow(Y31)
+    p <- ncol(Y31) + ncol(Y32)
+
+    ## Get initial values and set hyper parameters----------------------
+    pcout <- pca_naive(cbind(Y31, Y32), r = k)
+    sig_diag <- pcout$sig_diag
+    alpha <- t(pcout$alpha)
+    Z3 <- pcout$Z
+    shrunk_var <- limma::squeezeVar(sig_diag, df = n - ncovs - k)$var.post
+    shrunk_var_c <- shrunk_var[1:ncontrols]
+    alpha_c    <- alpha[, 1:ncontrols, drop = FALSE]
+    Z2 <- tcrossprod(sweep(Y21, 2, 1 / shrunk_var_c, `*`), alpha_c) %*%
+        solve(tcrossprod(sweep(alpha_c, 2, 1 / sqrt(shrunk_var_c), `*`)))
+    Y22init <- Z2 %*% alpha[, (ncontrols + 1):p, drop = FALSE]
+    Zinit <- rbind(Z2, Z3)
+    fnorm_z <- sum(Zinit ^ 2)
+    fnorm_alpha <- sum(alpha ^ 2)
+    Linit <- Zinit * (prod(dim(Zinit)) / fnorm_z)
+    Finit <- alpha * (prod(dim(alpha)) / fnorm_alpha)
+    psi_init <- fnorm_z * fnorm_alpha / (prod(dim(Zinit)) * prod(dim(alpha)))
+    xi_init  <- 1 / shrunk_var
+    phi_init <- mean(xi_init)
+
+
+    rho_0 <- 2
+    alpha_0 <- 2
+    beta_0 <- 1
+    eta_0 <- 2
+    tau_0 <- 1
+
+    xi_current    <- xi_init
+    phi_current   <- phi_init
+    psi_current   <- psi_init
+    L_current     <- Linit
+    F_current     <- Finit
+    Y22_current   <- Y22init
+    Y_current     <- rbind(cbind(Y21, Y22_current), cbind(Y31, Y32))
+
+
+    ## Run the Gibbs sampler --------------------------------------------------
+    Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, floor((nsamp - burnin) / keep)))
+    keep_index <- 1
+    psi_phi <- matrix(NA, nrow = floor((nsamp - burnin) / keep), ncol = 2)
+    xi_mat <- matrix(NA, nrow = floor((nsamp - burnin) / keep), ncol = p)
+    plot_iters <- round(seq(0.01, 1, by = 0.01) * nsamp)
+    if (print_update) {
+        cat("Progress:\n")
+        pb <- utils::txtProgressBar(style = 3)
+    }
+    for (gindex in 1:nsamp) {
+        if (print_update) {
+            utils::setTxtProgressBar(pb = pb, value = gindex / nsamp)
+        }
+
+        ## Update L ----------------------------------------------------
+        Fsig <- sweep(F_current, 2, xi_current, `*`)
+        eigen_fsf <- eigen(tcrossprod(Fsig, F_current) + diag(k), symmetric = TRUE)
+
+        L_meanmat <- tcrossprod(sweep(Y_current, 2, xi_current, `*`), F_current) %*%
+            tcrossprod(sweep(eigen_fsf$vectors, 2, 1 / eigen_fsf$values, `*`),
+                       eigen_fsf$vectors)
+
+        col_cov_half <- tcrossprod(sweep(eigen_fsf$vectors, 2, 1 / sqrt(eigen_fsf$values), `*`),
+                                   eigen_fsf$vectors)
+        L_current <- L_meanmat +
+            matrix(stats::rnorm(prod(dim(L_current))), nrow = nrow(L_current)) %*% col_cov_half
+
+        ## Should equal
+        ## Y_current %*% diag(xi_current) %*% t(F_current) %*%
+        ##     solve(tcrossprod(Fsig, F_current) + diag(k))
+        ## L_meanmat
+
+        ## Update F ----------------------------------------------------
+
+        eigen_ll <- eigen(crossprod(L_current) + diag(psi_current, k), symmetric = TRUE)
+        F_meanmat <- tcrossprod(sweep(eigen_ll$vectors, 2, 1 / eigen_ll$values, `*`),
+                                eigen_ll$vectors) %*% crossprod(L_current, Y_current)
+        row_cov_half <- tcrossprod(sweep(eigen_ll$vectors, 2, 1 / sqrt(eigen_ll$values), `*`),
+                                   eigen_ll$vectors)
+        F_error <- row_cov_half %*% sweep(matrix(stats::rnorm(prod(dim(F_current))),
+                                                 nrow = nrow(F_current)),
+                                          2, 1 / sqrt(xi_current), `*`)
+        F_current <- F_meanmat + F_error
+
+        ## Should be equal
+        ## solve(t(L_current) %*% L_current + psi_current * diag(k)) %*% t(L_current) %*% Y_current
+        ## F_meanmat
+
+        ## Update xi -----------------------------------------------------
+        theta_current <- L_current %*% F_current
+        r_vec <- colSums((Y_current - theta_current) ^ 2)
+        s_vec <- colSums(F_current ^ 2)
+        xi_shape <- (n + k + rho_0) / 2
+        xi_rate  <- (r_vec + s_vec + rho_0 * phi_current) / 2
+        xi_current <- sapply(xi_rate, FUN = stats::rgamma, n = 1, shape = xi_shape)
+
+        ## Update phi ----------------------------------------------------
+        phi_shape   <- (p * rho_0 + alpha_0) / 2
+        phi_rate    <- (alpha_0 * beta_0 + rho_0 * sum(xi_current)) / 2
+        phi_current <- stats::rgamma(n = 1, shape = phi_shape, rate = phi_rate)
+
+        ## Update psi ----------------------------------------------------
+        psi_shape <- (p * k + eta_0) / 2
+        psi_rate <- (eta_0 * tau_0 + sum(sweep(F_current, 2, sqrt(xi_current), `*`) ^ 2)) / 2
+        ## sum(diag(F_current %*% diag(xi_current) %*% t(F_current)))
+        psi_current <- stats::rgamma(n = 1, shape = psi_shape, rate = psi_rate)
+
+        ## Update Y22 ------------------------------------
+        Y22_mean <- theta_current[1:ncovs, (ncontrols + 1):p, drop = FALSE]
+        Y22_error <- sweep(matrix(stats::rnorm(n = ncovs * (p - ncontrols)), nrow = ncovs), 2,
+                           1 / sqrt(xi_current[(ncontrols + 1):p]), `*`)
+        Y22_current <- Y22_mean + Y22_error
+        Y_current[1:ncovs, (ncontrols + 1):p] <- Y22_current
+
+        if ((gindex - burnin) %% keep == 0 & gindex > burnin) {
+            Y22_array[, , keep_index] <- Y22_current
+            psi_phi[keep_index, 1] <- psi_current
+            psi_phi[keep_index, 2] <- phi_current
+            xi_mat[keep_index,] <- xi_current
+            keep_index <- keep_index + 1
+        }
+
+        if (gindex %in% plot_iters) {
+            if (plot_update & gindex > burnin + keep) {
+                graphics::par(mfrow = c(2, 1))
+                graphics::plot(psi_phi[, 1], type = "l", ylab = expression(psi))
+                graphics::plot(psi_phi[, 2], type = "l", ylab = expression(phi))
+                graphics::par(mfrow = c(1, 1))
+            }
+        }
+    }
+    if (print_update) {
+        cat("\nComplete!\n")
+    }
+
+    return(list(Y22_array = Y22_array, psi_phi = psi_phi, xi_mat = xi_mat))
 }

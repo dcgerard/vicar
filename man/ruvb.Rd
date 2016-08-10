@@ -4,7 +4,7 @@
 \alias{ruvb}
 \title{Bayesian version of Removing Unwanted Variation.}
 \usage{
-ruvb(Y, X, ctl, k = NULL, fa_func, fa_args = list(),
+ruvb(Y, X, ctl, k = NULL, fa_func = bfl, fa_args = list(),
   cov_of_interest = ncol(X), include_intercept = TRUE)
 }
 \arguments{
@@ -25,10 +25,10 @@ installed, then this function will estimate the number of
 hidden confounders using the methods of Buja and Eyuboglu
 (1992).}
 
-\item{fa_func}{A function that takes as input a matrix names
-\code{Y} that has missing values and returns a list of matrices
-called \code{Yhat} where each matrix is the same dimension of
-\code{Y} with the missing values filled in.}
+\item{fa_func}{A function that takes as input matrices named
+\code{Y21}, \code{Y31}, \code{Y32}, and \code{k} and returns a
+list, one of whose elements is called \code{Y22_array}. See
+\code{\link{bsvd}} for an example function.}
 
 \item{fa_args}{A list of additional parameters to pass to
 \code{fa_func}.}
@@ -60,9 +60,14 @@ will be unchanged.}
     the "p-values" of \code{tstats} (but not really).
 }
 \description{
-Bayesian version of Removing Unwanted Variation.
+Right now, this only allows you to use a uniform prior on the
+beta's. I plan on the future to allow you to input a function
+that's the prior.
 }
 \author{
 David Gerard
+}
+\seealso{
+\code{\link{bsvd}}
 }
 
