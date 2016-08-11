@@ -5,7 +5,8 @@
 \title{Simple Bayesian low rank matrix decomposition.}
 \usage{
 bfl(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4), keep = 20,
-  print_update = TRUE, plot_update = FALSE)
+  print_update = TRUE, plot_update = FALSE, rho_0 = 0.1, alpha_0 = 0.1,
+  beta_0 = 1, eta_0 = 0.1, tau_0 = 1)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}
@@ -30,13 +31,24 @@ to keep track of the Gibbs sampler (\code{TRUE}) or not
 
 \item{plot_update}{A logical. Should we make some plots to keep
 track of the Gibbs sampler (\code{TRUE}) or not (\code{FALSE})?}
+
+\item{rho_0}{A scalar. The prior "sample size" for the precisions.}
+
+\item{alpha_0}{A scalar. The prior "sample size" for the mean of the precisions.}
+
+\item{beta_0}{A scalar. The prior mean of the precisions.}
+
+\item{eta_0}{A scalar. The prior "sample size" for the scale of the mean matrix.}
+
+\item{tau_0}{A scalar. The prior mean of the scale of the mean matrix.}
 }
 \description{
 "bfl" = "Bayesian factor loading"
 }
 \details{
 This is as simple as they come. I put normal priors on the loadings
-and factors and gamma priors on the precisions.
+and factors and gamma priors on the precisions. The hyperparameters
+are set to provide weak prior information by default.
 }
 \author{
 David Gerard

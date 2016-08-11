@@ -66,8 +66,8 @@ test_that("See if RUV3 returns correct OLS estimates and matches vruv2", {
 test_that("bfl works OK", {
     set.seed(81)
     n <- 11
-    p <- 53
-    ncontrols <- 11
+    p <- 13
+    ncontrols <- 7
     k <- 2
     ncovs <- 3
 

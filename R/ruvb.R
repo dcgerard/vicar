@@ -219,23 +219,21 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 
 
         ## skip the first few iterations so that we can get to something more stable.
-        if (gindex >= nsamp / 10) {
-            ## Update U --------------------------------------
-            Cmat <- Yxi %*% sweep(v_current, 2, delta_current, `*`)
-            u_current <- rstiefel::rmf.matrix.gibbs(M = Cmat, X = u_current)
+        ## Update U --------------------------------------
+        Cmat <- Yxi %*% sweep(v_current, 2, delta_current, `*`)
+        u_current <- rstiefel::rmf.matrix.gibbs(M = Cmat, X = u_current)
 
+        ## Update V --------------------------------------
+        Cmat <- crossprod(Yxi, sweep(u_current, 2, delta_current, `*`))
+        dmax <- max(delta_current ^ 2) / 2
+        ximax <- max(xi_current)
+        new_mult <- sqrt(abs(dmax) * ximax)
 
-            ## Update V --------------------------------------
-            Cmat <- crossprod(Yxi, sweep(u_current, 2, delta_current, `*`))
-            dmax <- max(delta_current ^ 2) / 2
-            ximax <- max(xi_current)
-            new_mult <- sqrt(abs(dmax) * ximax)
-            v_current <- rstiefel::rbmf.matrix.gibbs(A = diag(xi_current * (new_mult / ximax)),
-                                                     B = diag(-(abs(delta_current) ^ 2) *
-                                                              (new_mult / (2 * dmax))),
-                                                     C = Cmat,
-                                                     X = v_current)
-        }
+        v_current <- rstiefel::rbmf.matrix.gibbs(A = diag(xi_current * (new_mult / ximax)),
+                                                 B = diag(-(abs(delta_current) ^ 2) *
+                                                          (new_mult / (2 * dmax))),
+                                                 C = Cmat,
+                                                 X = v_current)
 
         ## Update delta ----------------------------------
         for (rindex in 1:k) {
@@ -312,7 +310,8 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #' "bfl" = "Bayesian factor loading"
 #'
 #' This is as simple as they come. I put normal priors on the loadings
-#' and factors and gamma priors on the precisions.
+#' and factors and gamma priors on the precisions. The hyperparameters
+#' are set to provide weak prior information by default.
 #'
 #' @inheritParams em_miss
 #' @param nsamp A positive integer. The number of samples to draw.
@@ -325,15 +324,23 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #'     (\code{FALSE})?
 #' @param plot_update A logical. Should we make some plots to keep
 #'     track of the Gibbs sampler (\code{TRUE}) or not (\code{FALSE})?
+#' @param rho_0 A scalar. The prior "sample size" for the precisions.
+#' @param alpha_0 A scalar. The prior "sample size" for the mean of the precisions.
+#' @param beta_0 A scalar. The prior mean of the precisions.
+#' @param eta_0 A scalar. The prior "sample size" for the scale of the mean matrix.
+#' @param tau_0 A scalar. The prior mean of the scale of the mean matrix.
 #'
 #' @export
 #'
 #' @author David Gerard
 #'
 bfl <- function(Y21, Y31, Y32, k, nsamp = 10000,
-                 burnin = round(nsamp / 4), keep = 20,
-                 print_update = TRUE,
-                 plot_update = FALSE) {
+                burnin = round(nsamp / 4), keep = 20,
+                print_update = TRUE,
+                plot_update = FALSE,
+                rho_0 = 0.1, alpha_0 = 0.1,
+                beta_0 = 1, eta_0 = 0.1,
+                tau_0 = 1) {
 
     assertthat::are_equal(ncol(Y21), ncol(Y31))
     assertthat::are_equal(nrow(Y31), nrow(Y32))
@@ -361,13 +368,6 @@ bfl <- function(Y21, Y31, Y32, k, nsamp = 10000,
     psi_init <- fnorm_z * fnorm_alpha / (prod(dim(Zinit)) * prod(dim(alpha)))
     xi_init  <- 1 / shrunk_var
     phi_init <- mean(xi_init)
-
-
-    rho_0 <- 2
-    alpha_0 <- 2
-    beta_0 <- 1
-    eta_0 <- 2
-    tau_0 <- 1
 
     xi_current    <- xi_init
     phi_current   <- phi_init
