@@ -121,3 +121,26 @@ test_that("ruvimpute returns RUV2, RUV3, and RUV4", {
 
 }
 )
+
+
+test_that("Using em_miss in RUVimpute gets variance estimates", {
+    set.seed(998)
+    n <- 17
+    p <- 103
+    k <- 5
+    q <- 3
+
+    X <- matrix(rnorm(n * q), nrow = n)
+    beta <- matrix(rnorm(q * p), nrow = q)
+    Z <- matrix(rnorm(n * k), nrow = n)
+    alpha <- matrix(rnorm(k * p), nrow = k)
+    E <- matrix(rnorm(n * p), nrow = n)
+    Y <- X %*% beta + Z %*% alpha + E
+    ctl <- rep(FALSE, length = p)
+    ctl[1:13] <- TRUE
+    cov_of_interest <- 2:3
+
+    emout <- ruvem(Y = Y, X = X, ctl = ctl, k = k, cov_of_interest = cov_of_interest)
+
+}
+)

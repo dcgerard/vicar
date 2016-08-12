@@ -19,7 +19,7 @@
 em_miss <- function(Y21, Y31, Y32, k, gls = TRUE, init_type = c("ml", "pca")) {
 
     p <- ncol(Y31) + ncol(Y32)
-    
+
     init_type <- match.arg(init_type)
 
     if (is.null(Y21)) {
@@ -55,7 +55,7 @@ em_miss <- function(Y21, Y31, Y32, k, gls = TRUE, init_type = c("ml", "pca")) {
     sig_diag_final <- sqout$par[((k * p) + 1):length(sqout$par)]
     alpha_final <- matrix(sqout$par[1:(k * p)], nrow = k, ncol = p)
 
-    ## Estimate Z --------------------------------------------------------
+    ## Estimate Z2hat ------------------------------------------------------
     alpha_c <- alpha_final[, 1:ncol(Y21)]
     alpha_nc <- alpha_final[, (ncol(Y21) + 1):ncol(alpha_final)]
     sig_diag_c <- sig_diag_final[1:ncol(Y21)]
@@ -63,14 +63,26 @@ em_miss <- function(Y21, Y31, Y32, k, gls = TRUE, init_type = c("ml", "pca")) {
         ## Zhat <- Y21 %*% diag(1 / sig_diag_c) %*% t(alpha_c) %*%
         ##     solve(alpha_c %*% diag(1 / sig_diag_c) %*% t(alpha_c))
 
-        Zhat <- tcrossprod(sweep(Y21, 2, 1 / sig_diag_c, `*`), alpha_c) %*%
+        Z2hat <- tcrossprod(sweep(Y21, 2, 1 / sig_diag_c, `*`), alpha_c) %*%
             solve(tcrossprod(sweep(alpha_c, 2, 1 / sig_diag_c, `*`), alpha_c))
     } else {
-        Zhat <- tcrossprod(sweep(Y21, 2, 1 / sig_diag_c, `*`), alpha_c) %*%
+        Z2hat <- tcrossprod(sweep(Y21, 2, 1 / sig_diag_c, `*`), alpha_c) %*%
             solve(tcrossprod(sweep(alpha_c, 2, 1 / sig_diag_c, `*`), alpha_c) + diag(k))
     }
 
-    Y22hat <- Zhat %*% alpha_nc
+    Y22hat <- Z2hat %*% alpha_nc
+
+    ## Get Z3hat --------------------------------------------------------
+    if (gls) {
+        ## Zhat <- Y21 %*% diag(1 / sig_diag_c) %*% t(alpha_c) %*%
+        ##     solve(alpha_c %*% diag(1 / sig_diag_c) %*% t(alpha_c))
+        Z3hat <- tcrossprod(sweep(cbind(Y31, Y32), 2, 1 / sig_diag_final, `*`), alpha_final) %*%
+            solve(tcrossprod(sweep(alpha_final, 2, 1 / sig_diag_final, `*`), alpha_final))
+    } else {
+        Z3hat <- tcrossprod(sweep(cbind(Y31, Y32), 2, 1 / sig_diag_final, `*`), alpha_final) %*%
+            solve(tcrossprod(sweep(alpha_final, 2, 1 / sig_diag_final, `*`), alpha_final) + diag(k))
+    }
+    Zhat <- rbind(Z2hat, Z3hat)
 
     return(list(alpha = alpha_final, sig_diag = sig_diag_final, Z = Zhat, Y22hat = Y22hat))
 }
@@ -203,7 +215,7 @@ em_miss_obj_fast <- function(alpha_sigma, Y21, Y31, Y32, k) {
     if (any(sig_diag <= 0)) {
         return(-Inf)
     }
-    
+
     Y3 <- cbind(Y31, Y32)
 
 

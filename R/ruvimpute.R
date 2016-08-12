@@ -129,6 +129,131 @@ ruvimpute <- function(Y, X, ctl, k = NULL, impute_func = em_miss,
 }
 
 
+#' Same as ruvimpute but only does ruvem and comes up with estimates of standard errors.
+#'
+#' This is more friendly than \code{\link{ruvimpute}}.
+#'
+#' @inheritParams ruvimpute
+#' @param gls A logical. Should we use GLS (\code{TRUE}) or OLS
+#'     (\code{FALSE})?
+#' @author David Gerard
+#' @export
+#' @seealso \code{\link{ruvimpute}}, \code{\link{em_miss}}.
+ruvem <- function(Y, X, ctl, k = NULL, impute_args = list(),
+                  cov_of_interest = ncol(X), include_intercept = TRUE,
+                  gls = TRUE) {
+
+    assertthat::assert_that(is.matrix(Y))
+    assertthat::assert_that(is.numeric(Y))
+    assertthat::assert_that(is.matrix(X))
+    assertthat::assert_that(is.numeric(X))
+    assertthat::assert_that(is.vector(ctl))
+    assertthat::assert_that(is.logical(ctl))
+    assertthat::are_equal(ncol(Y), length(ctl))
+    assertthat::are_equal(nrow(Y), nrow(X))
+    assertthat::assert_that(all(cov_of_interest >= 1 & cov_of_interest <= ncol(X)))
+    assertthat::assert_that(is.logical(include_intercept))
+    assertthat::assert_that(is.list(impute_args))
+    assertthat::assert_that(is.null(impute_args$Y21))
+    assertthat::assert_that(is.null(impute_args$Y31))
+    assertthat::assert_that(is.null(impute_args$Y32))
+
+
+    rotate_out <- rotate_model(Y = Y, X = X, k = k, cov_of_interest =
+                               cov_of_interest, include_intercept =
+                               include_intercept, limmashrink = FALSE,
+                               do_factor = FALSE)
+
+    k <- rotate_out$k
+    ncontrols <- sum(ctl)
+
+    Y21 <- rotate_out$Y2[, ctl, drop = FALSE]
+    Y22 <- rotate_out$Y2[, !ctl, drop = FALSE]
+    Y31 <- rotate_out$Y3[, ctl, drop = FALSE]
+    Y32 <- rotate_out$Y3[, !ctl, drop = FALSE]
+    R22 <- rotate_out$R22
+
+    impute_args$Y21 <- Y21
+    impute_args$Y31 <- Y31
+    impute_args$Y32 <- Y32
+    impute_args$k   <- k
+    impute_args$gls <- TRUE
+    emout <- do.call(what = em_miss, args = impute_args)
+    Y22hat <- emout$Y22hat
+
+    R22inv <- backsolve(R22, diag(nrow(R22)))
+    beta2hat <- R22inv %*% (Y22 - Y22hat)
+
+    return_list <- list()
+    return_list$beta2hat <- beta2hat
+    betahat_long <- matrix(0, nrow = nrow(beta2hat), ncol = ncol(Y))
+    betahat_long[, !ctl] <- beta2hat
+    return_list$betahat_long <- betahat_long
+
+    alphahat_final <- matrix(NA, nrow = nrow(emout$alpha), ncol = ncol(emout$alpha))
+    alphahat_final[, ctl] <- emout$alpha[, 1:ncontrols]
+    alphahat_final[, !ctl] <- emout$alpha[, (ncontrols + 1):ncol(emout$alpha)]
+    sig_diag_final <- rep(NA, length = length(emout$sig_diag))
+    sig_diag_final[ctl] <- emout$sig_diag[1:ncontrols]
+    sig_diag_final[!ctl] <- emout$sig_diag[(ncontrols + 1):length(emout$sig_diag)]
+
+    ## betahat <- R22inv %*%
+    ##     (rotate_out$Y2 - emout$Z[1:length(cov_of_interest), , drop = FALSE] %*% alphahat_final)
+
+    ## Get Z1 hat ------------------------------------------------
+    Y1  <- rotate_out$Y1
+    if (!is.null(Y1)) {
+        R12 <- rotate_out$R12
+        R11 <- rotate_out$R11
+        Q   <- rotate_out$Q
+        beta1_ols <- solve(R11) %*% (Y1 - R12 %*% rotate_out$betahat_ols)
+        resid_top <- Y1 - R12 %*% betahat_long - R11 %*% beta1_ols
+        if (gls) {
+            Z1  <- solve(alphahat_final %*% diag(1 / sig_diag_final) %*% t(alphahat_final)) %*%
+                alphahat_final %*% diag(1 / sig_diag_final) %*% t(resid_top)
+        } else {
+            Z1  <- solve(alphahat_final %*%  t(alphahat_final)) %*% alphahat_final %*% t(resid_top)
+        }
+        Zhat <- Q %*% rbind(t(Z1), emout$Z)
+    } else {
+        Q   <- rotate_out$Q
+        Zhat <- Q %*% emout$Z
+    }
+
+    degrees_freedom   <- nrow(X) - ncol(X) - k
+    lmout             <- limma::squeezeVar(sig_diag_final[!ctl], df = degrees_freedom)
+    df_limma          <- degrees_freedom + lmout$df.prior
+    sigma_limma       <- rep(NA, length = length(sig_diag_final))
+    sigma_limma[!ctl] <- lmout$var.post
+
+    XZ                      <- cbind(X, Zhat)
+    mult_matrix             <- solve(t(XZ) %*% XZ)[cov_of_interest, cov_of_interest, drop = FALSE]
+    sebetahat               <- t(sqrt(outer(sig_diag_final, diag(mult_matrix), FUN = "*")))
+    sebetahat[, ctl]        <- NA
+    sebetahat_limma         <- t(sqrt(outer(sigma_limma, diag(mult_matrix), FUN = "*")))
+    sebetahat_limma[, ctl]  <- NA
+    tstats          <- betahat_long / sebetahat
+    tstats_limma    <- betahat_long / sebetahat_limma
+    pvalues         <- 2 * (stats::pt(q = -abs(tstats), df = degrees_freedom))
+    pvalues_limma   <- 2 * (stats::pt(q = -abs(tstats_limma), df = df_limma))
+
+    return_list$alphahat        <- alphahat_final
+    return_list$Zhat            <- Zhat
+    return_list$sebetahat       <- sebetahat
+    return_list$tstats          <- tstats
+    return_list$pvalues         <- pvalues
+    return_list$sebetahat_limma <- sebetahat_limma
+    return_list$tstats_limma    <- tstats_limma
+    return_list$pvalues_limma   <- pvalues_limma
+    return_list$XZ              <- XZ
+    return_list$mult_matrix     <- mult_matrix
+    return_list$df              <- degrees_freedom
+    return_list$df_limma        <- df_limma
+
+    return(return_list)
+}
+
+
 #' Constructs an overall matrix, then applies a given imputation function.
 #'
 #' @param Y21 A matrix of size k by m
