@@ -79,8 +79,10 @@ test_that("bfl works OK", {
     ##                  print_update = TRUE, plot_update = TRUE, nsamp = 1000, keep = 1)
 
     bfl_out <- bfl(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k,
-                   print_update = FALSE, plot_update = FALSE)
-    ##gdout <- gdfa(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k)
+                   print_update = FALSE, plot_update = FALSE,
+                   nsamp = 100, keep = 1)
+    gdout <- gdfa(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k, nsamp = 100,
+                  keep = 1, print_update = FALSE)
     expect_equal(dim(bfl_out$Y22_array)[1:2], c(ncovs, p - ncontrols))
 
     ## hist(bfl_out$xi_mat[, 1])

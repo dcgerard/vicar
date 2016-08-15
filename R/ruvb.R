@@ -33,7 +33,7 @@
 #' @seealso \code{\link{bsvd}}
 #'
 #' @export
-ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfl, fa_args = list(),
+ruvb <- function(Y, X, ctl, k = NULL, fa_func = gdfa, fa_args = list(),
                  cov_of_interest = ncol(X), include_intercept = TRUE) {
 
     assertthat::assert_that(is.matrix(Y))
