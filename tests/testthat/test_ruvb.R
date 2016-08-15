@@ -65,10 +65,10 @@ test_that("See if RUV3 returns correct OLS estimates and matches vruv2", {
 
 test_that("bfl works OK", {
     set.seed(81)
-    n <- 11
-    p <- 13
+    n <- 9
+    p <- 11
     ncontrols <- 7
-    k <- 2
+    k <- 1
     ncovs <- 3
 
     Y21 <- matrix(rnorm(ncovs * ncontrols), nrow = ncovs)
@@ -79,8 +79,8 @@ test_that("bfl works OK", {
     ##                  print_update = TRUE, plot_update = TRUE, nsamp = 1000, keep = 1)
 
     bfl_out <- bfl(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k,
-                   print_update = FALSE, plot_update = FALSE,
-                   nsamp = 100, keep = 1)
+                   print_update = FALSE, plot_update = FALSE)
+    ##gdout <- gdfa(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k)
     expect_equal(dim(bfl_out$Y22_array)[1:2], c(ncovs, p - ncontrols))
 
     ## hist(bfl_out$xi_mat[, 1])

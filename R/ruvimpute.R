@@ -283,13 +283,13 @@ impute_block <- function(Y21, Y31, Y32, impute_func,
 
     p <- ncol(Y31) + ncol(Y32)
     n <- nrow(Y21) + nrow(Y31)
-    m <- ncol(Y21)
-    k <- nrow(Y21)
+    ncontrols <- ncol(Y21)
+    ncovs <- nrow(Y21)
 
     Y                       <- matrix(NA, nrow = n, ncol = p)
-    Y[1:k, 1:m]             <- Y21
-    Y[(k + 1):n, 1:m]       <- Y31
-    Y[(k + 1):n, (m + 1):p] <- Y32
+    Y[1:ncovs, 1:ncontrols]             <- Y21
+    Y[(ncovs + 1):n, 1:ncontrols]       <- Y31
+    Y[(ncovs + 1):n, (ncontrols + 1):p] <- Y32
 
     impute_args$Y <- Y
     impout <- do.call(what = impute_func, args = impute_args)
@@ -305,12 +305,9 @@ impute_block <- function(Y21, Y31, Y32, impute_func,
     assertthat::assert_that(is.matrix(Yhat))
     assertthat::are_equal(dim(Yhat), dim(Y))
 
-    Y22hat <- Yhat[1:k, (m + 1):p, drop = FALSE]
+    Y22hat <- Yhat[1:ncovs, (ncontrols + 1):p, drop = FALSE]
     return(list(Y22hat = Y22hat, sig_diag = sig_diag))
 }
-
-
-
 
 
 

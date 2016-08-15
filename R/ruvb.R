@@ -476,3 +476,246 @@ bfl <- function(Y21, Y31, Y32, k, nsamp = 10000,
 
     return(list(Y22_array = Y22_array, psi_phi = psi_phi, xi_mat = xi_mat))
 }
+
+
+
+
+#' Better Bayesian factor analysis.
+#'
+#' Similar to that of Ghosh and Dunson (2009).
+#'
+#'
+#' @inheritParams em_miss
+#' @param nsamp A positive integer. The number of samples to draw.
+#' @param burnin A positive integer. The number of early samples to
+#'     discard.
+#' @param keep A positive integer. We will same the updates of
+#'     \code{Y22} every \code{keep} iteration of the Gibbs sampler.
+#' @param print_update A logical. Should we print a text progress bar
+#'     to keep track of the Gibbs sampler (\code{TRUE}) or not
+#'     (\code{FALSE})?
+#' @param plot_update A logical. Should we make some plots to keep
+#'     track of the Gibbs sampler (\code{TRUE}) or not (\code{FALSE})?
+#' @param hetero_factors A logical. Should we assign colum-specific
+#'     variances for the factors (\code{TRUE}) or not (\code{FALSE})?
+#' @param rho_0 The prior sample size for column-specific the
+#'     precisions.
+#' @param alpha_0 The prior sample size for the mean of the
+#'     column-specific precisions.
+#' @param beta_0 The prior mean of the mean of the column-specific
+#'     precisions.
+#' @param eta_0 The prior sample size of the expanded parameters.
+#' @param tau_0 The prior mean of of the expanded parameters.
+#' @param delta_0 The prior sample size of the column-specific
+#'     precisions of the factors.
+#' @param lambda_0 The prior sample size of the mean of the
+#'     column-specific precisions of the factors.
+#' @param nu_0 The prior mean of the mean of the column-specific
+#'     precisions of the factors.
+#'
+#' @export
+#'
+#' @author David Gerard
+#'
+#' @references Ghosh, Joyee, and David
+#'     B. Dunson. "Default prior distributions and efficient posterior
+#'     computation in Bayesian factor analysis."
+#'     Journal of Computational and Graphical Statistics 18.2 (2009):
+#'     306-320.
+gdfa <- function(Y21, Y31, Y32, k, nsamp = 10000,
+                 burnin = round(nsamp / 4), keep = 20,
+                 print_update = TRUE, plot_update = FALSE,
+                 hetero_factors = FALSE, rho_0 = 0.1, alpha_0 = 0.1,
+                 delta_0 = 0.1, lambda_0 = 0.1, nu_0 = 1, beta_0 = 1,
+                 eta_0 = 1, tau_0 = 1) {
+
+    assertthat::are_equal(ncol(Y21), ncol(Y31))
+    assertthat::are_equal(nrow(Y31), nrow(Y32))
+    ncovs <- nrow(Y21)
+    ncontrols <- ncol(Y21)
+    n <- nrow(Y21) + nrow(Y31)
+    p <- ncol(Y31) + ncol(Y32)
+
+    ## Get initial values and set hyper parameters----------------------
+    pcout <- pca_naive(cbind(Y31, Y32), r = k)
+    sig_diag <- pcout$sig_diag
+    alpha <- t(pcout$alpha)
+    Z3 <- pcout$Z
+    shrunk_var <- limma::squeezeVar(sig_diag, df = n - ncovs - k)$var.post
+    shrunk_var_c <- shrunk_var[1:ncontrols]
+    alpha_c    <- alpha[, 1:ncontrols, drop = FALSE]
+    Z2 <- tcrossprod(sweep(Y21, 2, 1 / shrunk_var_c, `*`), alpha_c) %*%
+        solve(tcrossprod(sweep(alpha_c, 2, 1 / sqrt(shrunk_var_c), `*`)))
+    Y22init <- Z2 %*% alpha[, (ncontrols + 1):p, drop = FALSE]
+    Zinit <- rbind(Z2, Z3)
+    fnorm_z <- sum(Zinit ^ 2)
+    fnorm_alpha <- sum(alpha ^ 2)
+    Linit <- Zinit * (prod(dim(Zinit)) / fnorm_z)
+    Finit <- alpha * (prod(dim(alpha)) / fnorm_alpha)
+
+    if (hetero_factors) {
+        theta_init <- 1 / limma::squeezeVar(colMeans(Finit ^ 2), df = k)$var.post
+        kappa_init <- mean(theta_init)
+    } else {
+        theta_init <- rep(1, length = p)
+        kappa_init <- 1
+    }
+
+    xi_init <- 1 / shrunk_var
+    phi_init <- mean(xi_init)
+
+    zeta_init <- 1 / limma::squeezeVar(colMeans(Linit ^ 2), df = k)$var.post
+
+    L_current     <- Linit
+    F_current     <- Finit
+    xi_current    <- xi_init
+    phi_current   <- phi_init
+    zeta_current  <- zeta_init
+    theta_current <- theta_init
+    kappa_current <- kappa_init
+    Y22_current   <- Y22init
+    Y_current     <- rbind(cbind(Y21, Y22_current), cbind(Y31, Y32))
+
+    ## Gibbs Sampler ---------------------------------------------------------
+    Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, floor((nsamp - burnin) / keep)))
+    keep_index <- 1
+    plot_iters <- round(seq(0.01, 1, by = 0.01) * nsamp)
+    if (print_update) {
+        cat("Progress:\n")
+        pb <- utils::txtProgressBar(style = 3)
+    }
+    for (gindex in 1:nsamp) {
+        if (print_update) {
+            utils::setTxtProgressBar(pb = pb, value = gindex / nsamp)
+        }
+
+        ## Update L ----------------------------------------------------
+        Fsig <- sweep(F_current, 2, xi_current, `*`)
+        eigen_fsf <- eigen(tcrossprod(Fsig, F_current) +
+                           diag(x = zeta_current, nrow = length(zeta_current),
+                                ncol = length(zeta_current)), symmetric = TRUE)
+
+        L_meanmat <- tcrossprod(sweep(Y_current, 2, xi_current, `*`), F_current) %*%
+            tcrossprod(sweep(eigen_fsf$vectors, 2, 1 / eigen_fsf$values, `*`),
+                       eigen_fsf$vectors)
+
+        col_cov_half <- tcrossprod(sweep(eigen_fsf$vectors, 2, 1 / sqrt(eigen_fsf$values), `*`),
+                                   eigen_fsf$vectors)
+        L_current <- L_meanmat +
+            matrix(stats::rnorm(prod(dim(L_current))), nrow = nrow(L_current)) %*% col_cov_half
+
+        ## Update F ---------------------------------------------------
+        ltl <- crossprod(L_current)
+        LY <- crossprod(L_current, Y_current)
+        if (k == 1) {
+            F_current <- matrix(mapply(LY, xi_current, theta_current, FUN = update_f,
+                                       MoreArgs = list(ltl = ltl)), nrow = 1)
+            ## F_current <- matrix(apply(rbind(LY, xi_current, theta_current),
+            ##                           MARGIN = 2, FUN = update_f2, ltl = ltl),
+            ##                     nrow = 1)
+        } else {
+            F_current <- mapply(split(LY, col(LY)), xi_current, theta_current, FUN = update_f,
+                                MoreArgs = list(ltl = ltl))
+            ## F_current <- apply(rbind(LY, xi_current, theta_current),
+            ##                    MARGIN = 2, FUN = update_f2, ltl = ltl)
+        }
+
+        ## Update xi ---------------------------------------------------------
+        mean_current <- L_current %*% F_current
+
+        r_vec <- colSums((Y_current - mean_current) ^ 2)
+        ## should equal this
+        ## diag(t(Y_current - mean_current) %*% (Y_current - mean_current))
+
+        xi_shape <- (n + rho_0) / 2
+        xi_rate  <- (r_vec + rho_0 * phi_current) / 2
+
+        xi_current <- sapply(xi_rate, stats::rgamma, n = 1, shape = xi_shape)
+
+        ## update phi --------------------------------------------------------
+        phi_shape <- (p * rho_0 + alpha_0) / 2
+        phi_rate  <- (alpha_0 * beta_0 + rho_0 * sum(xi_current)) / 2
+        phi_current <- stats::rgamma(n = 1, shape = phi_shape, rate = phi_rate)
+
+        ## Update zeta -------------------------------------------------------
+        s_vec <- colSums(L_current ^ 2)
+        zeta_shape <- (n + eta_0) / 2
+        zeta_rate  <- (s_vec + eta_0 * tau_0) / 2
+        zeta_current <- sapply(zeta_rate, stats::rgamma, n = 1, shape = zeta_shape)
+
+        if (hetero_factors) {
+            ## Update theta --------------------------------------------------
+            u_vec <- colSums(F_current ^ 2)
+            theta_shape <- (k + delta_0) / 2
+            theta_rate  <- (u_vec + delta_0 * kappa_current) / 2
+            theta_current <- sapply(theta_rate, stats::rgamma, n = 1, shape = theta_shape)
+
+            ## Update kappa --------------------------------------------------
+            kappa_shape <- (p * delta_0 + lambda_0) / 2
+            kappa_rate  <- (lambda_0 * nu_0 + delta_0 * sum(theta_current)) / 2
+            kappa_current <- stats::rgamma(n = 1, shape = kappa_shape, rate = kappa_rate)
+        }
+        ## Update Y22 ------------------------------------
+        Y22_mean <- mean_current[1:ncovs, (ncontrols + 1):p, drop = FALSE]
+        Y22_error <- sweep(matrix(stats::rnorm(n = ncovs * (p - ncontrols)), nrow = ncovs), 2,
+                           1 / sqrt(xi_current[(ncontrols + 1):p]), `*`)
+        Y22_current <- Y22_mean + Y22_error
+        Y_current[1:ncovs, (ncontrols + 1):p] <- Y22_current
+
+        if ((gindex - burnin) %% keep == 0 & gindex > burnin) {
+            Y22_array[, , keep_index] <- Y22_current
+            keep_index <- keep_index + 1
+        }
+    }
+    if (print_update) {
+        cat("\nComplete!\n")
+    }
+
+    return(list(Y22_array = Y22_array))
+}
+
+
+#' Utility function for updating F in \code{gdfa}.
+#'
+#' @param LY A vector. A column of \code{t(L_current) \%*\% Y_current}
+#' @param xi A numeric scalar. An element of xi_current.
+#' @param theta A numeric scalar. An element of theta_current.
+#' @param ltl t(L_current) \%*\% L_current
+#'
+#' @seealso \code{\link{gdfa}}
+update_f <- function(LY, xi, theta, ltl) {
+    k <- nrow(ltl)
+
+    ## LY <- matrix(args[1:k], ncol = 1)
+    ## xi <- args[k + 1]
+    ## theta <- args[k + 2]
+
+    eigen_ltl <- eigen(ltl * xi + diag(theta, k),
+                       symmetric = TRUE)
+    fmean <- sweep(eigen_ltl$vectors, 2, 1 / eigen_ltl$values, `*`) %*%
+        crossprod(eigen_ltl$vectors, LY) * xi
+
+    fcovhalf <- tcrossprod(sweep(eigen_ltl$vectors, 2, 1 / sqrt(eigen_ltl$values), `*`),
+                           eigen_ltl$vectors)
+
+    return(fmean + fcovhalf %*% matrix(stats::rnorm(k), ncol = 1))
+}
+
+
+update_f2 <- function(args, ltl) {
+    k <- nrow(ltl)
+
+    LY <- matrix(args[1:k], ncol = 1)
+    xi <- args[k + 1]
+    theta <- args[k + 2]
+
+    eigen_ltl <- eigen(ltl * xi + diag(theta, k),
+                       symmetric = TRUE)
+    fmean <- sweep(eigen_ltl$vectors, 2, 1 / eigen_ltl$values, `*`) %*%
+        crossprod(eigen_ltl$vectors, LY) * xi
+
+    fcovhalf <- tcrossprod(sweep(eigen_ltl$vectors, 2, 1 / sqrt(eigen_ltl$values), `*`),
+                           eigen_ltl$vectors)
+
+    return(fmean + fcovhalf %*% matrix(stats::rnorm(k), ncol = 1))
+}
