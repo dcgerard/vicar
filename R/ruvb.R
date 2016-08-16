@@ -88,6 +88,13 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = gdfa, fa_args = list(),
     return_list$posterior_upper   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.975))
     return_list$posterior_lower   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.025))
     return_list$lfsr              <- apply(betahat_post, c(1, 2), calc_lfsr)
+
+    lfsr_order <- order(c(return_list$lfsr))
+    svalues <- matrix((cumsum(c(return_list$lfsr)[lfsr_order]) /
+                       (1:(prod(dim(return_list$lfsr)))))[order(lfsr_order)],
+                      nrow = nrow(return_list$lfsr), ncol = ncol(return_list$lfsr))
+    return_list$svalues <- svalues
+
     return(return_list)
 }
 
