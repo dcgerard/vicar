@@ -578,6 +578,8 @@ gdfa <- function(Y21, Y31, Y32, k, nsamp = 10000,
 
     ## Gibbs Sampler ---------------------------------------------------------
     Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, floor((nsamp - burnin) / keep)))
+    xi_mat    <- matrix(NA, nrow = floor((nsamp - burnin) / keep), ncol = p)
+    phi_vec   <- rep(NA, floor((nsamp - burnin) / keep))
     keep_index <- 1
     plot_iters <- round(seq(0.01, 1, by = 0.01) * nsamp)
     if (print_update) {
@@ -603,6 +605,16 @@ gdfa <- function(Y21, Y31, Y32, k, nsamp = 10000,
                                    eigen_fsf$vectors)
         L_current <- L_meanmat +
             matrix(stats::rnorm(prod(dim(L_current))), nrow = nrow(L_current)) %*% col_cov_half
+
+        ## checks
+        ## L_mean_simp <- Y_current %*% diag(xi_current) %*% t(F_current) %*%
+        ##     solve(F_current %*% diag(xi_current) %*% t(F_current) +
+        ##           diag(zeta_current, nrow = length(zeta_current), ncol = length(zeta_current)))
+        ## L_mean_simp
+        ## L_meanmat
+        ## solve(F_current %*% diag(xi_current) %*% t(F_current) +
+        ##       diag(zeta_current, nrow = length(zeta_current), ncol = length(zeta_current)))
+        ## col_cov_half %*% col_cov_half
 
         ## Update F ---------------------------------------------------
         ltl <- crossprod(L_current)
@@ -664,6 +676,11 @@ gdfa <- function(Y21, Y31, Y32, k, nsamp = 10000,
 
         if ((gindex - burnin) %% keep == 0 & gindex > burnin) {
             Y22_array[, , keep_index] <- Y22_current
+            xi_mat[keep_index, ] <- xi_current
+            phi_vec[keep_index] <- phi_current
+            if (plot_update & gindex %in% plot_iters) {
+                graphics::plot(phi_vec, type = "l", xlab = "Index", ylab = expression(phi))
+            }
             keep_index <- keep_index + 1
         }
     }
@@ -671,7 +688,7 @@ gdfa <- function(Y21, Y31, Y32, k, nsamp = 10000,
         cat("\nComplete!\n")
     }
 
-    return(list(Y22_array = Y22_array))
+    return(list(Y22_array = Y22_array, xi_mat = xi_mat))
 }
 
 
@@ -697,6 +714,13 @@ update_f <- function(LY, xi, theta, ltl) {
 
     fcovhalf <- tcrossprod(sweep(eigen_ltl$vectors, 2, 1 / sqrt(eigen_ltl$values), `*`),
                            eigen_ltl$vectors)
+
+    ## Checks
+    ## fmean_simp <- xi * solve(ltl * xi + theta * diag(k)) %*% LY
+    ## fmean
+    ## fmean_simp
+    ## solve(ltl * xi + theta * diag(k))
+    ## fcovhalf %*% fcovhalf
 
     return(fmean + fcovhalf %*% matrix(stats::rnorm(k), ncol = 1))
 }

@@ -66,7 +66,7 @@ test_that("See if RUV3 returns correct OLS estimates and matches vruv2", {
 test_that("bfl works OK", {
     set.seed(81)
     n <- 9
-    p <- 11
+    p <- 23
     ncontrols <- 7
     k <- 1
     ncovs <- 3
@@ -77,6 +77,13 @@ test_that("bfl works OK", {
 
     ## bsvd_out <- bsvd(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k,
     ##                  print_update = TRUE, plot_update = TRUE, nsamp = 1000, keep = 1)
+
+    ## nsamp = 10000
+    ## burnin = round(nsamp / 4); keep = 20
+    ## print_update = TRUE; plot_update = FALSE
+    ## hetero_factors = FALSE; rho_0 = 0.1; alpha_0 = 0.1
+    ## delta_0 = 0.1; lambda_0 = 0.1; nu_0 = 1; beta_0 = 1
+    ## eta_0 = 1; tau_0 = 1
 
     bfl_out <- bfl(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k,
                    print_update = FALSE, plot_update = FALSE,
