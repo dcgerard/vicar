@@ -512,8 +512,9 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
     Y22NA <- matrix(NA, nrow = ncovs, ncol = p - ncontrols)
 
     Y <- as.data.frame(rbind(cbind(Y21, Y22NA), cbind(Y31, Y32)))
-
-    form1 <- stats::as.formula(paste("~", paste(paste("V", 1:p, sep = ""), collapse = " + ")))
+    v_vec <- paste("V", 1:p, sep = "")
+    colnames(Y) <- v_vec
+    form1 <- stats::as.formula(paste("~", paste(v_vec, collapse = " + ")))
     bfout <- bfa::bfa_gauss(form1, data = Y, num.factor = k,
                             keep.scores = TRUE, thin = keep,
                             nburn = burnin, nsim = nsamp,
@@ -525,8 +526,8 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
     Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, nmcmc_samp))
     for(index in 1:nmcmc_samp) {
         if (k == 1) {
-            Y22_array[,, index] <- matrix(bfout$post.scores[(ncontrols + 1):p,, index], ncol = 1) %*%
-                matrix(bfout$post.loadings[, 1:ncovs, index], nrow = 1)
+            Y22_array[,, index] <- matrix(bfout$post.scores[, 1:ncovs, index], ncol = 1) %*%
+                matrix(bfout$post.loadings[(ncontrols + 1):p,, index], nrow = 1)
         } else {
             Y22_array[,, index] <- t(bfout$post.loadings[(ncontrols + 1):p,, index] %*%
                                      bfout$post.scores[, 1:ncovs, index])

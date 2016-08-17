@@ -67,7 +67,7 @@ test_that("bfl works OK", {
     n <- 9
     p <- 23
     ncontrols <- 7
-    k <- 2
+    k <- 1
     ncovs <- 3
 
     Y21 <- matrix(rnorm(ncovs * ncontrols), nrow = ncovs)
