@@ -23,8 +23,7 @@ test_that("See if RUV3 returns correct OLS estimates and matches vruv2", {
     fa_func <- bfl
 
     return_list <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
-                        include_intercept = FALSE,
-                        fa_args = list(nsamp = 100, keep = 1, print_update = FALSE))
+                        include_intercept = FALSE)
 
     cout <- cate::cate.fit(X.primary = X[, cov_of_interest, drop = FALSE],
                            X.nuis = X[, -cov_of_interest, drop = FALSE],
@@ -68,7 +67,7 @@ test_that("bfl works OK", {
     n <- 9
     p <- 23
     ncontrols <- 7
-    k <- 1
+    k <- 2
     ncovs <- 3
 
     Y21 <- matrix(rnorm(ncovs * ncontrols), nrow = ncovs)
@@ -85,6 +84,8 @@ test_that("bfl works OK", {
     ## delta_0 = 0.1; lambda_0 = 0.1; nu_0 = 1; beta_0 = 1
     ## eta_0 = 1; tau_0 = 1
 
+    bfout   <- bfa_wrapper(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k,
+                           print_status = 100000)
     bfl_out <- bfl(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k,
                    print_update = FALSE, plot_update = FALSE,
                    nsamp = 100, keep = 1)

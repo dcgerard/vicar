@@ -33,7 +33,7 @@
 #' @seealso \code{\link{bsvd}}
 #'
 #' @export
-ruvb <- function(Y, X, ctl, k = NULL, fa_func = gdfa, fa_args = list(),
+ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_wrapper, fa_args = list(),
                  cov_of_interest = ncol(X), include_intercept = TRUE) {
 
     assertthat::assert_that(is.matrix(Y))
@@ -484,6 +484,57 @@ bfl <- function(Y21, Y31, Y32, k, nsamp = 10000,
     return(list(Y22_array = Y22_array, psi_phi = psi_phi, xi_mat = xi_mat))
 }
 
+
+#' Wrapper for the bfa package.
+#'
+#' This is just a wrapper for using the \code{\link[bfa]{bfa_gauss}}
+#' from the bfa package. Default settings are used.
+#'
+#' @inheritParams em_miss
+#' @param nsamp A positive integer. The number of samples to draw.
+#' @param burnin A positive integer. The number of early samples to
+#'     discard.
+#' @param keep A positive integer. We will same the updates of
+#'     \code{Y22} every \code{keep} iteration of the Gibbs sampler.
+#' @param print_status How often should bfa print updates?
+#'
+#' @author David Gerard
+#'
+#' @seealso \code{\link[bfa]{bfa_gauss}} for the workhorse function.
+bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 4), keep = 20,
+                        print_status = 500) {
+
+    n <- nrow(Y21) + nrow(Y31)
+    p <- ncol(Y31) + ncol(Y32)
+    ncovs <- nrow(Y21)
+    ncontrols <- ncol(Y21)
+
+    Y22NA <- matrix(NA, nrow = ncovs, ncol = p - ncontrols)
+
+    Y <- as.data.frame(rbind(cbind(Y21, Y22NA), cbind(Y31, Y32)))
+
+    form1 <- stats::as.formula(paste("~", paste(paste("V", 1:p, sep = ""), collapse = " + ")))
+    bfout <- bfa::bfa_gauss(form1, data = Y, num.factor = k,
+                            keep.scores = TRUE, thin = keep,
+                            nburn = burnin, nsim = nsamp,
+                            center.data = FALSE, scale.data = FALSE,
+                            factor.scales = TRUE,
+                            print.status = print_status)
+
+    nmcmc_samp <- dim(bfout$post.loadings)[3]
+    Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, nmcmc_samp))
+    for(index in 1:nmcmc_samp) {
+        if (k == 1) {
+            Y22_array[,, index] <- matrix(bfout$post.scores[(ncontrols + 1):p,, index], ncol = 1) %*%
+                matrix(bfout$post.loadings[, 1:ncovs, index], nrow = 1)
+        } else {
+            Y22_array[,, index] <- t(bfout$post.loadings[(ncontrols + 1):p,, index] %*%
+                                     bfout$post.scores[, 1:ncovs, index])
+        }
+    }
+
+    return(list(Y22_array = Y22_array, sigma2 = bfout$post.sigma2))
+}
 
 
 

@@ -22,7 +22,8 @@ Imports: ruv,
     softImpute,
     irlba,
     coda,
-    rstiefel
+    rstiefel,
+    bfa
 Suggests: testthat,
     ashr,
     leapp
