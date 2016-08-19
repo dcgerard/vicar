@@ -4,7 +4,7 @@
 \alias{ruvb}
 \title{Bayesian version of Removing Unwanted Variation.}
 \usage{
-ruvb(Y, X, ctl, k = NULL, fa_func = gdfa, fa_args = list(),
+ruvb(Y, X, ctl, k = NULL, fa_func = bfa_gs, fa_args = list(),
   cov_of_interest = ncol(X), include_intercept = TRUE)
 }
 \arguments{
@@ -63,6 +63,18 @@ will be unchanged.}
 Right now, this only allows you to use a uniform prior on the
 beta's. I plan on the future to allow you to input a function
 that's the prior.
+}
+\details{
+I have three versions of Bayesian factor analyses that I
+recommend. The first, \code{\link{bfa_gs}} is the Bayesian factor
+analysis used in Gerard and Stephens (2016). This is the default
+version. The second is \code{\link{bfl}}. This version links the
+variances between the factors and observations. Operationally,
+there is very little practicle difference between these two but
+\code{\link{bfa_gs}} would probably sit better with some
+people. The last is \code{bfa_wrapper}, which is just a wrapper for
+the R package bfa. The main thing about this version is that they
+do not use a hierarchical prior on the variances.
 }
 \author{
 David Gerard

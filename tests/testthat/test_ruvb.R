@@ -22,8 +22,11 @@ test_that("See if RUV3 returns correct OLS estimates and matches vruv2", {
     fa_args <- list()
     fa_func <- bfl
 
-    ## return_list <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
-    ##                     include_intercept = FALSE)
+    return_list <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
+                        include_intercept = FALSE)
+    ## return_list2 <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
+    ##                      include_intercept = FALSE, fa_func = bfl)
+
 
     cout <- cate::cate.fit(X.primary = X[, cov_of_interest, drop = FALSE],
                            X.nuis = X[, -cov_of_interest, drop = FALSE],
@@ -112,7 +115,7 @@ bfa_gd_gibbs(Linit = dat$Linit, Finit = dat$Finit,
              nsamp = dat$nsamp, burnin = dat$burnin, thin = dat$thin,
              rho_0 = 1, alpha_0 = 1, delta_0 = 1, lambda_0 = 1,
              nu_0 = 1, beta_0 = 1, eta_0 = 1, tau_0 = 1,
-             hetero_factors = TRUE)
+             hetero_factors = TRUE, dislay_progress = FALSE)
 
 dat2 <- readRDS("bfa_gd_examp2.Rds")
 Y22out <- bfa_gd_gibbs(Linit = dat2$Linit, Finit = dat2$Finit,
@@ -125,5 +128,6 @@ Y22out <- bfa_gd_gibbs(Linit = dat2$Linit, Finit = dat2$Finit,
                        alpha_0 = dat2$alpha_0, delta_0 = dat2$delta_0,
                        lambda_0 = dat2$lambda_0, nu_0 = dat2$nu_0,
                        beta_0 = dat2$beta_0, eta_0 = dat2$eta_0,
-                       tau_0 = dat2$tau_0, hetero_factors = TRUE)
+                       tau_0 = dat2$tau_0, hetero_factors = TRUE,
+                       display_progress = FALSE)
 })

@@ -56,6 +56,10 @@ This is a modification of the Bayesian approach from Hoff (2007) to
 allow for heteroscedastic columns. We start the missing values from
 the RUV4 solution.
 }
+\details{
+The rejection sampler in \code{\link[rstiefel]{rbmf.matrix.gibbs}}
+almost always stalls, so I am removing it from exports for now.
+}
 \author{
 David Gerard
 }

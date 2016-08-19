@@ -7,8 +7,8 @@
 using namespace Rcpp;
 
 // bfa_gd_gibbs
-List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_init, double phi_init, NumericVector zeta_init, NumericVector theta_init, double kappa_init, NumericMatrix Y22init, NumericMatrix Y21, NumericMatrix Y31, NumericMatrix Y32, int nsamp, int burnin, int thin, double rho_0, double alpha_0, double delta_0, double lambda_0, double nu_0, double beta_0, double eta_0, double tau_0, bool hetero_factors);
-RcppExport SEXP vicar_bfa_gd_gibbs(SEXP LinitSEXP, SEXP FinitSEXP, SEXP xi_initSEXP, SEXP phi_initSEXP, SEXP zeta_initSEXP, SEXP theta_initSEXP, SEXP kappa_initSEXP, SEXP Y22initSEXP, SEXP Y21SEXP, SEXP Y31SEXP, SEXP Y32SEXP, SEXP nsampSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP rho_0SEXP, SEXP alpha_0SEXP, SEXP delta_0SEXP, SEXP lambda_0SEXP, SEXP nu_0SEXP, SEXP beta_0SEXP, SEXP eta_0SEXP, SEXP tau_0SEXP, SEXP hetero_factorsSEXP) {
+List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_init, double phi_init, NumericVector zeta_init, NumericVector theta_init, double kappa_init, NumericMatrix Y22init, NumericMatrix Y21, NumericMatrix Y31, NumericMatrix Y32, int nsamp, int burnin, int thin, double rho_0, double alpha_0, double delta_0, double lambda_0, double nu_0, double beta_0, double eta_0, double tau_0, bool hetero_factors, bool display_progress);
+RcppExport SEXP vicar_bfa_gd_gibbs(SEXP LinitSEXP, SEXP FinitSEXP, SEXP xi_initSEXP, SEXP phi_initSEXP, SEXP zeta_initSEXP, SEXP theta_initSEXP, SEXP kappa_initSEXP, SEXP Y22initSEXP, SEXP Y21SEXP, SEXP Y31SEXP, SEXP Y32SEXP, SEXP nsampSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP rho_0SEXP, SEXP alpha_0SEXP, SEXP delta_0SEXP, SEXP lambda_0SEXP, SEXP nu_0SEXP, SEXP beta_0SEXP, SEXP eta_0SEXP, SEXP tau_0SEXP, SEXP hetero_factorsSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject __result;
     Rcpp::RNGScope __rngScope;
@@ -35,7 +35,8 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< double >::type eta_0(eta_0SEXP);
     Rcpp::traits::input_parameter< double >::type tau_0(tau_0SEXP);
     Rcpp::traits::input_parameter< bool >::type hetero_factors(hetero_factorsSEXP);
-    __result = Rcpp::wrap(bfa_gd_gibbs(Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors));
+    Rcpp::traits::input_parameter< bool >::type display_progress(display_progressSEXP);
+    __result = Rcpp::wrap(bfa_gd_gibbs(Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress));
     return __result;
 END_RCPP
 }

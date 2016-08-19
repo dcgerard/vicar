@@ -49,6 +49,10 @@ track of the Gibbs sampler (\code{TRUE}) or not (\code{FALSE})?}
 This is as simple as they come. I put normal priors on the loadings
 and factors and gamma priors on the precisions. The hyperparameters
 are set to provide weak prior information by default.
+
+The main difference between this version and others is that the
+factors are a prior assumed to have the same variances as the data
+observations. This might be distasteful to some.
 }
 \author{
 David Gerard

@@ -37,10 +37,12 @@
 #'     precisions of the factors.
 #' @param hetero_factors A logical. Should we also update the precisions of the
 #'     factors (\code{TRUE}), or not (\code{FALSE})?
+#' @param display_progress A logical. If \code{TRUE}, then a progress bar will
+#'     be displayed and you'll be able to interupt the C++ code. If \code{FALSE},
+#'     then neither of these capabilities will be provided.
 #'
 #'
-#'
-bfa_gd_gibbs <- function(Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors) {
-    .Call('vicar_bfa_gd_gibbs', PACKAGE = 'vicar', Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors)
+bfa_gd_gibbs <- function(Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress) {
+    .Call('vicar_bfa_gd_gibbs', PACKAGE = 'vicar', Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress)
 }
 

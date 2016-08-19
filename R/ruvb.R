@@ -4,6 +4,17 @@
 #' beta's. I plan on the future to allow you to input a function
 #' that's the prior.
 #'
+#' I have three versions of Bayesian factor analyses that I
+#' recommend. The first, \code{\link{bfa_gs}} is the Bayesian factor
+#' analysis used in Gerard and Stephens (2016). This is the default
+#' version. The second is \code{\link{bfl}}. This version links the
+#' variances between the factors and observations. Operationally,
+#' there is very little practicle difference between these two but
+#' \code{\link{bfa_gs}} would probably sit better with some
+#' people. The last is \code{bfa_wrapper}, which is just a wrapper for
+#' the R package bfa. The main thing about this version is that they
+#' do not use a hierarchical prior on the variances.
+#'
 #' @inheritParams vruv4
 #' @param fa_func A function that takes as input matrices named
 #'     \code{Y21}, \code{Y31}, \code{Y32}, and \code{k} and returns a
@@ -33,7 +44,7 @@
 #' @seealso \code{\link{bsvd}}
 #'
 #' @export
-ruvb <- function(Y, X, ctl, k = NULL, fa_func = gdfa, fa_args = list(),
+ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs, fa_args = list(),
                  cov_of_interest = ncol(X), include_intercept = TRUE) {
 
     assertthat::assert_that(is.matrix(Y))
@@ -115,6 +126,9 @@ calc_lfsr <- function(y) {
 #' allow for heteroscedastic columns. We start the missing values from
 #' the RUV4 solution.
 #'
+#' The rejection sampler in \code{\link[rstiefel]{rbmf.matrix.gibbs}}
+#' almost always stalls, so I am removing it from exports for now.
+#'
 #' @author David Gerard
 #'
 #' @inheritParams em_miss
@@ -148,7 +162,6 @@ calc_lfsr <- function(y) {
 #'     \code{mu_psi_phi} as calculated by
 #'     \code{\link[coda]{effectiveSize}}
 #'
-#' @export
 #'
 #' @references Hoff, P. D. (2012). Model averaging and dimension
 #'     selection for the singular value decomposition. Journal of the
@@ -319,6 +332,10 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #' This is as simple as they come. I put normal priors on the loadings
 #' and factors and gamma priors on the precisions. The hyperparameters
 #' are set to provide weak prior information by default.
+#'
+#' The main difference between this version and others is that the
+#' factors are a prior assumed to have the same variances as the data
+#' observations. This might be distasteful to some.
 #'
 #' @inheritParams em_miss
 #' @param nsamp A positive integer. The number of samples to draw.
@@ -539,10 +556,118 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
 
 
 
-#' Better Bayesian factor analysis.
+#' Bayesian factor analysis used in Gerard and Stephens (2016).
 #'
-#' Similar to that of Ghosh and Dunson (2009).
+#' Similar to that of Ghosh and Dunson (2009) but with two key
+#' differences: (1) the prior is order invariant (though this makes
+#' the factors and factor loadings unidentified), and (2) we place
+#' hierarchical priors on the uniquenesses (variances).
 #'
+#'
+#' @inheritParams em_miss
+#' @param nsamp A positive integer. The number of samples to draw.
+#' @param burnin A positive integer. The number of early samples to
+#'     discard.
+#' @param thin A positive integer. We will same the updates of
+#'     \code{Y22} every \code{thin} iteration of the Gibbs sampler.
+#' @param display_progress A logical. Should we print a text progress bar
+#'     to keep track of the Gibbs sampler (\code{TRUE}) or not
+#'     (\code{FALSE})?
+#' @param hetero_factors A logical. Should we assign colum-specific
+#'     variances for the factors (\code{TRUE}) or not (\code{FALSE})?
+#' @param rho_0 The prior sample size for column-specific the
+#'     precisions.
+#' @param alpha_0 The prior sample size for the mean of the
+#'     column-specific precisions.
+#' @param beta_0 The prior mean of the mean of the column-specific
+#'     precisions.
+#' @param eta_0 The prior sample size of the expanded parameters.
+#' @param tau_0 The prior mean of of the expanded parameters.
+#' @param delta_0 The prior sample size of the column-specific
+#'     precisions of the factors.
+#' @param lambda_0 The prior sample size of the mean of the
+#'     column-specific precisions of the factors.
+#' @param nu_0 The prior mean of the mean of the column-specific
+#'     precisions of the factors.
+#'
+#' @export
+#'
+#' @author David Gerard
+#'
+#' @seealso \code{\link{gdfa}} for the slower R implementation.
+#'
+#' @references Ghosh, Joyee, and David
+#'     B. Dunson. "Default prior distributions and efficient posterior
+#'     computation in Bayesian factor analysis."
+#'     Journal of Computational and Graphical Statistics 18.2 (2009):
+#'     306-320.
+bfa_gs <- function(Y21, Y31, Y32, k, nsamp = 10000,
+                   burnin = round(nsamp / 4), thin = 20,
+                   display_progress = TRUE, hetero_factors = FALSE,
+                   rho_0 = 0.1, alpha_0 = 0.1, delta_0 = 0.1,
+                   lambda_0 = 0.1, nu_0 = 1, beta_0 = 1, eta_0 = 1,
+                   tau_0 = 1) {
+
+    assertthat::are_equal(ncol(Y21), ncol(Y31))
+    assertthat::are_equal(nrow(Y31), nrow(Y32))
+    ncovs <- nrow(Y21)
+    ncontrols <- ncol(Y21)
+    n <- nrow(Y21) + nrow(Y31)
+    p <- ncol(Y31) + ncol(Y32)
+
+    ## Get initial values and set hyper parameters----------------------
+    pcout <- pca_naive(cbind(Y31, Y32), r = k)
+    sig_diag <- pcout$sig_diag
+    alpha <- t(pcout$alpha)
+    Z3 <- pcout$Z
+    shrunk_var <- limma::squeezeVar(sig_diag, df = n - ncovs - k)$var.post
+    shrunk_var_c <- shrunk_var[1:ncontrols]
+    alpha_c    <- alpha[, 1:ncontrols, drop = FALSE]
+    Z2 <- tcrossprod(sweep(Y21, 2, 1 / shrunk_var_c, `*`), alpha_c) %*%
+        solve(tcrossprod(sweep(alpha_c, 2, 1 / sqrt(shrunk_var_c), `*`)))
+    Y22init <- Z2 %*% alpha[, (ncontrols + 1):p, drop = FALSE]
+    Zinit <- rbind(Z2, Z3)
+    fnorm_z <- sum(Zinit ^ 2)
+    fnorm_alpha <- sum(alpha ^ 2)
+    Linit <- Zinit * (prod(dim(Zinit)) / fnorm_z)
+    Finit <- alpha * (prod(dim(alpha)) / fnorm_alpha)
+
+    if (hetero_factors) {
+        theta_init <- 1 / limma::squeezeVar(colMeans(Finit ^ 2), df = k)$var.post
+        kappa_init <- mean(theta_init)
+    } else {
+        theta_init <- rep(1, length = p)
+        kappa_init <- 1
+    }
+
+    xi_init <- 1 / shrunk_var
+    phi_init <- mean(xi_init)
+
+    zeta_init <- 1 / limma::squeezeVar(colMeans(Linit ^ 2), df = k)$var.post
+
+    bfout <- bfa_gd_gibbs(Linit = Linit, Finit = Finit,
+                          xi_init = xi_init, phi_init = phi_init,
+                          zeta_init = zeta_init, theta_init = theta_init,
+                          kappa_init = kappa_init, Y22init = Y22init,
+                          Y21 = Y21, Y31 = Y31, Y32 = Y32,
+                          nsamp = nsamp, burnin = burnin,
+                          thin = thin, rho_0 = rho_0,
+                          alpha_0 = alpha_0, delta_0 = delta_0,
+                          lambda_0 = lambda_0, nu_0 = nu_0,
+                          beta_0 = beta_0, eta_0 = eta_0,
+                          tau_0 = tau_0, hetero_factors = hetero_factors,
+                          display_progress = display_progress)
+
+    return(bfout)
+}
+
+
+
+
+#' Old version of Bayesian factor analysis.
+#'
+#' See \code{\link{bfa_gs}} for a description. This is the same thing
+#' but a slower R implementation.
 #'
 #' @inheritParams em_miss
 #' @param nsamp A positive integer. The number of samples to draw.
@@ -572,9 +697,10 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
 #' @param nu_0 The prior mean of the mean of the column-specific
 #'     precisions of the factors.
 #'
-#' @export
 #'
 #' @author David Gerard
+#'
+#' @seealso \code{\link{bfa_gs}}
 #'
 #' @references Ghosh, Joyee, and David
 #'     B. Dunson. "Default prior distributions and efficient posterior

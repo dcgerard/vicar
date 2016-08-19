@@ -1,5 +1,7 @@
 #include <RcppArmadillo.h>
 #include <Rcpp.h>
+// [[Rcpp::depends(RcppProgress)]]
+#include <progress.hpp>
 using namespace Rcpp;
 using namespace arma;
 
@@ -41,17 +43,19 @@ using namespace arma;
 //'     precisions of the factors.
 //' @param hetero_factors A logical. Should we also update the precisions of the
 //'     factors (\code{TRUE}), or not (\code{FALSE})?
-//'
+//' @param display_progress A logical. If \code{TRUE}, then a progress bar will
+//'     be displayed and you'll be able to interupt the C++ code. If \code{FALSE},
+//'     then neither of these capabilities will be provided.
 //'
 //'
 // [[Rcpp::export]]
 List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_init,
-		  double phi_init, NumericVector zeta_init, NumericVector theta_init,
-		  double kappa_init, NumericMatrix Y22init, NumericMatrix Y21,
-                  NumericMatrix Y31, NumericMatrix Y32, int nsamp, int burnin,
-                  int thin, double rho_0, double alpha_0, double delta_0,
-                  double lambda_0, double nu_0, double beta_0, double eta_0,
-		  double tau_0, bool hetero_factors) {
+		    double phi_init, NumericVector zeta_init, NumericVector theta_init,
+		    double kappa_init, NumericMatrix Y22init, NumericMatrix Y21,
+		    NumericMatrix Y31, NumericMatrix Y32, int nsamp, int burnin,
+		    int thin, double rho_0, double alpha_0, double delta_0,
+		    double lambda_0, double nu_0, double beta_0, double eta_0,
+		    double tau_0, bool hetero_factors, bool display_progress) {
 
   // Get dimensions of all matrices -------------------------------------------
   int n         = Linit.nrow(); // sample size
@@ -86,8 +90,31 @@ List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_ini
   mat xi_mat(p, nkeeps);
   vec phi_vec(nkeeps);
   int thin_index = 0;
+  int current_thin_index = keep_indices[0];
+
+  // calculate which indices I update progress message ------------------------
+  int nchecks = 100;
+  int check_thin = floor((nsamp + burnin) / nchecks);
+  Progress prog(nchecks, display_progress); // instance for progress bar
+  IntegerVector check_indices(nchecks);
+  for (int init_ind = 0; init_ind < nchecks; init_ind++) {
+    check_indices[init_ind] = init_ind * check_thin;
+  }
+  int current_check_index = check_indices[0];
+  int check_index = 0;
 
   for (int gindex = 0; gindex < nsamp + burnin; gindex++) {
+
+    // Update progress bar and check for aborted job --------------------------
+    if (gindex == current_check_index) {
+      if (Progress::check_abort()) {
+	return List::create("Aborted");
+      }
+      prog.increment();
+      check_index++;
+      current_check_index = check_indices[check_index];
+    }
+
 
     // Update Lcurrent --------------------------------------------------------
     vec Leigval;
@@ -159,11 +186,12 @@ List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_ini
     Ycurrent.submat(0, ncontrols, ncov - 1, p - 1) = Y22current;
 
     // Keep samples if correct index -------------------------------------------
-    if (std::find(keep_indices.begin(), keep_indices.end(), gindex) != keep_indices.end()) {
+    if (gindex == current_thin_index) {
       Y22array.slice(thin_index) = Y22current;
       xi_mat.col(thin_index) = xi_current;
       phi_vec[thin_index] = phi_current;
       thin_index++;
+      current_thin_index = keep_indices[thin_index];
     }
   }
 

@@ -11,7 +11,8 @@ LazyData: TRUE
 RoxygenNote: 5.0.1
 Remotes: github::stephens999/ashr
 LinkingTo: Rcpp,
-    RcppArmadillo
+    RcppArmadillo,
+    RcppProgress
 Imports: ruv,
     SQUAREM,
     limma,
@@ -27,7 +28,8 @@ Imports: ruv,
     rstiefel,
     bfa,
     Rcpp,
-    RcppArmadillo
+    RcppArmadillo,
+    RcppProgress
 Suggests: testthat,
     ashr,
     leapp
