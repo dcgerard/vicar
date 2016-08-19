@@ -41,7 +41,8 @@
 #'
 #' @author David Gerard
 #'
-#' @seealso \code{\link{bsvd}}
+#' @seealso \code{\link{bfa_gs}}, \code{\link{bfl}}, and
+#'     \code{bfa_wrapper} for implemented Bayesian factor analyeses.
 #'
 #' @export
 ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs, fa_args = list(),

@@ -80,6 +80,7 @@ do not use a hierarchical prior on the variances.
 David Gerard
 }
 \seealso{
-\code{\link{bsvd}}
+\code{\link{bfa_gs}}, \code{\link{bfl}}, and
+    \code{bfa_wrapper} for implemented Bayesian factor analyeses.
 }
 
