@@ -22,8 +22,8 @@ test_that("See if RUV3 returns correct OLS estimates and matches vruv2", {
     fa_args <- list()
     fa_func <- bfl
 
-    return_list <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
-                        include_intercept = FALSE)
+    ## return_list <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
+    ##                     include_intercept = FALSE)
 
     cout <- cate::cate.fit(X.primary = X[, cov_of_interest, drop = FALSE],
                            X.nuis = X[, -cov_of_interest, drop = FALSE],

@@ -121,20 +121,20 @@ List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_ini
     double xi_shape = (n + rho_0) / 2;
     for (int xindex = 0; xindex < p; xindex++) {
       double xi_scale = 2 / (resvec[xindex] + rho_0 * phi_current);
-      xi_current[xindex] = randg(1, distr_param(xi_shape, xi_scale))[0];
+      xi_current[xindex] = R::rgamma(xi_shape, xi_scale);
     }
 
     // Update phi_current -----------------------------------------------------
     double phi_shape = (p * rho_0 + alpha_0) / 2;
     double phi_scale = 2 / (alpha_0 * beta_0 + rho_0 * sum(xi_current));
-    phi_current = randg(1, distr_param(phi_shape, phi_scale))[0];
+    phi_current = R::rgamma(phi_shape, phi_scale);
 
     // Update zeta_current ----------------------------------------------------
     colvec Lsumvec = trans(sum(square(Lcurrent), 0));
     double zeta_shape = (n + eta_0) / 2;
     for (int zindex = 0; zindex < nfac; zindex++) {
       double zeta_scale = 2 / (eta_0 * tau_0 + Lsumvec[zindex]);
-      zeta_current[zindex] = randg(1, distr_param(zeta_shape, zeta_scale))[0];
+      zeta_current[zindex] = R::rgamma(zeta_shape, zeta_scale);
     }
 
     if (hetero_factors) {
@@ -143,13 +143,13 @@ List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_ini
       double theta_shape = (nfac + delta_0) / 2;
       for (int theta_index = 0; theta_index < p; theta_index++) {
 	double theta_scale = 2 / (delta_0 * kappa_current + Fsumvec[theta_index]);
-	theta_current[theta_index] = randg(1, distr_param(theta_shape, theta_scale))[0];
+	theta_current[theta_index] = R::rgamma(theta_shape, theta_scale);
       }
 
       // Update kappa_current -------------------------------------------------
       double kappa_shape = (p * delta_0 + lambda_0) / 2;
       double kappa_scale = 2 / (lambda_0 * nu_0 + delta_0 * sum(theta_current));
-      kappa_current = randg(1, distr_param(kappa_shape, kappa_scale))[0];
+      kappa_current = R::rgamma(kappa_shape, kappa_scale);
     }
 
     // Update Y22current and Ycurrent -----------------------------------------
