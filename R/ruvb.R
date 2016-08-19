@@ -33,7 +33,7 @@
 #' @seealso \code{\link{bsvd}}
 #'
 #' @export
-ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_wrapper, fa_args = list(),
+ruvb <- function(Y, X, ctl, k = NULL, fa_func = gdfa, fa_args = list(),
                  cov_of_interest = ncol(X), include_intercept = TRUE) {
 
     assertthat::assert_that(is.matrix(Y))
@@ -519,7 +519,7 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
                             keep.scores = TRUE, thin = keep,
                             nburn = burnin, nsim = nsamp,
                             center.data = FALSE, scale.data = FALSE,
-                            factor.scales = TRUE,
+                            factor.scales = TRUE, loading.prior = "normal",
                             print.status = print_status)
 
     nmcmc_samp <- dim(bfout$post.loadings)[3]

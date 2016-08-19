@@ -2,6 +2,7 @@
 
 export(ash_ruv2)
 export(ash_ruv4)
+export(bfa_gd_gibbs)
 export(bfl)
 export(bsvd)
 export(clean_my_p)
@@ -32,3 +33,5 @@ export(vruv2)
 export(vruv2_old)
 export(vruv4)
 export(vruvinv)
+importFrom(Rcpp,evalCpp)
+useDynLib(vicar)

@@ -67,7 +67,7 @@ test_that("bfl works OK", {
     n <- 9
     p <- 23
     ncontrols <- 7
-    k <- 1
+    k <- 3
     ncovs <- 3
 
     Y21 <- matrix(rnorm(ncovs * ncontrols), nrow = ncovs)
@@ -101,3 +101,29 @@ test_that("bfl works OK", {
 
 }
 )
+
+test_that("bfa_gd_gibbs works ok", {
+dat <- readRDS("bfa_gd_examp.Rds")
+bfa_gd_gibbs(Linit = dat$Linit, Finit = dat$Finit,
+             xi_init = dat$xi_init, phi_init = dat$phi_init,
+             zeta_init = dat$zeta_init, theta_init = dat$theta_init,
+             kappa_init = dat$kappa_init, Y22init = dat$Y22init,
+             Y21 = dat$Y21, Y31 = dat$Y31, Y32 = dat$Y32,
+             nsamp = dat$nsamp, burnin = dat$burnin, thin = dat$thin,
+             rho_0 = 1, alpha_0 = 1, delta_0 = 1, lambda_0 = 1,
+             nu_0 = 1, beta_0 = 1, eta_0 = 1, tau_0 = 1,
+             hetero_factors = TRUE)
+
+dat2 <- readRDS("bfa_gd_examp2.Rds")
+Y22out <- bfa_gd_gibbs(Linit = dat2$Linit, Finit = dat2$Finit,
+                       xi_init = dat2$xi_init, phi_init = dat2$phi_init,
+                       zeta_init = dat2$zeta_init, theta_init = dat2$theta_init,
+                       kappa_init = dat2$kappa_init, Y22init = dat2$Y22init,
+                       Y21 = dat2$Y21, Y31 = dat2$Y31, Y32 = dat2$Y32,
+                       nsamp = dat2$nsamp, burnin = dat2$burnin,
+                       thin = dat2$thin, rho_0 = dat2$rho_0,
+                       alpha_0 = dat2$alpha_0, delta_0 = dat2$delta_0,
+                       lambda_0 = dat2$lambda_0, nu_0 = dat2$nu_0,
+                       beta_0 = dat2$beta_0, eta_0 = dat2$eta_0,
+                       tau_0 = dat2$tau_0, hetero_factors = TRUE)
+})

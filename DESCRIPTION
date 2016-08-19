@@ -10,6 +10,8 @@ License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
 Remotes: github::stephens999/ashr
+LinkingTo: Rcpp,
+    RcppArmadillo
 Imports: ruv,
     SQUAREM,
     limma,
@@ -23,7 +25,9 @@ Imports: ruv,
     irlba,
     coda,
     rstiefel,
-    bfa
+    bfa,
+    Rcpp,
+    RcppArmadillo
 Suggests: testthat,
     ashr,
     leapp

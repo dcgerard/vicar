@@ -4,7 +4,7 @@
 \alias{ruvb}
 \title{Bayesian version of Removing Unwanted Variation.}
 \usage{
-ruvb(Y, X, ctl, k = NULL, fa_func = bfa_wrapper, fa_args = list(),
+ruvb(Y, X, ctl, k = NULL, fa_func = gdfa, fa_args = list(),
   cov_of_interest = ncol(X), include_intercept = TRUE)
 }
 \arguments{
