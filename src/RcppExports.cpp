@@ -40,3 +40,31 @@ BEGIN_RCPP
     return __result;
 END_RCPP
 }
+// bfa_gs_linked_gibbs
+List bfa_gs_linked_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_init, double phi_init, NumericVector zeta_init, NumericMatrix Y22init, NumericMatrix Y21, NumericMatrix Y31, NumericMatrix Y32, int nsamp, int burnin, int thin, double rho_0, double alpha_0, double beta_0, double eta_0, double tau_0, bool display_progress);
+RcppExport SEXP vicar_bfa_gs_linked_gibbs(SEXP LinitSEXP, SEXP FinitSEXP, SEXP xi_initSEXP, SEXP phi_initSEXP, SEXP zeta_initSEXP, SEXP Y22initSEXP, SEXP Y21SEXP, SEXP Y31SEXP, SEXP Y32SEXP, SEXP nsampSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP rho_0SEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP eta_0SEXP, SEXP tau_0SEXP, SEXP display_progressSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject __result;
+    Rcpp::RNGScope __rngScope;
+    Rcpp::traits::input_parameter< NumericMatrix >::type Linit(LinitSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Finit(FinitSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type xi_init(xi_initSEXP);
+    Rcpp::traits::input_parameter< double >::type phi_init(phi_initSEXP);
+    Rcpp::traits::input_parameter< NumericVector >::type zeta_init(zeta_initSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y22init(Y22initSEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y21(Y21SEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y31(Y31SEXP);
+    Rcpp::traits::input_parameter< NumericMatrix >::type Y32(Y32SEXP);
+    Rcpp::traits::input_parameter< int >::type nsamp(nsampSEXP);
+    Rcpp::traits::input_parameter< int >::type burnin(burninSEXP);
+    Rcpp::traits::input_parameter< int >::type thin(thinSEXP);
+    Rcpp::traits::input_parameter< double >::type rho_0(rho_0SEXP);
+    Rcpp::traits::input_parameter< double >::type alpha_0(alpha_0SEXP);
+    Rcpp::traits::input_parameter< double >::type beta_0(beta_0SEXP);
+    Rcpp::traits::input_parameter< double >::type eta_0(eta_0SEXP);
+    Rcpp::traits::input_parameter< double >::type tau_0(tau_0SEXP);
+    Rcpp::traits::input_parameter< bool >::type display_progress(display_progressSEXP);
+    __result = Rcpp::wrap(bfa_gs_linked_gibbs(Linit, Finit, xi_init, phi_init, zeta_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, beta_0, eta_0, tau_0, display_progress));
+    return __result;
+END_RCPP
+}

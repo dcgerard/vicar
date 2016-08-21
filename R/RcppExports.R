@@ -3,8 +3,6 @@
 
 #' Fast Gibbs sampler for Bayesian factor analysis.
 #'
-#' @author David Gerard
-#' @export
 #'
 #'
 #' @param Y22init A matrix of numerics. The initial value of Y22.
@@ -41,8 +39,54 @@
 #'     be displayed and you'll be able to interupt the C++ code. If \code{FALSE},
 #'     then neither of these capabilities will be provided.
 #'
+#' @author David Gerard
+#' @export
+#'
 #'
 bfa_gd_gibbs <- function(Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress) {
     .Call('vicar_bfa_gd_gibbs', PACKAGE = 'vicar', Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress)
+}
+
+#' Fast Gibbs sampler for Bayesian factor analysis.
+#'
+#' This is very similar to \code{\link{bfa_gd_gibbs}} except that we link the precisions
+#' of the observations with the precisions of the factors. For some reason, this works
+#' very well in practice.
+#'
+#'
+#'
+#'
+#'
+#'
+#' @param Y22init A matrix of numerics. The initial value of Y22.
+#' @param Y21 A matrix of numerics.
+#' @param Y31 A matrix of numerics.
+#' @param Y32 A matrix of numerics.
+#' @param nsamp The number of iterations to run in the Gibbs sampler, not including the burnin.
+#' @param burnin The number of iterations to burnin.
+#' @param thin We only collect samples every \code{thin} iterations.
+#' @param Linit A numeric matrix. The initial values of the loadings.
+#' @param Finit A numeric matrix. The initial values for the factors.
+#' @param xi_init A numeric vector. The initial values of the precisions.
+#' @param phi_init A numeric scalar. The initial value of the mean of the precitions.
+#' @param zeta_init A numeric vector. The initial values of the augmented row precisions.
+#' @param rho_0 The prior sample size for column-specific the
+#'     precisions.
+#' @param alpha_0 The prior sample size for the mean of the
+#'     column-specific precisions.
+#' @param beta_0 The prior mean of the mean of the column-specific
+#'     precisions.
+#' @param eta_0 The prior sample size of the expanded parameters.
+#' @param tau_0 The prior mean of of the expanded parameters.
+#' @param display_progress A logical. If \code{TRUE}, then a progress bar will
+#'     be displayed and you'll be able to interupt the C++ code. If \code{FALSE},
+#'     then neither of these capabilities will be provided.
+#'
+#' @author David Gerard
+#' @export
+#'
+#'
+bfa_gs_linked_gibbs <- function(Linit, Finit, xi_init, phi_init, zeta_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, beta_0, eta_0, tau_0, display_progress) {
+    .Call('vicar_bfa_gs_linked_gibbs', PACKAGE = 'vicar', Linit, Finit, xi_init, phi_init, zeta_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, beta_0, eta_0, tau_0, display_progress)
 }
 

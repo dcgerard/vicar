@@ -130,4 +130,15 @@ Y22out <- bfa_gd_gibbs(Linit = dat2$Linit, Finit = dat2$Finit,
                        beta_0 = dat2$beta_0, eta_0 = dat2$eta_0,
                        tau_0 = dat2$tau_0, hetero_factors = TRUE,
                        display_progress = FALSE)
+
+Y22out <- bfa_gs_linked_gibbs(Linit = dat2$Linit, Finit = dat2$Finit,
+                        xi_init = dat2$xi_init, phi_init = dat2$phi_init,
+                        zeta_init = dat2$zeta_init, Y22init = dat2$Y22init,
+                        Y21 = dat2$Y21, Y31 = dat2$Y31, Y32 = dat2$Y32,
+                        nsamp = dat2$nsamp, burnin = dat2$burnin,
+                        thin = dat2$thin, rho_0 = dat2$rho_0,
+                        alpha_0 = dat2$alpha_0,
+                        beta_0 = dat2$beta_0, eta_0 = dat2$eta_0,
+                        tau_0 = dat2$tau_0,
+                        display_progress = FALSE)
 })

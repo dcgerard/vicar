@@ -5,7 +5,7 @@
 \title{Bayesian factor analysis used in Gerard and Stephens (2016).}
 \usage{
 bfa_gs(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4),
-  thin = 20, display_progress = TRUE, hetero_factors = FALSE,
+  thin = 20, display_progress = TRUE, hetero_factors = TRUE,
   rho_0 = 0.1, alpha_0 = 0.1, delta_0 = 0.1, lambda_0 = 0.1, nu_0 = 1,
   beta_0 = 1, eta_0 = 1, tau_0 = 1)
 }
