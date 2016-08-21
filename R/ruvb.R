@@ -604,7 +604,7 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
 #'     306-320.
 bfa_gs <- function(Y21, Y31, Y32, k, nsamp = 10000,
                    burnin = round(nsamp / 4), thin = 20,
-                   display_progress = TRUE, hetero_factors = FALSE,
+                   display_progress = TRUE, hetero_factors = TRUE,
                    rho_0 = 0.1, alpha_0 = 0.1, delta_0 = 0.1,
                    lambda_0 = 0.1, nu_0 = 1, beta_0 = 1, eta_0 = 1,
                    tau_0 = 1) {
@@ -646,6 +646,9 @@ bfa_gs <- function(Y21, Y31, Y32, k, nsamp = 10000,
 
     zeta_init <- 1 / limma::squeezeVar(colMeans(Linit ^ 2), df = k)$var.post
 
+    if (display_progress) {
+        cat("Progress:\n")
+    }
     bfout <- bfa_gd_gibbs(Linit = Linit, Finit = Finit,
                           xi_init = xi_init, phi_init = phi_init,
                           zeta_init = zeta_init, theta_init = theta_init,
@@ -658,6 +661,9 @@ bfa_gs <- function(Y21, Y31, Y32, k, nsamp = 10000,
                           beta_0 = beta_0, eta_0 = eta_0,
                           tau_0 = tau_0, hetero_factors = hetero_factors,
                           display_progress = display_progress)
+    if (display_progress) {
+        cat("Complete!\n")
+    }
 
     return(bfout)
 }
