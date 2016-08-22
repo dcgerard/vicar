@@ -477,7 +477,8 @@ bfa_gs_linked_gibbs_r <- function(Linit, Finit, xi_init, phi_init,
 
         ## Update L ----------------------------------------------------
         Fsig <- sweep(F_current, 2, xi_current, `*`)
-        eigen_fsf <- eigen(tcrossprod(Fsig, F_current) + diag(zeta_current), symmetric = TRUE)
+        eigen_fsf <- eigen(tcrossprod(Fsig, F_current) +
+                           diag(zeta_current, nrow = nfac, ncol = nfac), symmetric = TRUE)
 
         L_meanmat <- tcrossprod(sweep(Y_current, 2, xi_current, `*`), F_current) %*%
             tcrossprod(sweep(eigen_fsf$vectors, 2, 1 / eigen_fsf$values, `*`),
