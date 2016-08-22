@@ -472,7 +472,7 @@ bfa_gs_linked_gibbs_r <- function(Linit, Finit, xi_init, phi_init,
     }
     for (gindex in 1:(nsamp + burnin)) {
         if (display_progress) {
-            utils::setTxtProgressBar(pb = pb, value = gindex / nsamp)
+            utils::setTxtProgressBar(pb = pb, value = gindex / (nsamp + burnin))
         }
 
         ## Update L ----------------------------------------------------
