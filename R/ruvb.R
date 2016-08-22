@@ -359,6 +359,8 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #'     expansion.
 #' @param tau_0 A scalar. The prior mean for the parameter expansion.
 #'     matrix.
+#' @param use_code A character. Should we use the C++ code
+#'     (\code{"cpp"}) or the R code (\code{"r"})?
 #'
 #' @export
 #'
@@ -367,11 +369,11 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #' @seealso \code{\link{bfa_gs_linked}}.
 #'
 bfa_gs_linked <- function(Y21, Y31, Y32, k, nsamp = 10000,
-                          burnin = round(nsamp / 4), thin = 20,
+                          burnin = round(nsamp / 4), thin = 10,
                           display_progress = TRUE,
                           rho_0 = 0.1, alpha_0 = 0.1,
                           beta_0 = 1, eta_0 = 1,
-                          tau_0 = 1) {
+                          tau_0 = 1, use_code = c("cpp", "r")) {
 
     assertthat::are_equal(ncol(Y21), ncol(Y31))
     assertthat::are_equal(nrow(Y31), nrow(Y32))
@@ -379,6 +381,7 @@ bfa_gs_linked <- function(Y21, Y31, Y32, k, nsamp = 10000,
     ncontrols <- ncol(Y21)
     n <- nrow(Y21) + nrow(Y31)
     p <- ncol(Y31) + ncol(Y32)
+    use_code = match.arg(use_code)
 
     ## Get initial values and set hyper parameters----------------------
     pcout <- pca_naive(cbind(Y31, Y32), r = k)
@@ -401,17 +404,150 @@ bfa_gs_linked <- function(Y21, Y31, Y32, k, nsamp = 10000,
     phi_init <- mean(xi_init)
     zeta_init <- 1 / limma::squeezeVar(colMeans(Linit ^ 2), df = k)$var.post
 
-    bfout <- bfa_gs_linked_gibbs(Linit = Linit, Finit = Finit,
-                                 xi_init = xi_init, phi_init = phi_init,
-                                 zeta_init = zeta_init, Y22init = Y22init,
-                                 Y21 = Y21, Y31 = Y31, Y32 = Y32,
-                                 nsamp = nsamp, burnin = burnin,
-                                 thin = thin, rho_0 = rho_0,
-                                 alpha_0 = alpha_0, beta_0 = beta_0,
-                                 eta_0 = eta_0, tau_0 = tau_0,
-                                 display_progress = display_progress)
+    if (use_code == "cpp") {
+        bfout <- bfa_gs_linked_gibbs(Linit = Linit, Finit = Finit,
+                                     xi_init = xi_init, phi_init = phi_init,
+                                     zeta_init = zeta_init, Y22init = Y22init,
+                                     Y21 = Y21, Y31 = Y31, Y32 = Y32,
+                                     nsamp = nsamp, burnin = burnin,
+                                     thin = thin, rho_0 = rho_0,
+                                     alpha_0 = alpha_0, beta_0 = beta_0,
+                                     eta_0 = eta_0, tau_0 = tau_0,
+                                     display_progress = display_progress)
+    } else if (use_code == "r") {
+        bfout <- bfa_gs_linked_gibbs_r(Linit = Linit, Finit = Finit,
+                                       xi_init = xi_init, phi_init = phi_init,
+                                       zeta_init = zeta_init, Y22init = Y22init,
+                                       Y21 = Y21, Y31 = Y31, Y32 = Y32,
+                                       nsamp = nsamp, burnin = burnin,
+                                       thin = thin, rho_0 = rho_0,
+                                       alpha_0 = alpha_0, beta_0 = beta_0,
+                                       eta_0 = eta_0, tau_0 = tau_0,
+                                       display_progress = display_progress)
+    }
+
     return(bfout)
 }
+
+
+#' R implementation of \code{\link{bfa_gs_linked_gibbs}}.
+#'
+#' @inheritParams bfa_gs_linked_gibbs
+#'
+#' @author David Gerard
+#'
+bfa_gs_linked_gibbs_r <- function(Linit, Finit, xi_init, phi_init,
+                                  zeta_init, Y22init, Y21, Y31, Y32,
+                                  nsamp, burnin, thin, rho_0, alpha_0,
+                                  beta_0, eta_0, tau_0,
+                                  display_progress) {
+
+    ## Get dimensions of matrices
+    n         <- nrow(Linit)
+    p         <- ncol(Finit)
+    nfac      <- ncol(Linit)
+    ncovs     <- nrow(Y21)
+    ncontrols <- ncol(Y21)
+
+    ## Initialize matrices
+    L_current   <- Linit
+    F_current   <- Finit
+    xi_current  <- xi_init
+    phi_current <- phi_init
+    zeta_current <- zeta_init
+    Y22_current <- Y22init
+    Y_current   <- rbind(cbind(Y21, Y22_current), cbind(Y31, Y32))
+
+
+    ## Run the Gibbs sampler --------------------------------------------------
+    nkeeps <- floor(nsamp / thin)
+
+    Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, nkeeps))
+    thin_index <- 1
+    phi_mat <- matrix(NA, nrow = nkeeps, ncol = 1)
+    xi_mat <- matrix(NA, nrow = nkeeps, ncol = p)
+    if (display_progress) {
+        cat("Progress:\n")
+        pb <- utils::txtProgressBar(style = 3)
+    }
+    for (gindex in 1:(nsamp + burnin)) {
+        if (display_progress) {
+            utils::setTxtProgressBar(pb = pb, value = gindex / nsamp)
+        }
+
+        ## Update L ----------------------------------------------------
+        Fsig <- sweep(F_current, 2, xi_current, `*`)
+        eigen_fsf <- eigen(tcrossprod(Fsig, F_current) + diag(zeta_current), symmetric = TRUE)
+
+        L_meanmat <- tcrossprod(sweep(Y_current, 2, xi_current, `*`), F_current) %*%
+            tcrossprod(sweep(eigen_fsf$vectors, 2, 1 / eigen_fsf$values, `*`),
+                       eigen_fsf$vectors)
+
+        col_cov_half <- tcrossprod(sweep(eigen_fsf$vectors, 2, 1 / sqrt(eigen_fsf$values), `*`),
+                                   eigen_fsf$vectors)
+        L_current <- L_meanmat +
+            matrix(stats::rnorm(prod(dim(L_current))), nrow = nrow(L_current)) %*% col_cov_half
+
+        ## Should equal
+        ## Y_current %*% diag(xi_current) %*% t(F_current) %*%
+        ##     solve(tcrossprod(Fsig, F_current) + diag(nfac))
+        ## L_meanmat
+
+        ## Update F -----------------------------------------------------------
+
+        eigen_ll <- eigen(crossprod(L_current) + diag(nfac), symmetric = TRUE)
+
+
+        F_meanmat <- tcrossprod(sweep(eigen_ll$vectors, 2, 1 / eigen_ll$values, `*`),
+                                eigen_ll$vectors) %*% crossprod(L_current, Y_current)
+        row_cov_half <- tcrossprod(sweep(eigen_ll$vectors, 2, 1 / sqrt(eigen_ll$values), `*`),
+                                   eigen_ll$vectors)
+        F_error <- row_cov_half %*% sweep(matrix(stats::rnorm(prod(dim(F_current))),
+                                                 nrow = nrow(F_current)),
+                                          2, 1 / sqrt(xi_current), `*`)
+        F_current <- F_meanmat + F_error
+
+        ## Update xi ----------------------------------------------------------
+        theta_current <- L_current %*% F_current
+        r_vec         <- colSums((Y_current - theta_current) ^ 2)
+        u_vec         <- colSums(F_current ^ 2)
+        xi_shape      <- (n + nfac + rho_0) / 2
+        xi_rate       <- (r_vec + u_vec + rho_0 * phi_current) / 2
+        xi_current    <- sapply(xi_rate, FUN = stats::rgamma, n = 1, shape = xi_shape)
+
+        ## Update phi ---------------------------------------------------------
+        phi_shape   <- (p * rho_0 + alpha_0) / 2
+        phi_rate    <- (alpha_0 * beta_0 + rho_0 * sum(xi_current)) / 2
+        phi_current <- stats::rgamma(n = 1, shape = phi_shape, rate = phi_rate)
+
+        ## Update zeta --------------------------------------------------------
+        s_vec        <- colSums(L_current ^ 2)
+        zeta_shape   <- (n + eta_0) / 2
+        zeta_rate    <- (s_vec + eta_0 * tau_0) / 2
+        zeta_current <- sapply(zeta_rate, FUN = stats::rgamma, n = 1, shape = zeta_shape)
+
+        ## Update Y22 ---------------------------------------------------------
+        Y22_mean <- theta_current[1:ncovs, (ncontrols + 1):p, drop = FALSE]
+        Y22_error <- sweep(matrix(stats::rnorm(n = ncovs * (p - ncontrols)), nrow = ncovs), 2,
+                           1 / sqrt(xi_current[(ncontrols + 1):p]), `*`)
+        Y22_current <- Y22_mean + Y22_error
+        Y_current[1:ncovs, (ncontrols + 1):p] <- Y22_current
+
+        if ((gindex - burnin) %% thin == 0 & gindex > burnin) {
+            Y22_array[, , thin_index] <- Y22_current
+            phi_mat[thin_index, 1] <- phi_current
+            xi_mat[thin_index,] <- xi_current
+            thin_index <- thin_index + 1
+        }
+    }
+    if (display_progress) {
+        cat("\nComplete!\n")
+    }
+
+    return(list(Y22_array = Y22_array, xi = xi_mat, phi = phi_mat))
+}
+
+
 
 
 #' Simple Bayesian low rank matrix decomposition.
