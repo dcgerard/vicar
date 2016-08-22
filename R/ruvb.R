@@ -20,6 +20,7 @@
 #'     \code{\link{bsvd}} for an example function.
 #' @param fa_args A list of additional parameters to pass to
 #'     \code{fa_func}.
+#' @param return_mcmc A logical. Should we return the MCMC draws?
 #'
 #' @return \code{beta2hat} The estimates of the coefficients of the
 #'     covariates of interest that do not correspond to control genes.
@@ -43,8 +44,9 @@
 #'     \code{bfa_wrapper} for implemented Bayesian factor analyeses.
 #'
 #' @export
-ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked, fa_args = list(),
-                 cov_of_interest = ncol(X), include_intercept = TRUE) {
+ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
+                 fa_args = list(), cov_of_interest = ncol(X),
+                 include_intercept = TRUE, return_mcmc = FALSE) {
 
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.numeric(Y))
@@ -104,6 +106,11 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked, fa_args = list(),
                        (1:(prod(dim(return_list$lfsr)))))[order(lfsr_order)],
                       nrow = nrow(return_list$lfsr), ncol = ncol(return_list$lfsr))
     return_list$svalues <- svalues
+
+    if (return_mcmc) {
+        return_list$betahat_post <- betahat_post
+        return_list$fa <- faout
+    }
 
     return(return_list)
 }
@@ -373,7 +380,7 @@ bfa_gs_linked <- function(Y21, Y31, Y32, k, nsamp = 10000,
                           display_progress = TRUE,
                           rho_0 = 0.1, alpha_0 = 0.1,
                           beta_0 = 1, eta_0 = 1,
-                          tau_0 = 1, use_code = c("cpp", "r")) {
+                          tau_0 = 1, use_code = c("r", "cpp")) {
 
     assertthat::are_equal(ncol(Y21), ncol(Y31))
     assertthat::are_equal(nrow(Y31), nrow(Y32))

@@ -5,7 +5,8 @@
 \title{Bayesian version of Removing Unwanted Variation.}
 \usage{
 ruvb(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked, fa_args = list(),
-  cov_of_interest = ncol(X), include_intercept = TRUE)
+  cov_of_interest = ncol(X), include_intercept = TRUE,
+  return_mcmc = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -42,6 +43,8 @@ are regressed out by OLS.}
 check \code{X} to see if it has an intercept term. If not, then
 it will add an intercept term. If \code{FALSE}, then \code{X}
 will be unchanged.}
+
+\item{return_mcmc}{A logical. Should we return the MCMC draws?}
 }
 \value{
 \code{beta2hat} The estimates of the coefficients of the
