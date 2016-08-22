@@ -96,6 +96,7 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
 
     return_list <- list()
     return_list$posterior_means   <- apply(betahat_post, c(1, 2), mean)
+    return_list$posterior_sd      <- apply(betahat_post, c(1, 2), sd)
     return_list$posterior_medians <- apply(betahat_post, c(1, 2), stats::median)
     return_list$posterior_upper   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.975))
     return_list$posterior_lower   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.025))
