@@ -22,20 +22,39 @@
 #'     \code{fa_func}.
 #' @param return_mcmc A logical. Should we return the MCMC draws?
 #'
-#' @return \code{beta2hat} The estimates of the coefficients of the
-#'     covariates of interest that do not correspond to control genes.
+#' @return A list with with some or all of the following elements.
 #'
-#'     \code{betahat_long} The estimates of the coefficients. Those
-#'     corresponding to control genes are set to 0.
+#'     \code{means} The posterior means of the betas.
 #'
-#'     \code{sebetahat} If \code{do_variance = TRUE}, then these are
-#'     the "standard errors" of \code{beta2hat} (but not really).
+#'     \code{sd} The posterior standard deviations of the betas.
 #'
-#'     \code{tstats} If \code{do_variance = TRUE}, then these are
-#'     the "t-statistics" of \code{beta2hat} (but not really).
+#'     \code{medians} The posterior medians of the betas
 #'
-#'     \code{pvalues} If \code{do_variance = TRUE}, then these are
-#'     the "p-values" of \code{tstats} (but not really).
+#'     \code{upper} The posterior 97.5th percentile of the betas.
+#'
+#'     \code{lower} The posterior 2.5th percentile of the betas.
+#'
+#'     \code{lfsr1} The empirical local false sign rate. This just
+#'     counts the number of betas that are less than 0 before
+#'     calculating lfsr.
+#'
+#'     \code{lfsr2} The normal approximation for local false sign
+#'     rate. This approximates the posterior of each beta by a normal,
+#'     then uses this approximation to calculate lfsr.
+#'
+#'     \code{t} The posterior means divided by the posterior standard
+#'     deviations.
+#'
+#'     \code{svalues1} The svalues from lfsr1.
+#'
+#'     \code{svalues2} The svalues from lfsr2.
+#'
+#'     \code{betahat_post} An array of the posterior samples of the
+#'     betas. Only returned if \code{return_mcmc} is \code{TRUE}.
+#'
+#'     \code{fa} The raw output from whatever factor analysis is
+#'     used. Only returned if \code{return_mcmc} is \code{TRUE}.
+#'
 #'
 #'
 #' @author David Gerard
@@ -94,19 +113,29 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
         betahat_post[, , index] <- R22inv %*% (Y22 - faout$Y22_array[, , index])
     }
 
+    ## Create posterior summaries -----------------------------------------------
     return_list <- list()
-    return_list$posterior_means   <- apply(betahat_post, c(1, 2), mean)
-    return_list$posterior_sd      <- apply(betahat_post, c(1, 2), sd)
-    return_list$posterior_medians <- apply(betahat_post, c(1, 2), stats::median)
-    return_list$posterior_upper   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.975))
-    return_list$posterior_lower   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.025))
-    return_list$lfsr              <- apply(betahat_post, c(1, 2), calc_lfsr)
+    return_list$means   <- apply(betahat_post, c(1, 2), mean)
+    return_list$sd      <- apply(betahat_post, c(1, 2), stats::sd)
+    return_list$medians <- apply(betahat_post, c(1, 2), stats::median)
+    return_list$upper   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.975))
+    return_list$lower   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.025))
+    return_list$lfsr1   <- apply(betahat_post, c(1, 2), calc_lfsr)
+    return_list$t       <- return_list$means / return_list$sd
+    pless               <- stats::pnorm(q = 0, mean = return_list$means, sd = return_list$sd)
+    return_list$lfsr2   <- pmin(pless, 1 - pless)
 
-    lfsr_order <- order(c(return_list$lfsr))
-    svalues <- matrix((cumsum(c(return_list$lfsr)[lfsr_order]) /
-                       (1:(prod(dim(return_list$lfsr)))))[order(lfsr_order)],
-                      nrow = nrow(return_list$lfsr), ncol = ncol(return_list$lfsr))
-    return_list$svalues <- svalues
+    lfsr1_order <- order(c(return_list$lfsr1))
+    svalues1 <- matrix((cumsum(c(return_list$lfsr1)[lfsr1_order]) /
+                        (1:(prod(dim(return_list$lfsr1)))))[order(lfsr1_order)],
+                       nrow = nrow(return_list$lfsr1), ncol = ncol(return_list$lfsr1))
+    return_list$svalues1 <- svalues1
+
+    lfsr2_order <- order(c(return_list$lfsr2))
+    svalues2 <- matrix((cumsum(c(return_list$lfsr2)[lfsr2_order]) /
+                        (1:(prod(dim(return_list$lfsr2)))))[order(lfsr2_order)],
+                       nrow = nrow(return_list$lfsr2), ncol = ncol(return_list$lfsr2))
+    return_list$svalues2 <- svalues2
 
     if (return_mcmc) {
         return_list$betahat_post <- betahat_post

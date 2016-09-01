@@ -47,20 +47,38 @@ will be unchanged.}
 \item{return_mcmc}{A logical. Should we return the MCMC draws?}
 }
 \value{
-\code{beta2hat} The estimates of the coefficients of the
-    covariates of interest that do not correspond to control genes.
+A list with with some or all of the following elements.
 
-    \code{betahat_long} The estimates of the coefficients. Those
-    corresponding to control genes are set to 0.
+    \code{means} The posterior means of the betas.
 
-    \code{sebetahat} If \code{do_variance = TRUE}, then these are
-    the "standard errors" of \code{beta2hat} (but not really).
+    \code{sd} The posterior standard deviations of the betas.
 
-    \code{tstats} If \code{do_variance = TRUE}, then these are
-    the "t-statistics" of \code{beta2hat} (but not really).
+    \code{medians} The posterior medians of the betas
 
-    \code{pvalues} If \code{do_variance = TRUE}, then these are
-    the "p-values" of \code{tstats} (but not really).
+    \code{upper} The posterior 97.5th percentile of the betas.
+
+    \code{lower} The posterior 2.5th percentile of the betas.
+
+    \code{lfsr1} The empirical local false sign rate. This just
+    counts the number of betas that are less than 0 before
+    calculating lfsr.
+
+    \code{lfsr2} The normal approximation for local false sign
+    rate. This approximates the posterior of each beta by a normal,
+    then uses this approximation to calculate lfsr.
+
+    \code{t} The posterior means divided by the posterior standard
+    deviations.
+
+    \code{svalues1} The svalues from lfsr1.
+
+    \code{svalues2} The svalues from lfsr2.
+
+    \code{betahat_post} An array of the posterior samples of the
+    betas. Only returned if \code{return_mcmc} is \code{TRUE}.
+
+    \code{fa} The raw output from whatever factor analysis is
+    used. Only returned if \code{return_mcmc} is \code{TRUE}.
 }
 \description{
 Right now, this only allows you to use a uniform prior on the

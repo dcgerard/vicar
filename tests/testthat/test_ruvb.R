@@ -1,7 +1,7 @@
 library(vicar)
 context("ruvb")
 
-test_that("See if RUV3 returns correct OLS estimates and matches vruv2", {
+test_that("see if ruvb works ok", {
     set.seed(71)
     n <- 11
     p <- 71
