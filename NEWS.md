@@ -1,3 +1,13 @@
+# vicar 0.1.3
+A lot of changes have occurred since my last news update. The biggest changes are:
+
+* RUV3 is a method that can be considered both a version of RUV2 and RUV4. I implemented this in the function `ruv3`.
+* `ruvimpute` is a generic function for using matrix imputation for confounder adjustment.
+* `ruvb` is a special Bayesian version of RUV. It is highly customize-able, as you can tweak the Bayesian factor analysis and the prior specifications of the effects.
+* I no longer recommend `vruv2` as this is now subsumed by `ruv3`. I'll probably remove `vruv2` in the future.
+
+I provide reasonable defaults for all new methods.
+
 # vicar 0.1.2
 
 * `vruv2` now works pretty well and is recommended for use. This is a very different way to do variance inflation in RUV2 than what was previously implemented.
