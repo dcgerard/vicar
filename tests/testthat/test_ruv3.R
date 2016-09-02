@@ -56,7 +56,7 @@ test_that("ruvimpute returns RUV2, RUV3, and RUV4", {
     n <- 17
     p <- 103
     k <- 5
-    q <- 2
+    q <- 3
 
     X <- matrix(rnorm(n * q), nrow = n)
     beta <- matrix(rnorm(q * p), nrow = q)
@@ -100,10 +100,10 @@ test_that("ruvimpute returns RUV2, RUV3, and RUV4", {
                         likelihood = "normal", limmashrink = FALSE, include_intercept = FALSE,
                         gls = FALSE)
 
-    expect_equal(c(imp2$beta2hat), ruv2out$betahat[, !ctl])
-    expect_equal(c(imp3$beta2hat), ruv3out$betahat[, !ctl])
-    expect_equal(c(imp4$beta2hat), ruv4out$betahat[, !ctl])
-    expect_equal(c(my_ruv4out$betahat)[!ctl], ruv4out$betahat[, !ctl])
+    expect_equal(c(imp2$beta2hat), c(ruv2out$betahat[, !ctl]))
+    expect_equal(c(imp3$beta2hat), c(ruv3out$betahat[, !ctl]))
+    expect_equal(c(imp4$beta2hat), c(ruv4out$betahat[, !ctl]))
+    expect_equal(c(t(my_ruv4out$betahat[!ctl, ])), c(ruv4out$betahat[, !ctl]))
 
 
     ## plot(sout$beta2hat, sout2$beta2hat)

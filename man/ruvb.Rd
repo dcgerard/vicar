@@ -6,7 +6,7 @@
 \usage{
 ruvb(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked, fa_args = list(),
   cov_of_interest = ncol(X), include_intercept = TRUE,
-  return_mcmc = FALSE)
+  return_mcmc = FALSE, prior_fun = NULL)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -45,6 +45,9 @@ it will add an intercept term. If \code{FALSE}, then \code{X}
 will be unchanged.}
 
 \item{return_mcmc}{A logical. Should we return the MCMC draws?}
+
+\item{prior_fun}{A function. This should take as inpute a matrix
+and output a positive numeric.}
 }
 \value{
 A list with with some or all of the following elements.

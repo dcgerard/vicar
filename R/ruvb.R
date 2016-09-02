@@ -21,6 +21,8 @@
 #' @param fa_args A list of additional parameters to pass to
 #'     \code{fa_func}.
 #' @param return_mcmc A logical. Should we return the MCMC draws?
+#' @param prior_fun A function. This should take as inpute a matrix
+#'     and output a positive numeric.
 #'
 #' @return A list with with some or all of the following elements.
 #'
@@ -65,7 +67,8 @@
 #' @export
 ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
                  fa_args = list(), cov_of_interest = ncol(X),
-                 include_intercept = TRUE, return_mcmc = FALSE) {
+                 include_intercept = TRUE, return_mcmc = FALSE,
+                 prior_fun = NULL) {
 
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.numeric(Y))
@@ -113,17 +116,36 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
         betahat_post[, , index] <- R22inv %*% (Y22 - faout$Y22_array[, , index])
     }
 
+
     ## Create posterior summaries -----------------------------------------------
     return_list <- list()
-    return_list$means   <- apply(betahat_post, c(1, 2), mean)
-    return_list$sd      <- apply(betahat_post, c(1, 2), stats::sd)
-    return_list$medians <- apply(betahat_post, c(1, 2), stats::median)
-    return_list$upper   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.975))
-    return_list$lower   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.025))
-    return_list$lfsr1   <- apply(betahat_post, c(1, 2), calc_lfsr)
-    return_list$t       <- return_list$means / return_list$sd
-    pless               <- stats::pnorm(q = 0, mean = return_list$means, sd = return_list$sd)
-    return_list$lfsr2   <- pmin(pless, 1 - pless)
+    if (is.null(prior_fun)) {
+        return_list$means   <- apply(betahat_post, c(1, 2), mean)
+        return_list$sd      <- apply(betahat_post, c(1, 2), stats::sd)
+        return_list$medians <- apply(betahat_post, c(1, 2), stats::median)
+        return_list$upper   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.975))
+        return_list$lower   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.025))
+        return_list$lfsr1   <- apply(betahat_post, c(1, 2), calc_lfsr)
+        return_list$t       <- return_list$means / return_list$sd
+        pless               <- stats::pnorm(q = 0, mean = return_list$means, sd = return_list$sd)
+        return_list$lfsr2   <- pmin(pless, 1 - pless)
+    } else {
+        g_vec <- apply(betahat_post, 3, prior_fun)
+        g_vec <- g_vec / sum(g_vec)
+
+        return_list$means   <- apply(betahat_post, c(1, 2), calc_mean_g, g = g_vec)
+        return_list$sd      <- sqrt(apply(betahat_post, c(1, 2), calc_mean_g, g = g_vec, r = 2) -
+                                    return_list$means ^ 2)
+        return_list$medians <- apply(betahat_post, c(1, 2), calc_quantiles_g, g = g_vec,
+                                     quant = 0.5)
+        return_list$lower   <- apply(betahat_post, c(1, 2), calc_quantiles_g, g = g_vec,
+                                     quant = 0.025)
+        return_list$upper   <- apply(betahat_post, c(1, 2), calc_quantiles_g, g = g_vec,
+                                     quant = 0.975)
+        return_list$lfsr1   <- apply(betahat_post, c(1, 2), calc_lfsr_g, g = g_vec)
+        pless               <- stats::pnorm(q = 0, mean = return_list$means, sd = return_list$sd)
+        return_list$lfsr2   <- pmin(pless, 1 - pless)
+    }
 
     lfsr1_order <- order(c(return_list$lfsr1))
     svalues1 <- matrix((cumsum(c(return_list$lfsr1)[lfsr1_order]) /
@@ -145,6 +167,54 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
     return(return_list)
 }
 
+#' Hierarchical prior density function as described in Gerard and Stephens (2016)
+#'
+#' @param beta_mat A matrix. The rows are the coefficients of the
+#'     difference covariates. The columns are the different genes.
+#' @param shape_param A positive numeric. The shape parameter for the
+#'     gamma prior.
+#' @param rate_param A positive numeric. The rate parameter for the
+#'     gamma prior.
+#'
+#' @author David Gerard
+#'
+#' @export
+hier_fun <- function(beta_mat, shape_param = 1, rate_param = 1) {
+    if (!is.matrix(beta_mat)) {
+        beta_mat <- matrix(beta_mat, nrow = 1)
+    }
+
+    pstar <- ncol(beta_mat)
+    sample_means     <- rowMeans(beta_mat)
+    sample_variances <- apply(beta_mat, 1, stats::var)
+    inner_pow <- pstar / (pstar + 1) * sample_means ^ 2 + (pstar - 1) * sample_variances +
+                                                          shape_param * rate_param
+    llike <- lgamma((pstar + shape_param) / 2) + shape_param * log(2) / 2 -
+        (pstar + shape_param) * log(inner_pow) / 2 - pstar * log(pi) / 2 - log(pstar + 1) / 2
+    return(exp(sum(llike)))
+}
+
+#' A basic normal prior density function.
+#'
+#' @param beta_mat A matrix. The rows are the coefficients of the
+#'     difference covariates. The columns are the different genes.
+#' @param prior_mean A numeric. The prior mean.
+#' @param prior_variance A positive numeric. The prior variance.
+#'
+#' @author David Gerard
+#'
+#' @export
+normal_prior <- function(beta_mat, prior_mean = 0, prior_variance = 100) {
+    if (!is.matrix(beta_mat)) {
+        beta_mat <- matrix(beta_mat, nrow = 1)
+    }
+    pstar <- ncol(beta_mat)
+
+    llike <- sum(stats::dnorm(beta_mat, mean = prior_mean, sd = sqrt(prior_variance), log = TRUE))
+    return(exp(llike))
+}
+
+
 #' Empirical estimate of lfsr based on posterior samples.
 #'
 #' @param y A vector of posterior draws.
@@ -154,6 +224,40 @@ calc_lfsr <- function(y) {
     nless <- sum(y < 0)
     lfsr <- min(nless, length(y) - nless) / length(y)
     return(lfsr)
+}
+
+#' Same as \code{\link{calc_lfsr}} except with a prior specification.
+#'
+#' @param y A vector of posterior draws.
+#' @param g A vector of priors.
+#'
+#' @author David Gerard
+calc_lfsr_g <- function(y, g) {
+    which_less <- y < 0
+    pjk <- sum(g[which_less]) / sum(g)
+    lfsr <- min(pjk, 1 - pjk)
+    return(lfsr)
+}
+
+#' Calculate moments of pointmass rv's.
+#'
+#' @inheritParams calc_lfsr_g
+#' @param r A positive numeric. The moment to calculate.
+#'
+#' @author David Gerard
+calc_mean_g <- function(y, g, r = 1) {
+    mean_val <- sum(g * (y ^ r)) / sum(g)
+}
+
+#' Calculate quantiles of pointmass rv's.
+#'
+#' @inheritParams calc_lfsr_g
+#' @param quant The quantile to calculate.
+#'
+#' @author David Gerard
+calc_quantiles_g <- function(y, g, quant = 0.5) {
+    qval <- y[order(y)][max(which(cumsum(g[order(y)]) / sum(g) < quant))]
+    return(qval)
 }
 
 #' Gibbs sampler for Bayesian SVD.

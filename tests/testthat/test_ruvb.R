@@ -1,7 +1,7 @@
 library(vicar)
 context("ruvb")
 
-test_that("see if ruvb works ok", {
+test_that("see if ruvb works ok. In particular, if uniform prior returns same results the two ways I calculate it", {
     set.seed(71)
     n <- 11
     p <- 71
@@ -22,10 +22,26 @@ test_that("see if ruvb works ok", {
     fa_args <- list()
     fa_func <- bfl
 
+    set.seed(73)
     return_list <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
-                        include_intercept = FALSE)
-    ## return_list2 <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
-    ##                      include_intercept = FALSE, fa_func = bfl)
+                        include_intercept = FALSE, prior_fun = NULL)
+
+    set.seed(73) ## returns identity
+    return_list2 <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
+                        include_intercept = FALSE, prior_fun = function(x){ 1 })
+
+
+
+    expect_equal(return_list$lfsr1, return_list2$lfsr1)
+    expect_equal(return_list$means, return_list2$means)
+    expect_equal(return_list$sd, return_list2$sd, tol = 10 ^ -3)
+    expect_equal(return_list$lfsr2, return_list2$lfsr2, tol = 10 ^ -3)
+
+    expect_true(sum(abs(return_list$lower - return_list2$lower)) /
+                sum(abs(return_list$lower)) < 0.02)
+    expect_true(sum(abs(return_list$upper - return_list2$upper)) /
+                sum(abs(return_list$upper)) < 0.02)
+
 
 
     cout <- cate::cate.fit(X.primary = X[, cov_of_interest, drop = FALSE],
@@ -153,3 +169,17 @@ Y22outr <- bfa_gs_linked_gibbs_r(Linit = dat2$Linit, Finit = dat2$Finit,
                                  tau_0 = dat2$tau_0,
                                  display_progress = FALSE)
 })
+
+
+
+test_that("calc_lfsr_g works", {
+    y <- -10:10
+    g <- rep(1, 20)
+    cout <- calc_lfsr_g(y, g)
+    expect_equal(cout, 0.5)
+
+    g <- c(rep(0, 5), rep(1, 15))
+    cout <- calc_lfsr_g(y, g)
+    expect_equal(cout, 1/3)
+}
+)
