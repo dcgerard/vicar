@@ -23,12 +23,18 @@ test_that("see if ruvb works ok. In particular, if uniform prior returns same re
     fa_func <- bfl
 
     set.seed(73)
-    return_list <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
-                        include_intercept = FALSE, prior_fun = NULL)
+    return_list <- ruvb(Y = Y, X = X, ctl = ctl, k = q,
+                        cov_of_interest = cov_of_interest,
+                        include_intercept = FALSE, prior_fun = NULL,
+                        fa_args = list(nsamp = 1000, thin = 1, display_progress = FALSE))
 
     set.seed(73) ## returns identity
-    return_list2 <- ruvb(Y = Y, X = X, ctl = ctl, k = q, cov_of_interest = cov_of_interest,
-                        include_intercept = FALSE, prior_fun = function(x){ 1 })
+    return_list2 <- ruvb(Y = Y, X = X, ctl = ctl, k = q,
+                         cov_of_interest = cov_of_interest,
+                         include_intercept = FALSE,
+                         prior_fun = function(beta_mat){ 1 },
+                         return_log = FALSE,
+                         fa_args = list(nsamp = 1000, thin = 1, display_progress = FALSE))
 
 
 
@@ -181,5 +187,45 @@ test_that("calc_lfsr_g works", {
     g <- c(rep(0, 5), rep(1, 15))
     cout <- calc_lfsr_g(y, g)
     expect_equal(cout, 1/3)
+}
+)
+
+test_that("inputting own prior results in same posterior summaries for log and no log", {
+    set.seed(71)
+    n <- 11
+    p <- 37
+    k <- 3
+    q <- 2
+
+    X <- matrix(rnorm(n * q), nrow = n)
+    beta <- matrix(rnorm(q * p), nrow = q)
+    beta[, 1:29] <- 0
+    Z <- matrix(rnorm(n * k), nrow = n)
+    alpha <- matrix(rnorm(k * p), nrow = k)
+    E <- matrix(rnorm(n * p), nrow = n)
+    Y <- X %*% beta + Z %*% alpha + E
+    ctl <- rep(FALSE, length = p)
+    ctl[1:13] <- TRUE
+    include_intercept <- FALSE
+    cov_of_interest <- 2
+    fa_args <- list()
+    fa_func <- bfl
+
+    set.seed(73)
+    return_list1 <- ruvb(Y = Y, X = X, ctl = ctl, k = q,
+                         cov_of_interest = cov_of_interest,
+                         include_intercept = FALSE,
+                         prior_fun = hier_fun, return_log = TRUE,
+                         fa_args = list(nsamp = 1000, thin = 1, display_progress = FALSE))
+
+    set.seed(73)
+    return_list2 <- ruvb(Y = Y, X = X, ctl = ctl, k = q,
+                         cov_of_interest = cov_of_interest,
+                         include_intercept = FALSE,
+                         prior_fun = hier_fun, return_log = FALSE,
+                         fa_args = list(nsamp = 1000, thin = 1, display_progress = FALSE),
+                         prior_args = list(return_log = FALSE))
+
+    expect_equal(return_list1, return_list2)
 }
 )

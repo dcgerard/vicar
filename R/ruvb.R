@@ -22,7 +22,16 @@
 #'     \code{fa_func}.
 #' @param return_mcmc A logical. Should we return the MCMC draws?
 #' @param prior_fun A function. This should take as inpute a matrix
-#'     and output a positive numeric.
+#'     and output a positive numeric, the density at said matrix. The
+#'     matix name should be \code{beta_mat}. Additional arguments may
+#'     be passed to \code{prior_fun} through the \code{prior_args}
+#'     argument.
+#' @param return_log A logical. Does \code{prior_fun} return the log
+#'     of the density (\code{"TRUE"}) or not (\code{"FALSE"})? For
+#'     numerical stability reasons, you should probably make
+#'     \code{prior_fun} return the log of the density and set this to
+#'     \code{"TRUE"}.
+#' @param prior_args A list of arguments to pass to \code{prior_fun}.
 #'
 #' @return A list with with some or all of the following elements.
 #'
@@ -68,7 +77,8 @@
 ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
                  fa_args = list(), cov_of_interest = ncol(X),
                  include_intercept = TRUE, return_mcmc = FALSE,
-                 prior_fun = NULL) {
+                 prior_fun = NULL, prior_args = list(),
+                 return_log = NULL) {
 
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.numeric(Y))
@@ -85,6 +95,7 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
     assertthat::assert_that(is.null(fa_args$Y21))
     assertthat::assert_that(is.null(fa_args$Y31))
     assertthat::assert_that(is.null(fa_args$Y32))
+    assertthat::assert_that(is.list(prior_args))
 
     rotate_out <- rotate_model(Y = Y, X = X, k = k, cov_of_interest =
                                cov_of_interest, include_intercept =
@@ -129,9 +140,19 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
         return_list$t       <- return_list$means / return_list$sd
         pless               <- stats::pnorm(q = 0, mean = return_list$means, sd = return_list$sd)
         return_list$lfsr2   <- pmin(pless, 1 - pless)
+    } else if (is.null(return_log)) {
+        stop("if prior_fun is not NULL, then return_log needs to be a logical")
     } else {
-        g_vec <- apply(betahat_post, 3, prior_fun)
-        g_vec <- g_vec / sum(g_vec)
+        if (return_log) {
+            lg_vec <- apply(X = betahat_post, MARGIN = 3, FUN = prior_fun_wrapper,
+                            prior_fun = prior_fun, prior_args = prior_args)
+            g_vec  <- exp(lg_vec - max(lg_vec))
+            g_vec  <- g_vec / sum(g_vec)
+        } else {
+            g_vec <- apply(X = betahat_post, MARGIN = 3, FUN = prior_fun_wrapper,
+                           prior_fun = prior_fun, prior_args = prior_args)
+            g_vec <- g_vec / sum(g_vec)
+        }
 
         return_list$means   <- apply(betahat_post, c(1, 2), calc_mean_g, g = g_vec)
         return_list$sd      <- sqrt(apply(betahat_post, c(1, 2), calc_mean_g, g = g_vec, r = 2) -
@@ -167,6 +188,22 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
     return(return_list)
 }
 
+#' Wrapper for \code{prior_fun} so that can be called in apply.
+#'
+#' @param beta_mat A matrix
+#' @param prior_fun A function.
+#' @param prior_args A list of arguments
+#'
+#' @author David Gerard
+prior_fun_wrapper <- function(beta_mat, prior_fun, prior_args = list()) {
+    assertthat::assert_that(is.matrix(beta_mat))
+    assertthat::assert_that(is.function(prior_fun))
+    assertthat::assert_that(is.list(prior_args))
+    prior_args$beta_mat <- beta_mat
+    return(do.call(what = prior_fun, args = prior_args))
+}
+
+
 #' Hierarchical prior density function as described in Gerard and Stephens (2016)
 #'
 #' @param beta_mat A matrix. The rows are the coefficients of the
@@ -175,11 +212,13 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
 #'     gamma prior.
 #' @param rate_param A positive numeric. The rate parameter for the
 #'     gamma prior.
+#' @param return_log A logical. Should we return the log-density
+#'     (\code{"TRUE"}) or the the density (\code{"FALSE"})?
 #'
 #' @author David Gerard
 #'
 #' @export
-hier_fun <- function(beta_mat, shape_param = 1, rate_param = 1) {
+hier_fun <- function(beta_mat, shape_param = 1, rate_param = 1, return_log = TRUE) {
     if (!is.matrix(beta_mat)) {
         beta_mat <- matrix(beta_mat, nrow = 1)
     }
@@ -191,7 +230,11 @@ hier_fun <- function(beta_mat, shape_param = 1, rate_param = 1) {
                                                           shape_param * rate_param
     llike <- lgamma((pstar + shape_param) / 2) + shape_param * log(2) / 2 -
         (pstar + shape_param) * log(inner_pow) / 2 - pstar * log(pi) / 2 - log(pstar + 1) / 2
-    return(exp(sum(llike)))
+    if(return_log) {
+        return(sum(llike))
+    } else {
+        return(exp(sum(llike)))
+    }
 }
 
 #' A basic normal prior density function.
@@ -905,12 +948,13 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
     v_vec <- paste("V", 1:p, sep = "")
     colnames(Y) <- v_vec
     form1 <- stats::as.formula(paste("~", paste(v_vec, collapse = " + ")))
-    bfout <- bfa::bfa_gauss(form1, data = Y, num.factor = k,
-                            keep.scores = TRUE, thin = keep,
-                            nburn = burnin, nsim = nsamp,
-                            center.data = FALSE, scale.data = FALSE,
-                            factor.scales = TRUE, loading.prior = "normal",
-                            print.status = print_status)
+    trash <- utils::capture.output(bfout <- bfa::bfa_gauss(form1, data = Y, num.factor = k,
+                                                           keep.scores = TRUE, thin = keep,
+                                                           nburn = burnin, nsim = nsamp,
+                                                           center.data = FALSE, scale.data = FALSE,
+                                                           factor.scales = TRUE,
+                                                           loading.prior = "normal",
+                                                           print.status = print_status))
 
     nmcmc_samp <- dim(bfout$post.loadings)[3]
     Y22_array <- array(NA, dim = c(ncovs, p - ncontrols, nmcmc_samp))

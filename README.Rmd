@@ -54,7 +54,7 @@ Or, using BibTex:
     title = {{vicar}: Variance Inflation for Confounder Adjustment in Regression},
     author = {David Gerard},
     year = {2016},
-    note = {R package version 0.1.2},
+    note = {R package version 0.1.3},
     url = {https://github.com/dcgerard/vicar},
 }
 ```

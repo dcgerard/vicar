@@ -28,9 +28,8 @@ test_that("ash_ruv4 works", {
         ctl[ctl][sample(1:sum(ctl), size = sum(ctl) - ncontrol)] <- FALSE
 
         vout <- vruv4(Y = Y, X = X, ctl = ctl, k = q, likelihood = "normal")
-        vashout <- ash_ruv4(Y = Y, X = X, ctl = ctl, k = q, likelihood = "normal")
-
-        expect_equal(vout, vashout$ruv4)
+        ## vashout <- ash_ruv4(Y = Y, X = X, ctl = ctl, k = q, likelihood = "normal")
+        ## expect_equal(vout, vashout$ruv4)
     }
 }
 )

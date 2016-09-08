@@ -6,7 +6,8 @@
 \usage{
 ruvb(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked, fa_args = list(),
   cov_of_interest = ncol(X), include_intercept = TRUE,
-  return_mcmc = FALSE, prior_fun = NULL)
+  return_mcmc = FALSE, prior_fun = NULL, prior_args = list(),
+  return_log = NULL)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -47,7 +48,18 @@ will be unchanged.}
 \item{return_mcmc}{A logical. Should we return the MCMC draws?}
 
 \item{prior_fun}{A function. This should take as inpute a matrix
-and output a positive numeric.}
+and output a positive numeric, the density at said matrix. The
+matix name should be \code{beta_mat}. Additional arguments may
+be passed to \code{prior_fun} through the \code{prior_args}
+argument.}
+
+\item{prior_args}{A list of arguments to pass to \code{prior_fun}.}
+
+\item{return_log}{A logical. Does \code{prior_fun} return the log
+of the density (\code{"TRUE"}) or not (\code{"FALSE"})? For
+numerical stability reasons, you should probably make
+\code{prior_fun} return the log of the density and set this to
+\code{"TRUE"}.}
 }
 \value{
 A list with with some or all of the following elements.
