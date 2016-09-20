@@ -1,9 +1,9 @@
-#' \code{vicar}: Variance Inflation for Confounder Adjustment in
+#' \code{vicar}: (more than just) Variance Inflation for Confounder Adjustment in
 #' Regression.
 #'
-#' Contrary to the name, \code{vicar} does more than just variance
-#' inflation. This package contains function for implementing RUV3,
-#' and two versions of what we call RUV5: RUV-Bayes and RUV-impute.
+#' \code{vicar} does more than just variance inflation. This package
+#' contains function for implementing RUV3, and two versions of what
+#' we call RUV5: RUV-Bayes and RUV-impute.
 #'
 #' @section \code{vicar} functions:
 #'

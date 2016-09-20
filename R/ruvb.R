@@ -243,18 +243,24 @@ hier_fun <- function(beta_mat, shape_param = 1, rate_param = 1, return_log = TRU
 #'     difference covariates. The columns are the different genes.
 #' @param prior_mean A numeric. The prior mean.
 #' @param prior_variance A positive numeric. The prior variance.
+#' @param return_log A logical. Should we return the log-density
+#'     (\code{"TRUE"}) or the the density (\code{"FALSE"})?
 #'
 #' @author David Gerard
 #'
 #' @export
-normal_prior <- function(beta_mat, prior_mean = 0, prior_variance = 100) {
+normal_prior <- function(beta_mat, prior_mean = 0, prior_variance = 100, return_log = TRUE) {
     if (!is.matrix(beta_mat)) {
         beta_mat <- matrix(beta_mat, nrow = 1)
     }
     pstar <- ncol(beta_mat)
 
     llike <- sum(stats::dnorm(beta_mat, mean = prior_mean, sd = sqrt(prior_variance), log = TRUE))
-    return(exp(llike))
+    if (return_log) {
+        return(llike)
+    } else {
+        return(exp(llike))
+    }
 }
 
 

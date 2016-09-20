@@ -56,6 +56,26 @@ fa_func.}
 
 \item{do_factor}{A logical. Should we do the factor analysis or just rotation?}
 }
+\value{
+A list that contains some of the following elements.
+   \itemize{
+      \item{\code{betahat_ols}: }{The OLS estimates of the coefficients of interest.}
+      \item{\code{Q}: }{The Q from the QR decomposition of \code{X}}
+      \item{\code{R11}: }{The top left element of the R matrix from the QR decomposition of \code{X}}
+      \item{\code{R12}: }{The top right element of the R matrix from the QR decomposition of \code{X}}
+      \item{\code{R22}: }{The bottom right element of the R matrix from the QR decomposition of \code{X}}
+      \item{\code{Y1}: }{The rows of the rotated Y matrix that correspond to the uninteresting covariates in \code{X}}
+      \item{\code{Y2}: }{The rows of the rotated Y matrix that correspond to the interesting covariates in \code{X}}
+      \item{\code{Y3}: }{The rows of the rotated Y matrix that correspond to the nullspace of \code{X}}
+      \item{\code{k}: }{The number of latent factors. Estimated with \code{\link[sva]{num.sv}} if not provided in the function arguments.}
+      \item{\code{X}: }{The provided \code{X} matrix. This might differ from the original \code{X} matrix up to a permutation of the columns. The interesting covariates are placed at the end of \code{X} and the uninteresting covariates are placed at the start of \code{X}.}
+      \item{\code{Y_tilde}: }{The rotated Y matrix.}
+      \item{\code{alpha}: }{The estimates of the coefficients of the unobserved confounders. Only returned if \code{do_factor = TRUE}}
+      \item{\code{Z3}: }{The estimates of the unobserved confounders (third part). Only returned if \code{do_factor = TRUE}}
+      \item{\code{sig_diag}: }{The estimates of the column-specific variances (NOT standard deviations). A vector. Only returned if \code{do_factor = TRUE}}
+      \item{\code{prior_df}: }{The estimated prior degrees of freedom. Returns NULL if \code{limmashrink = FALSE}. Only returned if \code{do_factor = TRUE}}
+   }
+}
 \description{
 QR rotation to independent models.
 }

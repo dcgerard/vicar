@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-VICAR: Variance Inflation for Confounder Adjustment in Regression
-=================================================================
+VICAR: (more than just) Variance Inflation for Confounder Adjustment in Regression
+==================================================================================
 
 [![Build Status](https://travis-ci.org/dcgerard/vicar.svg?branch=master)](https://travis-ci.org/dcgerard/vicar) [![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master)
 

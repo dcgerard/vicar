@@ -106,8 +106,8 @@ test_that("cruv4_multicov is same as RUV4 when no gls", {
     likelihood <- "normal"
 
     vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = FALSE,
-                          cov_of_interest = cov_of_interest, likelihood = "normal",
-                          gls = FALSE, limmashrink = FALSE)
+                  cov_of_interest = cov_of_interest, likelihood = "normal",
+                  gls = FALSE, limmashrink = FALSE)
 
     ruvout <- ruv::RUV4(Y = Y, X = X[, cov_of_interest, drop = FALSE],
                         ctl = ctl, k = num_sv,

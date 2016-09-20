@@ -4,7 +4,8 @@
 \alias{normal_prior}
 \title{A basic normal prior density function.}
 \usage{
-normal_prior(beta_mat, prior_mean = 0, prior_variance = 100)
+normal_prior(beta_mat, prior_mean = 0, prior_variance = 100,
+  return_log = TRUE)
 }
 \arguments{
 \item{beta_mat}{A matrix. The rows are the coefficients of the
@@ -13,6 +14,9 @@ difference covariates. The columns are the different genes.}
 \item{prior_mean}{A numeric. The prior mean.}
 
 \item{prior_variance}{A positive numeric. The prior variance.}
+
+\item{return_log}{A logical. Should we return the log-density
+(\code{"TRUE"}) or the the density (\code{"FALSE"})?}
 }
 \description{
 A basic normal prior density function.
