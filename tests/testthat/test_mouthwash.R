@@ -118,3 +118,81 @@ test_that("normal_mix_llike and normal_mix_fix works ok", {
     expect_equal(llike_vec, -1 * llike_vec2)
 }
 )
+
+
+test_that("uniform_mix_llike and uniform_mix_fix work", {
+    set.seed(124)
+    p <- 103
+    k <- 3
+    S_diag <- stats::rchisq(p, 5)
+    alpha_tilde <- matrix(stats::rnorm(k * p), nrow = p)
+    z2 <- matrix(stats::rnorm(k), ncol = 1)
+    beta <- matrix(stats::rnorm(p), ncol = 1)
+    betahat_ols <- beta + alpha_tilde %*% z2 + rnorm(p, mean = 0, sd = sqrt(S_diag))
+
+    M             <- 23
+    a_seq         <- seq(-10, 0, length = M)
+    b_seq         <- seq(10, 0, length = M)
+    lambda_seq    <- rep(1, M)
+    lambda_seq[1] <- 10
+    pi_vals <- rep(1 / M, length = M)
+    xi <- 1
+    degrees_freedom <- 3
+    scale_var <- TRUE
+
+    itermax <- 20
+    llike_vec <- rep(NA, length = itermax)
+    llike_vec[1] <- uniform_mix_llike(pi_vals = pi_vals, z2 = z2, xi = xi,
+                                      betahat_ols = betahat_ols, S_diag = S_diag,
+                                      alpha_tilde = alpha_tilde, a_seq = a_seq, b_seq = b_seq,
+                                      lambda_seq = lambda_seq, degrees_freedom = degrees_freedom)
+    xi_new <- xi
+    z_new  <- z2
+    pi_new <- pi_vals
+    for (iter_index in 2:itermax) {
+        uout <- uniform_mix_fix(pi_vals = pi_new, z2 = z_new, xi = xi_new,
+                                betahat_ols = betahat_ols, S_diag = S_diag,
+                                alpha_tilde = alpha_tilde, a_seq = a_seq, b_seq = b_seq,
+                                lambda_seq = lambda_seq, degrees_freedom = degrees_freedom,
+                                scale_var = TRUE)
+        xi_new <- uout$xi
+        z_new  <- uout$z2
+        pi_new <- uout$pi_vals
+        llike_vec[iter_index] <- uniform_mix_llike(pi_vals = pi_new, z2 = z_new, xi = xi_new,
+                                                   betahat_ols = betahat_ols, S_diag = S_diag,
+                                                   alpha_tilde = alpha_tilde, a_seq = a_seq,
+                                                   b_seq = b_seq, lambda_seq = lambda_seq,
+                                                   degrees_freedom = degrees_freedom)
+    }
+
+    expect_true(all(llike_vec[1:(itermax - 1)] <= llike_vec[2:itermax]))
+
+
+    pizxi_vec <- c(pi_vals, z2, xi)
+    llike_vec2 <- rep(NA, length = itermax)
+    llike_vec2[1] <- uniform_mix_llike_wrapper(pizxi_vec = pizxi_vec, betahat_ols = betahat_ols,
+                                               S_diag = S_diag, alpha_tilde = alpha_tilde,
+                                               a_seq = a_seq, b_seq = b_seq,
+                                               lambda_seq = lambda_seq,
+                                               degrees_freedom = degrees_freedom)
+    for (iter_index in 2:itermax) {
+        pizxi_vec <- uniform_mix_fix_wrapper(pizxi_vec = pizxi_vec, betahat_ols = betahat_ols,
+                                             S_diag = S_diag, alpha_tilde = alpha_tilde,
+                                             a_seq = a_seq, b_seq = b_seq,
+                                             lambda_seq = lambda_seq,
+                                             degrees_freedom = degrees_freedom,
+                                             scale_var = TRUE)
+        llike_vec2[iter_index] <- uniform_mix_llike_wrapper(pizxi_vec = pizxi_vec,
+                                                            betahat_ols = betahat_ols,
+                                                            S_diag = S_diag,
+                                                            alpha_tilde = alpha_tilde,
+                                                            a_seq = a_seq, b_seq = b_seq,
+                                                            lambda_seq = lambda_seq,
+                                                            degrees_freedom = degrees_freedom,
+                                                            scale_var = TRUE)
+    }
+
+    expect_equal(llike_vec2, llike_vec)
+
+}
+)

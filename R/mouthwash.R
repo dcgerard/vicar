@@ -461,7 +461,12 @@ brent_obj_norm <- function(xi, qvals, S_diag, tau2_seq, resid_vec) {
 #'
 #' @author David Gerard
 get_grid_var <- function(betahat_ols, S_diag) {
-    ## default grid to be same as in ASH
+
+    ## Check input ----------------------------------------------------
+    assertthat::are_equal(length(betahat_ols), length(S_diag))
+    assertthat::assert_that(all(S_diag > 0))
+
+    ## default grid to be same as in ASH ------------------------------
     tau2_min <- min(S_diag) / 100
     tau2_max <- 4 * max(betahat_ols ^ 2 - S_diag)
     if (tau2_max < 0) {
@@ -476,4 +481,335 @@ get_grid_var <- function(betahat_ols, S_diag) {
     }
     M <- length(tau2_seq)
     return(list(tau2_seq = tau2_seq, M = M))
+}
+
+
+################################################################################
+## Uniform mixtures ------------------------------------------------------------
+################################################################################
+
+
+#' Fixed point iteration when using t errors and a mixture of uniforms prior.
+#'
+#' @param pi_vals A vector of non-negative numerics that sums to
+#'     one. The current values of the mixing proportions.
+#' @param z2 A vector of numerics. The current values of the
+#'     unobserved confounders.
+#' @param xi A positive numeric. The current value of the variance
+#'     inflation factor.
+#' @param betahat_ols A vector of numerics. The OLS regression
+#'     coefficients.
+#' @param S_diag A vector of positive numerics. The standard errors.
+#' @param alpha_tilde A matrix of numerics. The estimats of the
+#'     coefficients of the confounders.
+#' @param a_seq A vector of numerics (usually non-positive). The lower
+#'     bounds of the uniform mixing densities.
+#' @param b_seq A vector of numerics (usually non-negative). The upper
+#'     bounds of the uniform mixing densities.
+#' @param lambda_seq A vector of numerics greater than 1. The
+#'     penalties on the mixing proportions.
+#' @param degrees_freedom A positive scalar or a vector of positive
+#'     scalars the length of \code{betahat_ols}. The degrees of
+#'     freedom of the t-distribution.
+#' @param scale_var A logical. Should we update the variance inflation
+#'     parameter (\code{TRUE}) or not (\code{FALSE})
+#'
+#' @author David Gerard
+uniform_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq, b_seq,
+                             lambda_seq, degrees_freedom, scale_var = TRUE) {
+
+    ## Make sure input is correct ----------------------------------------------
+    zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
+    assertthat::are_equal(length(zero_spot), 1)
+
+    M <- length(pi_vals)
+    p <- length(betahat_ols)
+    k <- length(z2)
+    assertthat::are_equal(length(a_seq), M)
+    assertthat::are_equal(length(b_seq), M)
+    assertthat::are_equal(length(lambda_seq), M)
+    assertthat::are_equal(length(S_diag), p)
+    assertthat::are_equal(nrow(alpha_tilde), p)
+    assertthat::are_equal(ncol(alpha_tilde), k)
+
+    ## Calculate f_tildes -----------------------------------------------------
+    sd_mat <- matrix(rep(sqrt(xi * S_diag), M), ncol = M)
+    resid_vec <- betahat_ols - alpha_tilde %*% z2
+    left_centered_means  <- outer(c(resid_vec), a_seq, FUN = `-`) / sd_mat
+    right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`) / sd_mat
+
+    denom_mat <- matrix(rep(b_seq - a_seq, p), byrow = TRUE, ncol = M)
+    top_mat <- stats::pt(q = left_centered_means, df = degrees_freedom) -
+        stats::pt(q = right_centered_means, df = degrees_freedom)
+    ftilde_mat <- top_mat / denom_mat
+
+    ftilde_mat[, zero_spot] <- dt_wrap(x = betahat_ols, df = degrees_freedom,
+                                       mean = alpha_tilde %*% z2,
+                                       sd = sqrt(xi * S_diag))
+
+    pif <- sweep(ftilde_mat, MARGIN = 2, STATS = pi_vals, FUN = `*`)
+    qvals <- pif / rowSums(pif)
+    assertthat::assert_that(all(abs(rowSums(qvals) - 1) < 10 ^ -14))
+
+    pi_new <- (colSums(qvals) + lambda_seq - 1) / (p - M + sum(lambda_seq))
+    assertthat::assert_that(abs(sum(pi_new) - 1) < 10 ^ -14)
+
+
+    oout <- stats::optim(par = z2, fn = unif_int_obj, gr = unif_int_grad,
+                         method = "L-BFGS-B",
+                         control = list(fnscale = -1, maxit = 10),
+                         xi = xi, betahat_ols = betahat_ols, alpha_tilde = alpha_tilde,
+                         S_diag = S_diag, a_seq = a_seq, b_seq = b_seq, qvals = qvals,
+                         degrees_freedom = degrees_freedom)
+
+    z_new <- oout$par
+    xi_new <- xi
+    if (scale_var) {
+        for (index in 1:10) {
+            xi_old <- xi_new
+            oout <- stats::optim(par = xi_new, fn = unif_int_obj, method = "Brent",
+                                 lower = 0, upper = 10,
+                                 control = list(fnscale = -1, maxit = 10),
+                                 z2 = z_new, betahat_ols = betahat_ols,
+                                 alpha_tilde = alpha_tilde, S_diag = S_diag, a_seq = a_seq,
+                                 b_seq = b_seq, qvals = qvals, degrees_freedom = degrees_freedom)
+            xi_new <- oout$par
+            oout <- stats::optim(par = z_new, fn = unif_int_obj, gr = unif_int_grad,
+                                 method = "L-BFGS-B",
+                                 control = list(fnscale = -1, maxit = 10),
+                                 xi = xi_new, betahat_ols = betahat_ols, alpha_tilde = alpha_tilde,
+                                 S_diag = S_diag, a_seq = a_seq, b_seq = b_seq, qvals = qvals,
+                                 degrees_freedom = degrees_freedom)
+            z_new <- oout$par
+            if (abs(xi_old / xi_new - 1) < 10 ^ -3) break
+        }
+    }
+    return(list(pi_vals = pi_new, z2 = z_new, xi = xi_new))
+}
+
+#' Intermediate objective function in EM.
+#'
+#' @inheritParams uniform_mix_fix
+#' @param qvals A matrix of non-negative numerics whose rows sum to
+#'     one. The E-step proportions.
+#'
+#' @author David Gerard
+unif_int_obj <- function(z2, xi, betahat_ols, alpha_tilde, S_diag, a_seq, b_seq, qvals,
+                         degrees_freedom) {
+
+    ## Make sure input is correct --------------------------------------------
+    M <- length(a_seq)
+    p <- length(betahat_ols)
+    k <- length(z2)
+    zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
+    assertthat::are_equal(length(zero_spot), 1)
+    assertthat::are_equal(length(S_diag), p)
+    assertthat::are_equal(nrow(alpha_tilde), p)
+    assertthat::are_equal(ncol(alpha_tilde), k)
+    assertthat::are_equal(length(b_seq), M)
+    assertthat::are_equal(ncol(qvals), M)
+    assertthat::are_equal(nrow(qvals), p)
+
+    ## Calculate objective function ------------------------------------------
+    sd_mat <- matrix(rep(sqrt(xi * S_diag), M), ncol = M)
+    resid_vec <- betahat_ols - alpha_tilde %*% z2
+    left_centered_means  <- outer(c(resid_vec), a_seq, FUN = `-`) / sd_mat
+    right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`) / sd_mat
+    tdiff_mat <- stats::pt(q = left_centered_means, df = degrees_freedom) -
+        stats::pt(q = right_centered_means, df = degrees_freedom)
+
+    tdiff_mat[, zero_spot] <- dt_wrap(x = betahat_ols, mean = alpha_tilde %*% z2,
+                                      sd = sqrt(xi * S_diag), df = degrees_freedom)
+
+    obj_val <- sum(log(tdiff_mat) * qvals)
+    return(obj_val)
+}
+
+#' Gradient wrt z2 of intermediate function in EM.
+#'
+#' @inheritParams uniform_mix_fix
+#' @param qvals A matrix of non-negative numerics whose rows sum to
+#'     one. The E-step proportions.
+#'
+#' @author David Gerard
+unif_int_grad <- function(z2, xi, betahat_ols, alpha_tilde, S_diag, a_seq, b_seq, qvals,
+                          degrees_freedom) {
+
+    ## Make sure input is correct --------------------------------------------
+    M <- length(a_seq)
+    p <- length(betahat_ols)
+    k <- length(z2)
+    zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
+    assertthat::are_equal(length(zero_spot), 1)
+    assertthat::are_equal(length(S_diag), p)
+    assertthat::are_equal(nrow(alpha_tilde), p)
+    assertthat::are_equal(ncol(alpha_tilde), k)
+    assertthat::are_equal(length(b_seq), M)
+    assertthat::are_equal(ncol(qvals), M)
+    assertthat::are_equal(nrow(qvals), p)
+
+    ## Calculate gradient ----------------------------------------------------
+    sd_mat <- matrix(rep(sqrt(xi * S_diag), M), ncol = M)
+    resid_vec <- betahat_ols - alpha_tilde %*% z2
+    left_centered_means  <- outer(c(resid_vec), a_seq, FUN = `-`) / sd_mat
+    right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`) / sd_mat
+    tdiff_mat <- stats::pt(q = left_centered_means, df = degrees_freedom) -
+        stats::pt(q = right_centered_means, df = degrees_freedom)
+
+    dtdiff_mat <- stats::dt(x = right_centered_means, df = degrees_freedom) / sd_mat -
+        stats::dt(x = left_centered_means, df = degrees_freedom) / sd_mat
+
+    tratio_mat <- dtdiff_mat / tdiff_mat
+
+    tratio_mat[, zero_spot] <- (degrees_freedom + 1) * resid_vec /
+        (degrees_freedom * xi * S_diag + resid_vec ^ 2)
+
+    grad_val <- crossprod(alpha_tilde, rowSums(tratio_mat * qvals))
+
+    return(grad_val)
+}
+
+#' Wrapper for \code{\link{uniform_mix_fix}}, mostly so I can use SQUAREM.
+#'
+#' @inheritParams uniform_mix_fix
+#' @param pizxi_vec A vector of numerics. The first M of which are
+#'     \code{pi_vals}, the next k of which are \code{z2}, the last
+#'     element is \code{xi}.
+#'
+#' @author David Gerard
+uniform_mix_fix_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde, a_seq, b_seq,
+                                      lambda_seq, degrees_freedom, scale_var = TRUE) {
+    ## Make sure input is correct
+    p <- length(betahat_ols)
+    M <- length(a_seq)
+    k <- ncol(alpha_tilde)
+    assertthat::are_equal(length(S_diag), p)
+    assertthat::are_equal(nrow(alpha_tilde), p)
+    assertthat::are_equal(length(b_seq), M)
+    assertthat::are_equal(length(lambda_seq), M)
+    assertthat::assert_that(is.logical(scale_var))
+    assertthat::are_equal(length(pizxi_vec), M + k + 1)
+
+    pi_vals <- pizxi_vec[1:M]
+    z2      <- pizxi_vec[(M + 1):(M + k)]
+    xi      <- pizxi_vec[length(pizxi_vec)]
+    fout <- uniform_mix_fix(pi_vals = pi_vals, z2 = z2, xi = xi,
+                            betahat_ols = betahat_ols, S_diag = S_diag,
+                            alpha_tilde = alpha_tilde, a_seq = a_seq,
+                            b_seq = b_seq, lambda_seq = lambda_seq,
+                            degrees_freedom = degrees_freedom,
+                            scale_var = scale_var)
+    pizxi_new <- c(fout$pi_vals, fout$z2, fout$xi)
+    return(pizxi_new)
+}
+
+#' Log-likelihood when using t errors and mixture of uniforms prior.
+#'
+#' @inheritParams uniform_mix_fix
+#'
+#' @author David Gerard
+uniform_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq, b_seq,
+                              lambda_seq, degrees_freedom) {
+
+    ## Make sure input is correct ----------------------------------------------
+    zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
+    assertthat::are_equal(length(zero_spot), 1)
+
+    M <- length(pi_vals)
+    p <- length(betahat_ols)
+    k <- length(z2)
+    assertthat::are_equal(length(a_seq), M)
+    assertthat::are_equal(length(b_seq), M)
+    assertthat::are_equal(length(lambda_seq), M)
+    assertthat::are_equal(length(S_diag), p)
+    assertthat::are_equal(nrow(alpha_tilde), p)
+    assertthat::are_equal(ncol(alpha_tilde), k)
+
+    ## Calculate f_tildes -----------------------------------------------------
+    sd_mat <- matrix(rep(sqrt(xi * S_diag), M), ncol = M)
+    resid_vec <- betahat_ols - alpha_tilde %*% z2
+    left_centered_means  <- outer(c(resid_vec), a_seq, FUN = `-`) / sd_mat
+    right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`)
+
+    denom_mat <- matrix(rep(b_seq - a_seq, p), byrow = TRUE, ncol = M)
+    top_mat <- stats::pt(q = left_centered_means, df = degrees_freedom) -
+        stats::pt(q = right_centered_means, df = degrees_freedom)
+    ftilde_mat <- top_mat / denom_mat
+
+    ftilde_mat[, zero_spot] <- dt_wrap(x = betahat_ols, df = degrees_freedom,
+                                       mean = alpha_tilde %*% z2,
+                                       sd = sqrt(xi * S_diag))
+
+    llike <- sum(log(rowSums(sweep(ftilde_mat, MARGIN = 2, STATS = pi_vals, FUN = `*`))))
+
+    if (all(lambda_seq == 1)) {
+        pen <- 0
+    } else {
+        pen <- sum(log(pi_vals[lambda_seq > 1]) * (lambda_seq[lambda_seq > 1] - 1))
+    }
+
+    return(llike + pen)
+}
+
+#' Wrapper for \code{\link{uniform_mix_llike}}, mostly for the SQUAREM package.
+#'
+#' @inheritParams uniform_mix_fix
+#' @param pizxi_vec A vector of numerics. The first M of which are
+#'     \code{pi_vals}, the next k of which are \code{z2}, the last
+#'     element is \code{xi}.
+#'
+#' @author David Gerard
+uniform_mix_llike_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde, a_seq, b_seq,
+                                      lambda_seq, degrees_freedom, scale_var = TRUE) {
+    ## Make sure input is correct
+    p <- length(betahat_ols)
+    M <- length(a_seq)
+    k <- ncol(alpha_tilde)
+    assertthat::are_equal(length(S_diag), p)
+    assertthat::are_equal(nrow(alpha_tilde), p)
+    assertthat::are_equal(length(b_seq), M)
+    assertthat::are_equal(length(lambda_seq), M)
+    assertthat::assert_that(is.logical(scale_var))
+    assertthat::are_equal(length(pizxi_vec), M + k + 1)
+
+    pi_vals <- pizxi_vec[1:M]
+    z2      <- pizxi_vec[(M + 1):(M + k)]
+    xi      <- pizxi_vec[length(pizxi_vec)]
+    llike <- uniform_mix_llike(pi_vals = pi_vals, z2 = z2, xi = xi,
+                             betahat_ols = betahat_ols, S_diag = S_diag,
+                             alpha_tilde = alpha_tilde, a_seq = a_seq,
+                             b_seq = b_seq, lambda_seq = lambda_seq,
+                             degrees_freedom = degrees_freedom)
+    return(llike)
+}
+
+
+#' Wrapper for dt with a non-zero mena and non-1 scale parameter.
+#'
+#' @param x A numeric. Where to evaluate the density function.
+#' @param df A positive numeric. The degrees of freedom.
+#' @param mean A numeric. The mean of the t. Defaults to 0.
+#' @param sd A positive numeric. The standard deviation of the
+#'     t. Defaults to 1.
+#' @param log A logical. Should we return the log-density
+#'     (\code{TRUE}) or the density (\code{FALSE})?
+dt_wrap <- function(x, df, mean = 0, sd = 1, log = FALSE) {
+    x_new <- (x - mean) / sd
+    if (!log) {
+        dval <- stats::dt(x_new, df = df) / sd
+    } else {
+        dval <- stats::dt(x_new, df = df, log = TRUE) - log(sd)
+    }
+    return(dval)
+}
+
+#' Wrapper for pt with a non-zero mena and non-1 scale parameter.
+#'
+#' @param x A numeric. Where to evaluate the cdf.
+#' @inheritParams dt_wrap
+#'
+pt_wrap <- function(x, df, mean = 0, sd = 1) {
+    x_new <- (x - mean) / sd
+    pval <- stats::pt(x_new, df = df)
+    return(pval)
 }
