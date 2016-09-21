@@ -121,7 +121,8 @@ test_that("normal_mix_llike and normal_mix_fix works ok", {
 
 
 test_that("uniform_mix_llike and uniform_mix_fix work", {
-    set.seed(124)
+    set.seed(991)
+
     p <- 103
     k <- 3
     S_diag <- stats::rchisq(p, 5)
@@ -163,6 +164,7 @@ test_that("uniform_mix_llike and uniform_mix_fix work", {
                                                    alpha_tilde = alpha_tilde, a_seq = a_seq,
                                                    b_seq = b_seq, lambda_seq = lambda_seq,
                                                    degrees_freedom = degrees_freedom)
+        cat(iter_index, "\n")
     }
 
     expect_true(all(llike_vec[1:(itermax - 1)] <= llike_vec[2:itermax]))
@@ -192,7 +194,7 @@ test_that("uniform_mix_llike and uniform_mix_fix work", {
                                                             scale_var = TRUE)
     }
 
-    expect_equal(llike_vec2, llike_vec)
+    expect_equal(-1 * llike_vec2, llike_vec)
 
 }
 )

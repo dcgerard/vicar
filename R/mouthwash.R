@@ -220,6 +220,11 @@ initialize_mixing_prop <- function(pi_init_type = c("zero_conc", "uniform", "ran
     return(pi_init)
 }
 
+
+###############################################################################
+## Normal Mixtures ------------------------------------------------------------
+###############################################################################
+
 #' Wrapper for \code{\link{normal_mix_llike}} so that I can use it in SQUAREM.
 #'
 #' This returns the negative log-liklihood for SQUAREM to use.
@@ -539,8 +544,13 @@ uniform_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a
     right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`) / sd_mat
 
     denom_mat <- matrix(rep(b_seq - a_seq, p), byrow = TRUE, ncol = M)
-    top_mat <- stats::pt(q = left_centered_means, df = degrees_freedom) -
-        stats::pt(q = right_centered_means, df = degrees_freedom)
+    top_mat <- ptdiff_mat(X = left_centered_means, Y = right_centered_means,
+                          degrees_freedom = degrees_freedom)
+
+    ## top_mat2 <- stats::pt(q = left_centered_means, df = degrees_freedom) -
+    ##     stats::pt(q = right_centered_means, df = degrees_freedom)
+    ## assertthat::are_equal(top_mat, top_mat2)
+
     ftilde_mat <- top_mat / denom_mat
 
     ftilde_mat[, zero_spot] <- dt_wrap(x = betahat_ols, df = degrees_freedom,
@@ -556,7 +566,7 @@ uniform_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a
 
 
     oout <- stats::optim(par = z2, fn = unif_int_obj, gr = unif_int_grad,
-                         method = "L-BFGS-B",
+                         method = "BFGS",
                          control = list(fnscale = -1, maxit = 10),
                          xi = xi, betahat_ols = betahat_ols, alpha_tilde = alpha_tilde,
                          S_diag = S_diag, a_seq = a_seq, b_seq = b_seq, qvals = qvals,
@@ -575,7 +585,7 @@ uniform_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a
                                  b_seq = b_seq, qvals = qvals, degrees_freedom = degrees_freedom)
             xi_new <- oout$par
             oout <- stats::optim(par = z_new, fn = unif_int_obj, gr = unif_int_grad,
-                                 method = "L-BFGS-B",
+                                 method = "BFGS",
                                  control = list(fnscale = -1, maxit = 10),
                                  xi = xi_new, betahat_ols = betahat_ols, alpha_tilde = alpha_tilde,
                                  S_diag = S_diag, a_seq = a_seq, b_seq = b_seq, qvals = qvals,
@@ -615,8 +625,12 @@ unif_int_obj <- function(z2, xi, betahat_ols, alpha_tilde, S_diag, a_seq, b_seq,
     resid_vec <- betahat_ols - alpha_tilde %*% z2
     left_centered_means  <- outer(c(resid_vec), a_seq, FUN = `-`) / sd_mat
     right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`) / sd_mat
-    tdiff_mat <- stats::pt(q = left_centered_means, df = degrees_freedom) -
-        stats::pt(q = right_centered_means, df = degrees_freedom)
+
+    tdiff_mat <- ptdiff_mat(X = left_centered_means, Y = right_centered_means,
+                            degrees_freedom = degrees_freedom)
+    ## tdiff_mat2 <- stats::pt(q = left_centered_means, df = degrees_freedom) -
+    ##     stats::pt(q = right_centered_means, df = degrees_freedom)
+    ## assertthat::are_equal(tdiff_mat, tdiff_mat2)
 
     tdiff_mat[, zero_spot] <- dt_wrap(x = betahat_ols, mean = alpha_tilde %*% z2,
                                       sd = sqrt(xi * S_diag), df = degrees_freedom)
@@ -653,8 +667,14 @@ unif_int_grad <- function(z2, xi, betahat_ols, alpha_tilde, S_diag, a_seq, b_seq
     resid_vec <- betahat_ols - alpha_tilde %*% z2
     left_centered_means  <- outer(c(resid_vec), a_seq, FUN = `-`) / sd_mat
     right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`) / sd_mat
-    tdiff_mat <- stats::pt(q = left_centered_means, df = degrees_freedom) -
-        stats::pt(q = right_centered_means, df = degrees_freedom)
+
+    tdiff_mat <- ptdiff_mat(X = left_centered_means, Y = right_centered_means,
+                            degrees_freedom = degrees_freedom)
+
+    ## tdiff_mat2 <- stats::pt(q = left_centered_means, df = degrees_freedom) -
+    ##     stats::pt(q = right_centered_means, df = degrees_freedom)
+    ## assertthat::are_equal(tdiff_mat, tdiff_mat2)
+
 
     dtdiff_mat <- stats::dt(x = right_centered_means, df = degrees_freedom) / sd_mat -
         stats::dt(x = left_centered_means, df = degrees_freedom) / sd_mat
@@ -729,11 +749,17 @@ uniform_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde,
     sd_mat <- matrix(rep(sqrt(xi * S_diag), M), ncol = M)
     resid_vec <- betahat_ols - alpha_tilde %*% z2
     left_centered_means  <- outer(c(resid_vec), a_seq, FUN = `-`) / sd_mat
-    right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`)
+    right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`) / sd_mat
 
     denom_mat <- matrix(rep(b_seq - a_seq, p), byrow = TRUE, ncol = M)
-    top_mat <- stats::pt(q = left_centered_means, df = degrees_freedom) -
-        stats::pt(q = right_centered_means, df = degrees_freedom)
+
+    top_mat <- ptdiff_mat(X = left_centered_means, Y = right_centered_means,
+                            degrees_freedom = degrees_freedom)
+
+    ## top_mat2 <- stats::pt(q = left_centered_means, df = degrees_freedom) -
+    ##     stats::pt(q = right_centered_means, df = degrees_freedom)
+    ## assertthat::are_equal(top_mat, top_mat2)
+
     ftilde_mat <- top_mat / denom_mat
 
     ftilde_mat[, zero_spot] <- dt_wrap(x = betahat_ols, df = degrees_freedom,
@@ -752,6 +778,8 @@ uniform_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde,
 }
 
 #' Wrapper for \code{\link{uniform_mix_llike}}, mostly for the SQUAREM package.
+#'
+#' This returns the negative log-likelihood for use in SQUAREM.
 #'
 #' @inheritParams uniform_mix_fix
 #' @param pizxi_vec A vector of numerics. The first M of which are
@@ -780,7 +808,7 @@ uniform_mix_llike_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tild
                              alpha_tilde = alpha_tilde, a_seq = a_seq,
                              b_seq = b_seq, lambda_seq = lambda_seq,
                              degrees_freedom = degrees_freedom)
-    return(llike)
+    return(-1 * llike)
 }
 
 
@@ -812,4 +840,49 @@ pt_wrap <- function(x, df, mean = 0, sd = 1) {
     x_new <- (x - mean) / sd
     pval <- stats::pt(x_new, df = df)
     return(pval)
+}
+
+
+#' More stable way to calculate differences in T cdf's.
+#'
+#' If \eqn{T()} is the cdf of a t-distribution if
+#' \code{degrees_freedom} degrees of freedom, then this function will
+#' calculate \eqn{T(x) - T(y)} or \eqn{T(-y) - T(-x)} (which are are
+#' equivalent), depending on which one is more numerically stable.
+#'
+#' @param x A quantile of the t.
+#' @param y The other quantile of the t.
+#' @param degrees_freedom The degrees of freedom of the t.
+#'
+#' @author David Gerard
+ptdiff <- function(x, y, degrees_freedom) {
+    if (abs(x) > abs(y)) {
+        diff <- stats::pt(x, df = degrees_freedom) - stats::pt(y, df = degrees_freedom)
+    } else {
+        diff <- stats::pt(-1 * y, df = degrees_freedom) - stats::pt(-1 * x, df = degrees_freedom)
+    }
+    return(diff)
+}
+
+#' More stable way to calculate differences in T cdfs when input is a matrix.
+#'
+#' @param X A matirx of quantiles of the t.
+#' @param Y Another matirx of quantiles of the t.
+#' @param degrees_freedom The degrees of freedom of the t.
+#'
+#' @author David Gerard
+#'
+#' @seealso \code{\link{ptdiff}}.
+ptdiff_mat <- function(X, Y, degrees_freedom) {
+
+    assertthat::are_equal(dim(X), dim(Y))
+
+    which_switch <- abs(Y) > abs(X)
+
+    diff <- matrix(NA, nrow = nrow(X), ncol = ncol(X))
+    diff[which_switch] <- stats::pt(-Y[which_switch], df = degrees_freedom) -
+        stats::pt(-X[which_switch], df = degrees_freedom)
+    diff[!which_switch] <- stats::pt(X[!which_switch], df = degrees_freedom) -
+        stats::pt(Y[!which_switch], df = degrees_freedom)
+    return(diff)
 }

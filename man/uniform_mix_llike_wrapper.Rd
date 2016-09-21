@@ -37,7 +37,7 @@ freedom of the t-distribution.}
 parameter (\code{TRUE}) or not (\code{FALSE})}
 }
 \description{
-Wrapper for \code{\link{uniform_mix_llike}}, mostly for the SQUAREM package.
+This returns the negative log-likelihood for use in SQUAREM.
 }
 \author{
 David Gerard
