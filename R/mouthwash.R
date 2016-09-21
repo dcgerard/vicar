@@ -161,7 +161,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                  a_seq = a_seq, b_seq = b_seq,
                                  degrees_freedom = degrees_freedom,
                                  lambda_seq = lambda_seq, mixing_dist = mixing_dist,
-                                 likelihood = likelihood, pi_init_type = pi_init_type)
+                                 likelihood = likelihood, pi_init_type = pi_init_type,
+                                 scale_var = scale_var)
     return(val)
 }
 
@@ -274,6 +275,8 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     val <- c(val, list(logLR = ashr::calc_logLR(ghat, data)))
     val <- c(val, list(data = data))
     val <- c(val, list(pi0 = pi_vals[zero_spot]))
+    val <- c(val, list(z2 = z2_final))
+    val <- c(val, list(xi = xi_final))
     NegativeProb  <- ashr:::calc_np(g = ghat, data = data)
     PositiveProb  <- ashr:::calc_pp(g = ghat, data = data)
     lfsr          <- ashr:::calc_lfsr(g = ghat, data = data)
