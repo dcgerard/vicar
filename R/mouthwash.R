@@ -282,8 +282,8 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     qvalue        <- ashr:::calc_qvalue(g = ghat, data = data)
     PosteriorMean <- ashr:::calc_pm(g = ghat, data = data)
     PosteriorSD   <- ashr:::calc_psd(g = ghat, data = data)
-    result <- cbind(NegativeProb, PositiveProb, lfsr, svalue, lfdr, qvalue,
-                    PosteriorMean, PosteriorSD)
+    result <- data.frame(NegativeProb, PositiveProb, lfsr, svalue, lfdr, qvalue,
+                         PosteriorMean, PosteriorSD)
     val <- c(val, list(result = result))
 
     class(val) <- "ash"

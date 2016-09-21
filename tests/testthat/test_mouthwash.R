@@ -3,8 +3,8 @@ context("MOUTHWASH functions")
 
 test_that("mouthwash works ok", {
     set.seed(68)
-    n <- 11
-    p <- 19
+    n <- 20
+    p <- 102
     k <- 3
     cov_of_interest <- 2
     X <- matrix(stats::rnorm(n * k), nrow = n)
@@ -25,9 +25,13 @@ test_that("mouthwash works ok", {
     lambda_seq        <- NULL
     lambda0           <- 10
 
+    start_unif <- proc.time()
     mout <- mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2)
+    tot_unif <- proc.time() - start_unif
     mout$pi0
+    start_normal <- proc.time()
     mout <- mouthwash(Y = Y, X = X, k = 1, mixing_dist = "normal", likelihood = "normal")
+    tot_normal <- proc.time() - start_normal
     mout$pi0
 
 }
