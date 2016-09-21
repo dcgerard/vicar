@@ -25,6 +25,11 @@ test_that("mouthwash works ok", {
     lambda_seq        <- NULL
     lambda0           <- 10
 
+    mout <- mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2)
+    mout$pi0
+    mout <- mouthwash(Y = Y, X = X, k = 1, mixing_dist = "normal", likelihood = "normal")
+    mout$pi0
+
 }
 )
 
@@ -135,11 +140,12 @@ test_that("uniform_mix_llike and uniform_mix_fix work", {
     a_seq         <- seq(-10, 0, length = M)
     b_seq         <- seq(10, 0, length = M)
     lambda_seq    <- rep(1, M)
-    lambda_seq[1] <- 10
+    lambda_seq[length(lambda_seq)] <- 10
     pi_vals <- rep(1 / M, length = M)
     xi <- 1
     degrees_freedom <- 3
     scale_var <- TRUE
+    pi_init_type <- "zero_conc"
 
     itermax <- 20
     llike_vec <- rep(NA, length = itermax)

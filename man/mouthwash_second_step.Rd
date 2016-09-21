@@ -4,10 +4,11 @@
 \alias{mouthwash_second_step}
 \title{The second step of MOUTHWASH.}
 \usage{
-mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, grid_seq, lambda_seq,
+mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, lambda_seq,
+  tau2_seq = NULL, a_seq = NULL, b_seq = NULL,
   mixing_dist = c("uniform", "+uniform", "sym_uniform", "normal"),
   likelihood = c("t", "normal"), pi_init_type = c("zero_conc", "uniform",
-  "random"), scale_var = TRUE)
+  "random"), scale_var = TRUE, degrees_freedom)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The OLS estimates of the
@@ -20,14 +21,20 @@ errors.}
 length of betahat_ols. The number of columns should equal the
 number of hidden confounders.}
 
-\item{grid_seq}{The grid of variances (if \code{mixing_dist =
-"normal"}) or the grid of uniform bounds. See
-\code{\link{mouthwash}} for details.}
-
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
 proportions. This can only be specified if \code{grid_seq} is
 also specified.}
+
+\item{tau2_seq}{The grid of variances of the mixing distributions
+if \code{mixing_dist = "normal"}. Only one of \code{tau2_seq}
+or \code{a_seq} and \code{b_seq} need be specified.}
+
+\item{a_seq}{The grid of lower bounds for the uniforms if
+\code{mixing_dist} is one of the uniforms.}
+
+\item{b_seq}{The grid of upper bounds for the uniforms if
+\code{mixing_dist} is one of the uniforms.}
 
 \item{mixing_dist}{A character. Should we use a mixture of uniforms
 (\code{"uniform"}), a mixture of uniforms with minimum at 0
@@ -46,6 +53,9 @@ or by sampling uniformly on the simplex (\code{"random"})?}
 
 \item{scale_var}{A logical. Should we estimate a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}
+
+\item{degrees_freedom}{The degrees of freedom of the t-distribution
+if \code{likelihood = "t"}.}
 }
 \description{
 The second step of MOUTHWASH.

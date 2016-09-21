@@ -69,7 +69,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     pi_init_type <- match.arg(pi_init_type)
     lambda_type  <- match.arg(lambda_type)
 
-    if (likelihood == "normal" & mixing_dist == "normal") {
+    if (likelihood == "t" & mixing_dist == "normal") {
         stop("normal mixtures not implemented for t-likelihood yet (or likely ever).")
     }
 
@@ -103,15 +103,12 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 
     ## rescale alpha and sig_diag by R22 to get data for second step ------------------
     alpha_tilde <- rotate_out$alpha / c(rotate_out$R22)
-    S_diag      <- rotate_out$sig_diag / c(rotate_out$R22 ^ 2)
-    betahat_ols <- rotate_out$betahat_ols
+    S_diag      <- c(rotate_out$sig_diag / c(rotate_out$R22 ^ 2))
+    betahat_ols <- matrix(rotate_out$betahat_ols, ncol = 1)
 
     ## Set grid and penalties ---------------------------------------------------------
     if (!is.null(lambda_seq) & is.null(grid_seq)) {
         stop("lambda_seq specified but grid_seq is NULL")
-    } else if (!is.null(lambda_seq) & !is.null(grid_seq)) {
-        M <- length(lambda_seq)
-        assertthat::are_equal(length(lambda_seq), length(grid_seq))
     }
 
     if (is.null(grid_seq)) {
@@ -121,10 +118,33 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
         } else {
             grid_seq <- grid_vals$tau2_seq
         }
-        M <- length(grid_seq)
     }
 
-    zero_spot <- which(abs(grid_seq) < 10 ^ -14) ## the location of the zero
+    if (mixing_dist == "normal") {
+        tau2_seq <- grid_seq
+        M <- length(tau2_seq)
+        a_seq <- NULL
+        b_seq <- NULL
+        zero_spot <- which(abs(tau2_seq) < 10 ^ -14)
+    } else if (mixing_dist == "uniform") {
+        a_seq <- c(-1 * grid_seq[length(grid_seq):2], rep(0, length(grid_seq)))
+        b_seq <- c(rep(0, length(grid_seq)), grid_seq[2:length(grid_seq)])
+        M <- length(a_seq)
+        tau2_seq <- NULL
+        zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
+    } else if (mixing_dist == "+uniform") {
+        a_seq <- rep(0, length(grid_seq))
+        b_seq <- grid_seq
+        M <- length(a_seq)
+        tau2_seq <- NULL
+        zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
+    } else if (mixing_dist == "sym_uniform") {
+        a_seq <- -1 * grid_seq
+        b_seq <- grid_seq
+        M <- length(a_seq)
+        tau2_seq <- NULL
+        zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
+    }
     assertthat::are_equal(length(zero_spot), 1)
 
     if (is.null(lambda_seq)) {
@@ -136,11 +156,13 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
         }
     }
 
-    result_out <- mouthwash_second_step(betahat_ols = betahat_ols, S_diag = S_diag,
-                                        alpha_tilde = alpha_tilde, grid_seq = grid_seq,
-                                        lambda_seq = lambda_seq, mixing_dist = mixing_dist,
-                                        likelihood = likelihood, pi_init_type = pi_init_type)
-
+    val <- mouthwash_second_step(betahat_ols = betahat_ols, S_diag = S_diag,
+                                 alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
+                                 a_seq = a_seq, b_seq = b_seq,
+                                 degrees_freedom = degrees_freedom,
+                                 lambda_seq = lambda_seq, mixing_dist = mixing_dist,
+                                 likelihood = likelihood, pi_init_type = pi_init_type)
+    return(val)
 }
 
 #' The second step of MOUTHWASH.
@@ -153,33 +175,50 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 #' @param alpha_tilde A matrix. The number of rows should be equal the
 #'     length of betahat_ols. The number of columns should equal the
 #'     number of hidden confounders.
-#' @param grid_seq The grid of variances (if \code{mixing_dist =
-#'     "normal"}) or the grid of uniform bounds. See
-#'     \code{\link{mouthwash}} for details.
+#' @param tau2_seq The grid of variances of the mixing distributions
+#'     if \code{mixing_dist = "normal"}. Only one of \code{tau2_seq}
+#'     or \code{a_seq} and \code{b_seq} need be specified.
+#' @param a_seq The grid of lower bounds for the uniforms if
+#'     \code{mixing_dist} is one of the uniforms.
+#' @param b_seq The grid of upper bounds for the uniforms if
+#'     \code{mixing_dist} is one of the uniforms.
+#' @param degrees_freedom The degrees of freedom of the t-distribution
+#'     if \code{likelihood = "t"}.
 #'
 #' @author David Gerard
 #'
 #' @export
 #'
-mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde, grid_seq, lambda_seq,
+mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
+                                  lambda_seq, tau2_seq = NULL,
+                                  a_seq = NULL, b_seq = NULL,
                                   mixing_dist = c("uniform", "+uniform", "sym_uniform", "normal"),
                                   likelihood = c("t", "normal"),
                                   pi_init_type = c("zero_conc", "uniform", "random"),
-                                  scale_var = TRUE) {
+                                  scale_var = TRUE, degrees_freedom) {
 
     ## Make sure input is correct -------------------------------------------------
-    M <- length(grid_seq)
-    k <- ncol(alpha_tilde)
-    zero_spot <- which(abs(grid_seq) < 10 ^ -14)
-    assertthat::are_equal(length(zero_spot), 1)
-
-    assertthat::are_equal(length(betahat_ols), nrow(alpha_tilde))
-    assertthat::are_equal(length(S_diag), length(betahat_ols))
-    assertthat::are_equal(length(lambda_seq), M)
-
     mixing_dist  <- match.arg(mixing_dist)
     likelihood   <- match.arg(likelihood)
     pi_init_type <- match.arg(pi_init_type)
+
+    if (mixing_dist == "normal") {
+        assertthat::assert_that(!is.null(tau2_seq))
+        M <- length(tau2_seq)
+        zero_spot <- which(abs(tau2_seq) < 10 ^ -14)
+    } else if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
+        assertthat::assert_that(!is.null(a_seq))
+        assertthat::assert_that(!is.null(b_seq))
+        M <- length(a_seq)
+        assertthat::are_equal(length(b_seq), M)
+        zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
+    }
+    assertthat::are_equal(length(zero_spot), 1)
+
+    k <- ncol(alpha_tilde)
+    assertthat::are_equal(length(betahat_ols), nrow(alpha_tilde))
+    assertthat::are_equal(length(S_diag), length(betahat_ols))
+    assertthat::are_equal(length(lambda_seq), M)
 
     ## initialize parameters and run EM --------------------------------------------
     z2_init <- matrix(stats::rnorm(k), ncol = 1)
@@ -189,11 +228,66 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde, grid_seq, la
     if (likelihood == "normal" & mixing_dist == "normal") {
         sqout <- SQUAREM::squarem(par = pizxi_init, fixptfn = normal_mix_fix_wrapper,
                                   objfn = normal_mix_llike_wrapper, betahat_ols = betahat_ols,
-                                  S_diag = S_diag, alpha_tilde = alpha_tilde, tau2_seq = grid_seq,
+                                  S_diag = S_diag, alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
                                   lambda_seq = lambda_seq, scale_var = scale_var,
+                                  control = list(tol = 10 ^ -4))
+
+        normal_mix_fix_wrapper(pizxi_vec = pizxi_init, betahat_ols = betahat_ols,
+                               S_diag = S_diag, alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
+                               lambda_seq = lambda_seq, scale_var = scale_var)
+
+    } else if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
+        sqout <- SQUAREM::squarem(par = pizxi_init, fixptfn = uniform_mix_fix_wrapper,
+                                  objfn = uniform_mix_llike_wrapper, betahat_ols = betahat_ols,
+                                  S_diag = S_diag, alpha_tilde = alpha_tilde, a_seq = a_seq,
+                                  b_seq = b_seq, lambda_seq = lambda_seq,
+                                  degrees_freedom = degrees_freedom, scale_var = scale_var,
                                   control = list(tol = 10 ^ -4))
     }
 
+    pi_vals  <- sqout$par[1:M]
+    z2_final <- sqout$par[(M + 1):(M + k)]
+    xi_final <- sqout$par[M + k + 1]
+
+    az <- alpha_tilde %*% z2_final
+
+    ## ash summaries --------------------------------------------------------------
+    if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
+        ghat <- ashr::unimix(pi = pi_vals, a = a_seq, b = b_seq)
+    } else if (mixing_dist == "normal") {
+        ghat <- ashr::normalmix(pi = pi_vals, mean = rep(0, M), sd = sqrt(tau2_seq))
+    }
+
+    if (likelihood == "normal" & mixing_dist == "normal") {
+        data <- ashr::set_data(betahat = c(betahat_ols - az),
+                               sebetahat = c(sqrt(xi_final * S_diag)),
+                               lik = ashr::normal_lik())
+    } else {
+        data <- ashr::set_data(betahat = c(betahat_ols - az),
+                               sebetahat = c(sqrt(xi_final * S_diag)),
+                               lik = ashr::t_lik(degrees_freedom))
+    }
+
+    val <- list()
+    val <- c(val, list(fitted_g = ghat))
+    val <- c(val, list(loglik = ashr::calc_loglik(ghat, data)))
+    val <- c(val, list(logLR = ashr::calc_logLR(ghat, data)))
+    val <- c(val, list(data = data))
+    val <- c(val, list(pi0 = pi_vals[zero_spot]))
+    NegativeProb  <- ashr:::calc_np(g = ghat, data = data)
+    PositiveProb  <- ashr:::calc_pp(g = ghat, data = data)
+    lfsr          <- ashr:::calc_lfsr(g = ghat, data = data)
+    svalue        <- ashr:::calc_svalue(g = ghat, data = data)
+    lfdr          <- ashr:::calc_lfdr(g = ghat, data = data)
+    qvalue        <- ashr:::calc_qvalue(g = ghat, data = data)
+    PosteriorMean <- ashr:::calc_pm(g = ghat, data = data)
+    PosteriorSD   <- ashr:::calc_psd(g = ghat, data = data)
+    result <- cbind(NegativeProb, PositiveProb, lfsr, svalue, lfdr, qvalue,
+                    PosteriorMean, PosteriorSD)
+    val <- c(val, list(result = result))
+
+    class(val) <- "ash"
+    return(val)
 }
 
 #' Function for initializing mixing proportions.
@@ -287,6 +381,11 @@ normal_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, 
     assertthat::are_equal(length(z2), ncol(alpha_tilde))
     assertthat::assert_that(xi > 0)
     assertthat::are_equal(length(S_diag), nrow(alpha_tilde))
+
+    ## make sure hard boundary is observed -----------------------------------------
+    if (any(pi_vals < -10 ^ -14) | xi < 10 ^ -14) {
+      return(-Inf)
+    }
 
     ## Mixing variances and means ------------------------------------------------------
     mix_var  <- outer(xi * S_diag, tau2_seq, FUN = `+`) ## p by M
@@ -397,6 +496,12 @@ normal_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, ta
 
     pi_new <- (colSums(qvals) + lambda_seq - 1) / (p - M + sum(lambda_seq))
     assertthat::assert_that(abs(sum(pi_new) - 1) < 10 ^ -14)
+    assertthat::assert_that(all(pi_new > -10 ^ -8))
+
+    if (any(pi_new < 0)) {
+        pi_new[pi_new < 0] <- 0
+        pi_new <- pi_new / sum(pi_new)
+    }
 
     theta_diag <- rowSums(qvals / mix_var) / 2
 
@@ -413,9 +518,9 @@ normal_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, ta
             xi_old <- xi_new
             oout <- stats::optim(par = xi_old, fn = brent_obj_norm, method = "Brent",
                                  qvals = qvals, S_diag = S_diag, tau2_seq = tau2_seq,
-                                 resid_vec = resid_vec, lower = 0, upper = 10,
+                                 resid_vec = resid_vec, lower = 10 ^ -14, upper = 10,
                                  control = list(fnscale = -1, maxit = 10))
-            xi_new <- oout$par
+            xi_new <- max(oout$par, 10 ^ -14)
 
             mix_var  <- outer(xi_new * S_diag, tau2_seq, FUN = `+`)
             theta_diag <- rowSums(qvals / mix_var) / 2
@@ -563,6 +668,12 @@ uniform_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a
 
     pi_new <- (colSums(qvals) + lambda_seq - 1) / (p - M + sum(lambda_seq))
     assertthat::assert_that(abs(sum(pi_new) - 1) < 10 ^ -14)
+    assertthat::assert_that(all(pi_new > -10 ^ -8))
+
+    if (any(pi_new < 0)) {
+      pi_new[pi_new < 0] <- 0
+      pi_new <- pi_new / sum(pi_new)
+    }
 
 
     oout <- stats::optim(par = z2, fn = unif_int_obj, gr = unif_int_grad,
@@ -578,12 +689,12 @@ uniform_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a
         for (index in 1:10) {
             xi_old <- xi_new
             oout <- stats::optim(par = xi_new, fn = unif_int_obj, method = "Brent",
-                                 lower = 0, upper = 10,
+                                 lower = 10 ^ -14, upper = 10,
                                  control = list(fnscale = -1, maxit = 10),
                                  z2 = z_new, betahat_ols = betahat_ols,
                                  alpha_tilde = alpha_tilde, S_diag = S_diag, a_seq = a_seq,
                                  b_seq = b_seq, qvals = qvals, degrees_freedom = degrees_freedom)
-            xi_new <- oout$par
+            xi_new <- max(oout$par, 10 ^ -14)
             oout <- stats::optim(par = z_new, fn = unif_int_obj, gr = unif_int_grad,
                                  method = "BFGS",
                                  control = list(fnscale = -1, maxit = 10),
@@ -744,6 +855,11 @@ uniform_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde,
     assertthat::are_equal(length(S_diag), p)
     assertthat::are_equal(nrow(alpha_tilde), p)
     assertthat::are_equal(ncol(alpha_tilde), k)
+
+    ## make sure hard boundary is observed -----------------------------------------
+    if (any(pi_vals < -10 ^ -14) | xi < 10 ^ -14) {
+      return(-Inf)
+    }
 
     ## Calculate f_tildes -----------------------------------------------------
     sd_mat <- matrix(rep(sqrt(xi * S_diag), M), ncol = M)

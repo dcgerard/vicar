@@ -9,7 +9,7 @@ BugReports: http://github.com/dcgerard/vicar/issues
 License: GPL-3
 LazyData: TRUE
 RoxygenNote: 5.0.1
-Remotes: github::stephens999/ashr
+Remotes: github::stephens999/ashr@general
 LinkingTo: Rcpp,
     RcppArmadillo,
     RcppProgress
@@ -29,7 +29,7 @@ Imports: ruv,
     bfa,
     Rcpp,
     RcppArmadillo,
-    RcppProgress
+    RcppProgress,
+    ashr
 Suggests: testthat,
-    ashr,
     leapp

@@ -21,9 +21,9 @@ errors.}
 length of betahat_ols. The number of columns should equal the
 number of hidden confounders.}
 
-\item{tau2_seq}{The grid of variances. This is the same thing as
-grid_seq in \code{\link{mouthwash_second_step}} if
-\code{likelihood = "normal"}.}
+\item{tau2_seq}{The grid of variances of the mixing distributions
+if \code{mixing_dist = "normal"}. Only one of \code{tau2_seq}
+or \code{a_seq} and \code{b_seq} need be specified.}
 
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
