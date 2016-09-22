@@ -7,6 +7,37 @@
 mouthwash_z_grad(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq,
   b_seq, lambda_seq, degrees_freedom)
 }
+\arguments{
+\item{pi_vals}{A vector of non-negative numerics that sums to
+one. The current values of the mixing proportions.}
+
+\item{z2}{A vector of numerics. The current values of the
+unobserved confounders.}
+
+\item{xi}{A positive numeric. The current value of the variance
+inflation factor.}
+
+\item{betahat_ols}{A vector of numerics. The OLS regression
+coefficients.}
+
+\item{S_diag}{A vector of positive numerics. The standard errors.}
+
+\item{alpha_tilde}{A matrix of numerics. The estimats of the
+coefficients of the confounders.}
+
+\item{a_seq}{A vector of numerics (usually non-positive). The lower
+bounds of the uniform mixing densities.}
+
+\item{b_seq}{A vector of numerics (usually non-negative). The upper
+bounds of the uniform mixing densities.}
+
+\item{lambda_seq}{A vector of numerics greater than 1. The
+penalties on the mixing proportions.}
+
+\item{degrees_freedom}{A positive scalar or a vector of positive
+scalars the length of \code{betahat_ols}. The degrees of
+freedom of the t-distribution.}
+}
 \description{
 Gradient wrt z of \code{\link{uniform_mix_llike}}.
 }

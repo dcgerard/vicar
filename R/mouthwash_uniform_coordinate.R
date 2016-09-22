@@ -124,7 +124,7 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
 
 #' Gradient wrt z of \code{\link{uniform_mix_llike}}.
 #'
-#' @inheritParams uniform_mix_llike
+#' @inheritParams uniform_mix_fix
 #'
 #' @author David Gerard
 #'

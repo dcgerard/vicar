@@ -26,13 +26,17 @@ test_that("mouthwash works ok", {
     lambda0           <- 10
 
     start_unif <- proc.time()
-    mout <- mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2)
+    mout <- mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2,
+                      likelihood = "t", mixing_dist = "uniform")
     tot_unif <- proc.time() - start_unif
     mout$pi0
     start_normal <- proc.time()
     mout <- mouthwash(Y = Y, X = X, k = 1, mixing_dist = "normal", likelihood = "normal")
     tot_normal <- proc.time() - start_normal
     mout$pi0
+
+    expect_error(mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2,
+                           likelihood = "t", mixing_dist = "normal"))
 
 }
 )

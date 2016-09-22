@@ -74,11 +74,6 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
         stop("normal mixtures not implemented for t-likelihood yet (or likely ever).")
     }
 
-    if (ncol(Y) > 100 & mixing_dist != "normal") {
-        warning("uniform mixtures somewhat janky for moderate to large p")
-    }
-
-
     ## Rotate ---------------------------------------------------------------------------
     rotate_out <- rotate_model(Y = Y, X = X, k = k,
                                cov_of_interest = cov_of_interest,
@@ -230,31 +225,37 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     ## initialize parameters and run EM --------------------------------------------
     z2_init <- matrix(stats::rnorm(k), ncol = 1)
     pi_init <- initialize_mixing_prop(pi_init_type = pi_init_type, zero_spot = zero_spot, M = M)
-    pizxi_init <- c(pi_init, z2_init, 1)
+
 
     if (likelihood == "normal" & mixing_dist == "normal") {
+        pizxi_init <- c(pi_init, z2_init, 1)
         sqout <- SQUAREM::squarem(par = pizxi_init, fixptfn = normal_mix_fix_wrapper,
                                   objfn = normal_mix_llike_wrapper, betahat_ols = betahat_ols,
                                   S_diag = S_diag, alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
                                   lambda_seq = lambda_seq, scale_var = scale_var,
                                   control = list(tol = 10 ^ -4))
-
-        normal_mix_fix_wrapper(pizxi_vec = pizxi_init, betahat_ols = betahat_ols,
-                               S_diag = S_diag, alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
-                               lambda_seq = lambda_seq, scale_var = scale_var)
-
+        pi_vals  <- sqout$par[1:M]
+        z2_final <- sqout$par[(M + 1):(M + k)]
+        xi_final <- sqout$par[M + k + 1]
     } else if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
-        sqout <- SQUAREM::squarem(par = pizxi_init, fixptfn = uniform_mix_fix_wrapper,
-                                  objfn = uniform_mix_llike_wrapper, betahat_ols = betahat_ols,
-                                  S_diag = S_diag, alpha_tilde = alpha_tilde, a_seq = a_seq,
-                                  b_seq = b_seq, lambda_seq = lambda_seq,
-                                  degrees_freedom = degrees_freedom, scale_var = scale_var,
-                                  control = list(tol = 10 ^ -4))
+        ## sqout <- SQUAREM::squarem(par = pizxi_init, fixptfn = uniform_mix_fix_wrapper,
+        ##                           objfn = uniform_mix_llike_wrapper, betahat_ols = betahat_ols,
+        ##                           S_diag = S_diag, alpha_tilde = alpha_tilde, a_seq = a_seq,
+        ##                           b_seq = b_seq, lambda_seq = lambda_seq,
+        ##                           degrees_freedom = degrees_freedom, scale_var = scale_var,
+        ##                           control = list(tol = 10 ^ -4))
+
+        opt_out <- mouthwash_coordinate(pi_init = pi_init, z_init = z2_init, xi_init = 1,
+                                        betahat_ols = betahat_ols, S_diag = S_diag,
+                                        alpha_tilde = alpha_tilde, a_seq = a_seq,
+                                        b_seq = b_seq, lambda_seq = lambda_seq,
+                                        degrees_freedom = degrees_freedom, scale_var = scale_var)
+        pi_vals  <- opt_out$pi_vals
+        z2_final <- opt_out$z2
+        xi_final <- opt_out$xi
     }
 
-    pi_vals  <- sqout$par[1:M]
-    z2_final <- sqout$par[(M + 1):(M + k)]
-    xi_final <- sqout$par[M + k + 1]
+
 
     az <- alpha_tilde %*% z2_final
 
