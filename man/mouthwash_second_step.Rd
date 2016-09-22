@@ -5,10 +5,10 @@
 \title{The second step of MOUTHWASH.}
 \usage{
 mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, lambda_seq,
-  tau2_seq = NULL, a_seq = NULL, b_seq = NULL,
-  mixing_dist = c("uniform", "+uniform", "sym_uniform", "normal"),
-  likelihood = c("t", "normal"), pi_init_type = c("zero_conc", "uniform",
-  "random"), scale_var = TRUE, degrees_freedom)
+  tau2_seq = NULL, a_seq = NULL, b_seq = NULL, mixing_dist = c("normal",
+  "uniform", "+uniform", "sym_uniform"), likelihood = c("normal", "t"),
+  pi_init_type = c("zero_conc", "uniform", "random"), scale_var = TRUE,
+  degrees_freedom)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The OLS estimates of the

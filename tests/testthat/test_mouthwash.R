@@ -222,3 +222,37 @@ test_that("ptdiff_mat and ptdiff_mat_log work ok", {
 
 }
 )
+
+
+
+test_that("mouthwash_coord works", {
+    set.seed(724)
+
+    p <- 103
+    k <- 3
+    S_diag <- stats::rchisq(p, 5)
+    alpha_tilde <- matrix(stats::rnorm(k * p), nrow = p)
+    z2 <- matrix(stats::rnorm(k), ncol = 1)
+    beta <- matrix(stats::rnorm(p), ncol = 1)
+    betahat_ols <- beta + alpha_tilde %*% z2 + rnorm(p, mean = 0, sd = sqrt(S_diag))
+
+    M             <- 23
+    a_seq         <- seq(-10, 0, length = M)
+    b_seq         <- seq(10, 0, length = M)
+    lambda_seq    <- rep(1, M)
+    lambda_seq[length(lambda_seq)] <- 10
+    pi_init <- rep(1 / M, length = M)
+    xi_init <- 1
+    degrees_freedom <- 3
+    scale_var <- TRUE
+    tol <- 10 ^ -6
+    maxit <- 100
+    z_init <- z2
+
+    mout <- mouthwash_coordinate(pi_init = pi_init, z_init = z_init, xi_init = xi_init,
+                                 betahat_ols = betahat_ols,
+                                 S_diag = S_diag, alpha_tilde = alpha_tilde, a_seq = a_seq,
+                                 b_seq = b_seq, lambda_seq = lambda_seq,
+                                 degrees_freedom = degrees_freedom, scale_var = scale_var)
+}
+)

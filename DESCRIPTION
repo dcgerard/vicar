@@ -32,4 +32,5 @@ Imports: ruv,
     RcppProgress,
     ashr
 Suggests: testthat,
-    leapp
+    leapp,
+    Rmosek
