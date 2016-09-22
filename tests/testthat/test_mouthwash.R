@@ -174,7 +174,6 @@ test_that("uniform_mix_llike and uniform_mix_fix work", {
                                                    alpha_tilde = alpha_tilde, a_seq = a_seq,
                                                    b_seq = b_seq, lambda_seq = lambda_seq,
                                                    degrees_freedom = degrees_freedom)
-        cat(iter_index, "\n")
     }
 
     expect_true(all(llike_vec[1:(itermax - 1)] <= llike_vec[2:itermax]))
@@ -205,6 +204,21 @@ test_that("uniform_mix_llike and uniform_mix_fix work", {
     }
 
     expect_equal(-1 * llike_vec2, llike_vec)
+
+}
+)
+
+
+test_that("ptdiff_mat and ptdiff_mat_log work ok", {
+    set.seed(525)
+    n <- 10
+    p <- 1000
+    X <- matrix(stats::rchisq(n * p, df = 1), nrow = n)
+    Y <- matrix(-1 * stats::rchisq(n * p, df = 1), nrow = n)
+
+    pt1 <- log(ptdiff_mat(X, Y, degrees_freedom = 3))
+    pt2 <- ptdiff_mat_log(X, Y, degrees_freedom = 3)
+    expect_equal(pt1, pt2)
 
 }
 )

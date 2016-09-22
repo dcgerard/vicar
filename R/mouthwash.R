@@ -740,16 +740,23 @@ unif_int_obj <- function(z2, xi, betahat_ols, alpha_tilde, S_diag, a_seq, b_seq,
     left_centered_means  <- outer(c(resid_vec), a_seq, FUN = `-`) / sd_mat
     right_centered_means <- outer(c(resid_vec), b_seq, FUN = `-`) / sd_mat
 
-    tdiff_mat <- ptdiff_mat(X = left_centered_means, Y = right_centered_means,
-                            degrees_freedom = degrees_freedom)
+    tdiff_mat <- ptdiff_mat_log(X = left_centered_means, Y = right_centered_means,
+                                degrees_freedom = degrees_freedom)
     ## tdiff_mat2 <- stats::pt(q = left_centered_means, df = degrees_freedom) -
     ##     stats::pt(q = right_centered_means, df = degrees_freedom)
     ## assertthat::are_equal(tdiff_mat, tdiff_mat2)
 
     tdiff_mat[, zero_spot] <- dt_wrap(x = betahat_ols, mean = alpha_tilde %*% z2,
-                                      sd = sqrt(xi * S_diag), df = degrees_freedom)
+                                      sd = sqrt(xi * S_diag), df = degrees_freedom, log = TRUE)
 
-    obj_val <- sum(log(tdiff_mat) * qvals)
+    ## tdiff_mat2 <- ptdiff_mat(X = left_centered_means, Y = right_centered_means,
+    ##                          degrees_freedom = degrees_freedom)
+    ## tdiff_mat2[, zero_spot] <- dt_wrap(x = betahat_ols, mean = alpha_tilde %*% z2,
+    ##                                   sd = sqrt(xi * S_diag), df = degrees_freedom)
+    ## sum(log(tdiff_mat2) * qvals)
+
+
+    obj_val <- sum(tdiff_mat * qvals)
     return(obj_val)
 }
 
@@ -794,6 +801,10 @@ unif_int_grad <- function(z2, xi, betahat_ols, alpha_tilde, S_diag, a_seq, b_seq
         stats::dt(x = left_centered_means, df = degrees_freedom) / sd_mat
 
     tratio_mat <- dtdiff_mat / tdiff_mat
+
+    ## stupid hack to get rid of NaN's --------------------------------------
+    tratio_mat[tdiff_mat == 0] <- 0
+    ## ----------------------------------------------------------------------
 
     tratio_mat[, zero_spot] <- (degrees_freedom + 1) * resid_vec /
         (degrees_freedom * xi * S_diag + resid_vec ^ 2)
@@ -1004,4 +1015,27 @@ ptdiff_mat <- function(X, Y, degrees_freedom) {
     diff[!which_switch] <- stats::pt(X[!which_switch], df = degrees_freedom) -
         stats::pt(Y[!which_switch], df = degrees_freedom)
     return(diff)
+}
+
+
+#' Log version of \code{\link{ptdiff_mat}}.
+#'
+#' @inheritParams ptdiff_mat
+#'
+#' @author David Gerard
+#'
+#' @seealso \code{\link{ptdiff_mat}}.
+ptdiff_mat_log <- function(X, Y, degrees_freedom) {
+    assertthat::are_equal(dim(X), dim(Y))
+    which_switch <- abs(Y) > abs(X)
+    ldiff_mat <- matrix(NA, nrow = nrow(X), ncol = ncol(X))
+
+    a <- stats::pt(X[!which_switch], df = degrees_freedom, log.p = TRUE)
+    b <- stats::pt(Y[!which_switch], df = degrees_freedom, log.p = TRUE)
+    ldiff_mat[!which_switch] <- a + log(1 - exp(b - a))
+
+    a <- stats::pt(-X[which_switch], df = degrees_freedom, log.p = TRUE)
+    b <- stats::pt(-Y[which_switch], df = degrees_freedom, log.p = TRUE)
+    ldiff_mat[which_switch] <- b + log(1 - exp(a - b))
+    return(ldiff_mat)
 }
