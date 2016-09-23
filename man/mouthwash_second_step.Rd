@@ -8,7 +8,7 @@ mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, lambda_seq,
   tau2_seq = NULL, a_seq = NULL, b_seq = NULL, mixing_dist = c("normal",
   "uniform", "+uniform", "sym_uniform"), likelihood = c("normal", "t"),
   pi_init_type = c("zero_conc", "uniform", "random"), scale_var = TRUE,
-  degrees_freedom)
+  degrees_freedom, plot_update = FALSE)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The OLS estimates of the
@@ -56,6 +56,10 @@ parameter (\code{TRUE}) or not (\code{FALSE})?}
 
 \item{degrees_freedom}{The degrees of freedom of the t-distribution
 if \code{likelihood = "t"}.}
+
+\item{plot_update}{A logical. Should I plot the the path of the
+log-likelihood (\code{TRUE}) or not (\code{FALSE})? Only
+applicable when \code{mixing_dist} is not \code{"normal"}.}
 }
 \description{
 The second step of MOUTHWASH.

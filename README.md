@@ -15,15 +15,17 @@ Y = XB + ZA + E,
 for
 
 -   Y an n by p matrix of gene expression data with n samples and p genes,
--   X an n by q matrix of of q covariates,
+-   X an n by q matrix of q covariates,
 -   B a q by p matrix of unobserved coefficients for the observed covariates,
 -   Z an n by k matrix of hidden confounders,
 -   A a k by p matrix of hidden coefficients for the hidden confounders, and
 -   E an n by p matrix of independent normal errors with column variances s1,...,sp.
 
-Not accounting for the hidden covariates, Z, can reduce power and result in poor control of false discovery rate.
+Not accounting for the hidden covariates, Z, can reduce power and result in poor control of false discovery rate. This package provides a suite of functions to adjust for hidden confounders, both when one has and does not have access to control genes.
 
-There are many approaches available for estimating hidden confounders. This package is among those that use control genes to account to hidden confounding. Other such methods include RUV2 (J. A. Gagnon-Bartsch and Speed 2012), RUV4 (J Gagnon-Bartsch, Jacob, and Speed 2013), and CATE (Wang et al. 2015). This package adds to this field by
+The function `mouthwash` can adjust for hidden confounding when one does not have access to control genes. It does so via a non-parametric empirical Bayes method that uses the powerful methodology of Adaptive SHrinkage (Stephens 2016) within the factor-augmented regression framework described in Wang et al. (2015).
+
+When one has control genes, there are many approaches to take. Such methods include RUV2 (J. A. Gagnon-Bartsch and Speed 2012), RUV4 (J Gagnon-Bartsch, Jacob, and Speed 2013), and CATE (Wang et al. 2015). This package adds to the field of confounder adjustment with control genes by
 
 1.  Implementing a version of CATE that is calibrated using control genes similarly to the method in J Gagnon-Bartsch, Jacob, and Speed (2013). The function is called `vruv4`.
 2.  Introduces RUV3, a version of RUV that can be considered both RUV2 and RUV4. The function is called `ruv3`.
@@ -32,16 +34,16 @@ There are many approaches available for estimating hidden confounders. This pack
 
 Please cite this package as:
 
-> Gerard, David. 2016. *vicar: Variance Inflation for Confounder Adjustment in Regression*. <https://github.com/dcgerard/vicar>.
+> Gerard, David. 2016. *vicar: (more than just) Variance Inflation for Confounder Adjustment in Regression*. <https://github.com/dcgerard/vicar>.
 
 Or, using BibTex:
 
 ``` tex
 @Manual{gerard2016vicar,
-    title = {{vicar}: Variance Inflation for Confounder Adjustment in Regression},
+    title = {{vicar}: (more than just) Variance Inflation for Confounder Adjustment in Regression},
     author = {David Gerard},
     year = {2016},
-    note = {R package version 0.1.3},
+    note = {R package version 0.1.4},
     url = {https://github.com/dcgerard/vicar},
 }
 ```
@@ -68,6 +70,8 @@ Gagnon-Bartsch, J, L Jacob, and TP Speed. 2013. “Removing Unwanted Variation f
 Gagnon-Bartsch, Johann. 2015. *ruv: Detect and Remove Unwanted Variation Using Negative Controls*. <https://CRAN.R-project.org/package=ruv>.
 
 Gagnon-Bartsch, Johann A, and Terence P Speed. 2012. “Using Control Genes to Correct for Unwanted Variation in Microarray Data.” *Biostatistics* 13 (3). Biometrika Trust: 539–52.
+
+Stephens, Matthew. 2016. “False Discovery Rates: A New Deal.” *BioRxiv*. Cold Spring Harbor Labs Journals. doi:[10.1101/038216](https://doi.org/10.1101/038216).
 
 Wang, Jingshu, and Qingyuan Zhao. 2015. *cate: High Dimensional Factor Analysis and Confounder Adjusted Testing and Estimation*. <https://CRAN.R-project.org/package=cate>.
 

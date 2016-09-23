@@ -9,7 +9,9 @@ Regression.}
 \description{
 \code{vicar} does more than just variance inflation. This package
 contains function for implementing RUV3, and two versions of what
-we call RUV5: RUV-Bayes and RUV-impute.
+we call RUV5: RUV-Bayes and RUV-impute. It also contains the
+function \code{\link{mouthwash}} for confounder adjustment when one
+does not have access to control genes.
 }
 \section{\code{vicar} functions}{
 
@@ -21,6 +23,8 @@ we call RUV5: RUV-Bayes and RUV-impute.
     \code{\link{ruvimpute}}: An implementation of RUV-impute.
 
     \code{\link{vruv4}}: Variance inflated version of CATE.
+
+    \code{\link{mouthwash}}: Confounder adjustment without control genes.
 }
 \author{
 David Gerard

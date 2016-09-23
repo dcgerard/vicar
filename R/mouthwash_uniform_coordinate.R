@@ -15,12 +15,14 @@
 #' @param z_init The initial values of z2. A numeric vector.
 #' @param xi_init The initial (or known) value of the variance
 #'     inflation term.
+#' @param plot_update A logical. Should I plot the the path of the
+#'     log-likelihood (\code{TRUE}) or not (\code{FALSE})?
 #'
 #' @author David Gerard
 mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                  alpha_tilde, a_seq, b_seq, lambda_seq,
                                  degrees_freedom, scale_var = TRUE,
-                                 tol = 10 ^ -6, maxit = 100) {
+                                 tol = 10 ^ -6, maxit = 100, plot_update = FALSE) {
 
     ## Make sure input is correct ---------------------------------------------
     M <- length(a_seq)
@@ -62,7 +64,7 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
 
         ## Update z with quasi-Newton ----------------------------------------------------
         optim_out <- stats::optim(par = z_new, fn = uniform_mix_llike,
-                                  gr = mouthwash_z_grad, method = "L-BFGS-B",
+                                  gr = mouthwash_z_grad, method = "BFGS",
                                   pi_vals = pi_new, xi = xi_new, betahat_ols = betahat_ols,
                                   S_diag = S_diag, alpha_tilde = alpha_tilde, a_seq = a_seq,
                                   b_seq = b_seq, lambda_seq = lambda_seq,
@@ -111,11 +113,18 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                    alpha_tilde = alpha_tilde, a_seq = a_seq,
                                    b_seq = b_seq, lambda_seq = lambda_seq,
                                    degrees_freedom = degrees_freedom)
+        llike_vec <- c(llike_vec, llike_new)
 
         assertthat::assert_that((llike_new -llike_old) > - 10 ^ -14)
 
+
         err <- abs(llike_new / llike_old - 1)
         iter_index <- iter_index + 1
+
+        if (plot_update) {
+            graphics::plot(llike_vec, type = "l", xlab = "Iteration", ylab = "log-likelihood")
+            graphics::mtext(paste0("Diff: ", format(err, digits = 2)))
+        }
     }
 
     return(list(pi_vals = pi_new, z2 = z_new, xi = xi_new))

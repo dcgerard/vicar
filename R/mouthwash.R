@@ -4,7 +4,42 @@
 
 #' MOUTHWASH: Maximize Over Unobservables To Help With Adaptive SHrinkage.
 #'
+#' This function implements the full MOUTHWASH method. First, it
+#' rotates the response and explanatory variables into a part that we
+#' use to estimate the confounding variables and the variances, and a
+#' part that we use to estimate the coefficients of the observed
+#' covariates. This function will implement a factor analysis for the
+#' first part then run \code{\link{mouthwash_second_step}} for the
+#' second part.
 #'
+#' The assumed mode is \deqn{Y = X\beta + Z\alpha + E.} \eqn{Y} is a
+#' \eqn{n} by \code{p} matrix of response varaibles. For example, each
+#' row might be an array of log-transformed gene-expression data.
+#' \eqn{X} is a \eqn{n} by \eqn{q} matrix of observed covariates. It
+#' is assumed that all but one column of which contains nuisance
+#' parameters. For example, the first column might be a vector of ones
+#' to include an intercept. \eqn{\beta} is a \eqn{q} by \eqn{p} matrix
+#' of corresponding coefficients.  \eqn{Z} is a \eqn{n} by \eqn{k}
+#' matrix of confounder variables. \eqn{\alpha} is the corresponding
+#' \eqn{k} by \eqn{p} matrix of coefficients for the unobserved
+#' confounders. \eqn{E} is a \eqn{n} by \eqn{p} matrix of error
+#' terms. \eqn{E} is assumed to be matrix normal with identity row
+#' covariance and diagonal column covariance \eqn{\Sigma}. That is,
+#' the columns are heteroscedastic while the rows are homoscedastic
+#' independent.
+#'
+#' This function will first rotate \eqn{Y} and \eqn{X} using the QR
+#' decomposition. This separates the model into three parts. The first
+#' part only contains nuisance parameters, the second part contains
+#' the coefficients of interest, and the third part contains the
+#' confounders. \code{mouthwash} applies a user-provided factor
+#' analysis to the third part to estimate the confounding factors,
+#' then runs an EM (or coordinate-ascent) algorithm on the second part
+#' to estimate the coefficients of interest.
+#'
+#' Many forms of factor analyses are avaiable in this package. The
+#' default is PCA with the column-wise residual mean-squares as the
+#' estimates of the column-wise variances.
 #'
 #' @inheritParams vruv4
 #' @param grid_seq The grid for the mixing distribution. If
@@ -36,6 +71,50 @@
 #'     or by sampling uniformly on the simplex (\code{"random"})?
 #' @param scale_var A logical. Should we estimate a variance inflation
 #'     parameter (\code{TRUE}) or not (\code{FALSE})?
+#' @param plot_update A logical. Should I plot the the path of the
+#'     log-likelihood (\code{TRUE}) or not (\code{FALSE})? Only
+#'     applicable when \code{mixing_dist} is not \code{"normal"}.
+#'
+#' @return A list with some or all of the following elements.
+#'
+#'     \code{fitted_g}: The estimated unimodal prior. It is of class
+#'     \code{\link[ashr]{unimix}} if \code{mixing_dist} is one of
+#'     \code{"uniform"}, \code{"+uniform"}, or
+#'     \code{"sym_uniform"}. It is of class
+#'     \code{\link[ashr]{normalmix}} if \code{mixing_dist} is
+#'     \code{"normal"}.
+#'
+#'     \code{loglik} The final log-likelihood.
+#'
+#'     \code{logLR} The likelihood ratio compared to the all-null setting (point-mass on zero).
+#'
+#'     \code{data} Post-confounder adjusted ashr data.
+#'
+#'     \code{pi0} The estimate of the proportion of null genes.
+#'
+#'     \code{z2} The estimated confounders (after rotation)
+#'     corresponding the covariates of interest. Mostly output for
+#'     debugging reasons.
+#'
+#'     \code{xi} The estimated variance inflation parameter.
+#'
+#'     \code{Zhat} The estimate of the confounders.
+#'
+#'     \code{alphahat} The estimate of the coefficients of the confounders.
+#'
+#'     \code{sig_diag} The estimate of the column-specific variances.
+#'
+#'     \code{result} A data frame with the results from MOUTHWASH. The columns of which are
+#'     \itemize{
+#'       \item{NegativeProb}{The probability that the effect is negative.}
+#'       \item{PositiveProb}{The probability that the effect is positive.}
+#'       \item{lfsr}{The local false sign rates of each effect.}
+#'       \item{svalue}{The s-values, a measure of significance.}
+#'       \item{lfdr}{The local false discovery rates.}
+#'       \item{qvalue}{Teh q-values, a measure of significance.}
+#'       \item{PosteriorMean}{The posterior means of the effects.}
+#'       \item{PosteriorSD}{The posterior standard deviations of the effects.}
+#'     }
 #'
 #' @export
 #'
@@ -47,10 +126,10 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform", "normal"),
                       lambda_type = c("zero_conc", "uniform"),
                       pi_init_type = c("zero_conc", "uniform", "random"),
-                      degrees_freedom = NULL,
-                      pi_init = NULL, grid_seq = NULL, lambda_seq = NULL,
-                      lambda0 = 10,
-                      scale_var = TRUE) {
+                      degrees_freedom = NULL, pi_init = NULL,
+                      grid_seq = NULL, lambda_seq = NULL,
+                      lambda0 = 10, scale_var = TRUE,
+                      plot_update = FALSE) {
 
 
     ## Make sure input is correct --------------------------------------------------------
@@ -100,7 +179,6 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     }
     assertthat::assert_that(length(degrees_freedom) == 1 | length(degrees_freedom) == ncol(Y))
     assertthat::assert_that(all(degrees_freedom > 0))
-
 
     ## rescale alpha and sig_diag by R22 to get data for second step ------------------
     alpha_tilde <- rotate_out$alpha / c(rotate_out$R22)
@@ -163,7 +241,31 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                  degrees_freedom = degrees_freedom,
                                  lambda_seq = lambda_seq, mixing_dist = mixing_dist,
                                  likelihood = likelihood, pi_init_type = pi_init_type,
-                                 scale_var = scale_var)
+                                 scale_var = scale_var, plot_update = plot_update)
+
+    ## Estimate rest of the hidden confounders -----------------------------------
+    Y1  <- rotate_out$Y1
+    Z2 <- val$z2
+    Z3 <- rotate_out$Z3
+    if (!is.null(Y1)) {
+        R12 <- rotate_out$R12
+        R11 <- rotate_out$R11
+        Q   <- rotate_out$Q
+        beta1_ols <- solve(R11) %*% (Y1 - R12 %*% t(betahat_ols))
+        resid_top <- Y1 - R12 %*% t(val$result$PosteriorMean) - R11 %*% beta1_ols
+        Z1  <- solve(t(alpha_tilde) %*% diag(1 / rotate_out$sig_diag) %*% alpha_tilde) %*%
+            t(alpha_tilde) %*% diag(1 / rotate_out$sig_diag) %*% t(resid_top)
+        Zhat <- Q %*% rbind(t(Z1), t(Z2), Z3)
+    } else {
+        Q   <- rotate_out$Q
+        Zhat <- Q %*% rbind(t(Z2), Z3)
+    }
+
+    val$Zhat <- Zhat
+    val$alphahat <- t(rotate_out$alpha)
+    val$sig_diag <- rotate_out$sig_diag
+
+
     return(val)
 }
 
@@ -186,6 +288,10 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 #'     \code{mixing_dist} is one of the uniforms.
 #' @param degrees_freedom The degrees of freedom of the t-distribution
 #'     if \code{likelihood = "t"}.
+#' @param plot_update A logical. Should I plot the the path of the
+#'     log-likelihood (\code{TRUE}) or not (\code{FALSE})? Only
+#'     applicable when \code{mixing_dist} is not \code{"normal"}.
+#'
 #'
 #' @author David Gerard
 #'
@@ -197,7 +303,8 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                   mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform"),
                                   likelihood = c("normal", "t"),
                                   pi_init_type = c("zero_conc", "uniform", "random"),
-                                  scale_var = TRUE, degrees_freedom) {
+                                  scale_var = TRUE, degrees_freedom,
+                                  plot_update = FALSE) {
 
     ## Make sure input is correct -------------------------------------------------
     mixing_dist  <- match.arg(mixing_dist)
@@ -249,7 +356,8 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                         betahat_ols = betahat_ols, S_diag = S_diag,
                                         alpha_tilde = alpha_tilde, a_seq = a_seq,
                                         b_seq = b_seq, lambda_seq = lambda_seq,
-                                        degrees_freedom = degrees_freedom, scale_var = scale_var)
+                                        degrees_freedom = degrees_freedom, scale_var = scale_var,
+                                        plot_update = plot_update)
         pi_vals  <- opt_out$pi_vals
         z2_final <- opt_out$z2
         xi_final <- opt_out$xi

@@ -1,4 +1,12 @@
+# vicar 0.1.4
+
+This version added the function `mouthwash` to adjust for hidden
+confounding when one does not have control genes. It applies the same
+prior from [ashr](https://github.com/stephens999/ashr/tree/general) to
+a factor-augmentred regression framework.
+
 # vicar 0.1.3
+
 A lot of changes have occurred since my last news update. The biggest changes are:
 
 * RUV3 is a method that can be considered both a version of RUV2 and RUV4. I implemented this in the function `ruv3`.
