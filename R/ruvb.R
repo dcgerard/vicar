@@ -5,13 +5,14 @@
 #' that's the prior.
 #'
 #' I have three versions of Bayesian factor analyses that I
-#' recommend. The first, \code{\link{bfa_gs}} is the Bayesian factor
-#' analysis used in Gerard and Stephens (2016). The second is
-#' \code{\link{bfa_gs_linked}}. This version links the variances
-#' between the factors and observations. The last is
-#' \code{bfa_wrapper}, which is just a wrapper for the R package
-#' bfa. The main thing about this version is that they do not use a
-#' hierarchical prior on the variances.
+#' recommend. The first is \code{\link{bfa_gs_linked}}. This version
+#' links the variances between the factors and observations and is the
+#' version used in Gerard and Stephens (2016). The second,
+#' \code{\link{bfa_gs}}, is the same as the first except it does not
+#' link the variances between the factors and the observations. The
+#' last is \code{bfa_wrapper}, which is just a wrapper for the R
+#' package bfa. The main thing about this version is that they do not
+#' use a hierarchical prior on the variances.
 #'
 #' @inheritParams vruv4
 #' @param fa_func A function that takes as input matrices named

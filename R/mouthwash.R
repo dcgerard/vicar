@@ -235,6 +235,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
         }
     }
 
+    ## Run MOUTHWASH -------------------------------------------------------------
     val <- mouthwash_second_step(betahat_ols = betahat_ols, S_diag = S_diag,
                                  alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
                                  a_seq = a_seq, b_seq = b_seq,
