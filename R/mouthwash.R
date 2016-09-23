@@ -368,44 +368,69 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 
     az <- alpha_tilde %*% z2_final
 
-    ## ash summaries --------------------------------------------------------------
+    ## make mix object  --------------------------------------------------------------
     if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
         ghat <- ashr::unimix(pi = pi_vals, a = a_seq, b = b_seq)
     } else if (mixing_dist == "normal") {
         ghat <- ashr::normalmix(pi = pi_vals, mean = rep(0, M), sd = sqrt(tau2_seq))
     }
 
-    if (likelihood == "normal" & mixing_dist == "normal") {
-        data <- ashr::set_data(betahat = c(betahat_ols - az),
-                               sebetahat = c(sqrt(xi_final * S_diag)),
-                               lik = ashr::normal_lik())
-    } else {
-        data <- ashr::set_data(betahat = c(betahat_ols - az),
-                               sebetahat = c(sqrt(xi_final * S_diag)),
-                               lik = ashr::t_lik(degrees_freedom))
+    ## For ashr compatibility -------------------------------------------------------
+    mixcompdist <- mixing_dist
+    if (mixcompdist == "uniform") {
+        mixcompdist <- "halfuniform"
+    } else if (mixcompdist == "sym_uniform") {
+        mixcompdist <- "uniform"
     }
 
-    val <- list()
-    val <- c(val, list(fitted_g = ghat))
-    val <- c(val, list(loglik = ashr::calc_loglik(ghat, data)))
-    val <- c(val, list(logLR = ashr::calc_logLR(ghat, data)))
-    val <- c(val, list(data = data))
+    ashr_df <- degrees_freedom
+    if (likelihood == "normal") {
+        ashr_df <- NULL
+    }
+
+    val <- ashr::ash.workhorse(betahat = c(betahat_ols - az),
+                               sebetahat = c(sqrt(xi_final * S_diag)),
+                               df = ashr_df,
+                               prior = "nullbiased",
+                               nullweight = lambda_seq[zero_spot],
+                               g = ghat,
+                               fixg = TRUE,
+                               mixcompdist = mixcompdist)
     val <- c(val, list(pi0 = pi_vals[zero_spot]))
     val <- c(val, list(z2 = z2_final))
     val <- c(val, list(xi = xi_final))
-    NegativeProb  <- ashr:::calc_np(g = ghat, data = data)
-    PositiveProb  <- ashr:::calc_pp(g = ghat, data = data)
-    lfsr          <- ashr:::calc_lfsr(g = ghat, data = data)
-    svalue        <- ashr:::calc_svalue(g = ghat, data = data)
-    lfdr          <- ashr:::calc_lfdr(g = ghat, data = data)
-    qvalue        <- ashr:::calc_qvalue(g = ghat, data = data)
-    PosteriorMean <- ashr:::calc_pm(g = ghat, data = data)
-    PosteriorSD   <- ashr:::calc_psd(g = ghat, data = data)
-    result <- data.frame(NegativeProb, PositiveProb, lfsr, svalue, lfdr, qvalue,
-                         PosteriorMean, PosteriorSD)
-    val <- c(val, list(result = result))
 
-    class(val) <- "ash"
+    ## The following does the same as the call to ash
+    ## if (likelihood == "normal" & mixing_dist == "normal") {
+    ##     data <- ashr::set_data(betahat = c(betahat_ols - az),
+    ##                            sebetahat = c(sqrt(xi_final * S_diag)),
+    ##                            lik = ashr::normal_lik())
+    ## } else {
+    ##     data <- ashr::set_data(betahat = c(betahat_ols - az),
+    ##                            sebetahat = c(sqrt(xi_final * S_diag)),
+    ##                            lik = ashr::t_lik(degrees_freedom))
+    ## }
+    ## val <- list()
+    ## val <- c(val, list(fitted_g = ghat))
+    ## val <- c(val, list(loglik = ashr::calc_loglik(ghat, data)))
+    ## val <- c(val, list(logLR = ashr::calc_logLR(ghat, data)))
+    ## val <- c(val, list(data = data))
+    ## val <- c(val, list(pi0 = pi_vals[zero_spot]))
+    ## val <- c(val, list(z2 = z2_final))
+    ## val <- c(val, list(xi = xi_final))
+    ## NegativeProb  <- ashr:::calc_np(g = ghat, data = data)
+    ## PositiveProb  <- ashr:::calc_pp(g = ghat, data = data)
+    ## lfsr          <- ashr:::calc_lfsr(g = ghat, data = data)
+    ## svalue        <- ashr:::calc_svalue(g = ghat, data = data)
+    ## lfdr          <- ashr:::calc_lfdr(g = ghat, data = data)
+    ## qvalue        <- ashr:::calc_qvalue(g = ghat, data = data)
+    ## PosteriorMean <- ashr:::calc_pm(g = ghat, data = data)
+    ## PosteriorSD   <- ashr:::calc_psd(g = ghat, data = data)
+    ## result <- data.frame(NegativeProb, PositiveProb, lfsr, svalue, lfdr, qvalue,
+    ##                      PosteriorMean, PosteriorSD)
+    ## val <- c(val, list(result = result))
+    ## class(val) <- "ash"
+
     return(val)
 }
 
