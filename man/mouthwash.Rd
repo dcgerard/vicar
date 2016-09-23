@@ -7,7 +7,7 @@
 mouthwash(Y, X, k = NULL, cov_of_interest = ncol(X),
   include_intercept = TRUE, limmashrink = TRUE, fa_func = pca_naive,
   fa_args = list(), likelihood = c("normal", "t"),
-  mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform", "normal"),
+  mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform"),
   lambda_type = c("zero_conc", "uniform"), pi_init_type = c("zero_conc",
   "uniform", "random"), degrees_freedom = NULL, pi_init = NULL,
   grid_seq = NULL, lambda_seq = NULL, lambda0 = 10, scale_var = TRUE,

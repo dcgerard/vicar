@@ -93,12 +93,12 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                    alpha = 0)
         ash_g <- ashr::unimix(pi = pi_new, a = a_seq, b = b_seq)
 
+        optmethod <- "mixEM"
         ## if (requireNamespace(package = "Rmosek", quietly = TRUE)) {
         ##     optmethod <- "mixIP"
         ## } else {
         ##     optmethod <- "mixEM"
         ## }
-        opt_method <- "mixEM"
         control_default <- list(K = 1, method = 3, square = TRUE,
                                 step.min0 = 1, step.max0 = 1, mstep = 4, kr = 1, objfn.inc = 1,
                                 tol = 1e-07, maxiter = 500, trace = FALSE)
