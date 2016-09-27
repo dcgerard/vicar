@@ -89,7 +89,6 @@
 #'     \code{degrees_freedom} The degrees of freedom of the t-
 #'     statistics.
 #'
-#' @export
 #'
 #' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
 #'     P. Speed. "Removing unwanted variation from high dimensional
@@ -306,7 +305,6 @@ vruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #'
 #' @author David Gerard
 #'
-#' @export
 #'
 #' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
 #'     P. Speed. "Removing unwanted variation from high dimensional

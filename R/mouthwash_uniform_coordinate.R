@@ -103,7 +103,7 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                 step.min0 = 1, step.max0 = 1, mstep = 4, kr = 1, objfn.inc = 1,
                                 tol = 1e-07, maxiter = 500, trace = FALSE)
 
-        ash_out <- ashr:::estimate_mixprop(data = ash_data, g = ash_g, prior = lambda_seq,
+        ash_out <- ashr::estimate_mixprop(data = ash_data, g = ash_g, prior = lambda_seq,
                                            optmethod = optmethod, control = list())
 
         pi_new <- ash_out$optreturn$pihat

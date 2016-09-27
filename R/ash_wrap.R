@@ -37,6 +37,10 @@
 #'     rest are considered nuiszance parameters and are regressed out
 #'     by OLS. \code{ash_ruv4} only works with one covariate of
 #'     interest right now.
+#' @param scale_var A logical. Should we use the variance inflation
+#'     parameter in the estimate standard errors when inserting into
+#'     \code{\link[ashr]{ash.workhorse}} (\code{TRUE}) or not
+#'     (\code{FALSE})?
 #'
 #' @author David Gerard
 #'
@@ -73,7 +77,8 @@ ash_ruv4 <- function(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
                      likelihood = c("t", "normal"), ash_args = list(),
                      limmashrink = TRUE, degrees_freedom = NULL,
                      include_intercept = TRUE, gls = TRUE,
-                     fa_func = pca_naive, fa_args = list()) {
+                     fa_func = pca_naive, fa_args = list(),
+                     scale_var = TRUE) {
 
     if (!requireNamespace("ashr", quietly = TRUE)) {
         stop("ashr must be installed to run ash_ruv4. To install, run in R:\n    install.packages(\"devtools\")\n    devtools::install_github(\"stephens999/ashr\")")
@@ -92,17 +97,20 @@ ash_ruv4 <- function(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
                   include_intercept = include_intercept, gls = gls,
                   fa_func = fa_func, fa_args = fa_args)
 
-    betahat   <- c(vout$betahat)
-    sebetahat <- c(vout$sebetahat)
-    df        <- vout$degrees_freedom
+    if (scale_var) {
+        sebetahat <- c(vout$sebetahat)
+    } else {
+        sebetahat <- c(vout$sebetahat_ols)
+    }
+    betahat <- c(vout$betahat)
+    df <- vout$degrees_freedom
 
     ash_args$betahat   <- betahat
     ash_args$sebetahat <- sebetahat
-    if (likelihood == "t") {
+    if (likelihood == "t" & df != Inf) {
         ash_args$df <- df
     }
     ashout <- do.call(what = ashr::ash.workhorse, args = ash_args)
-
     ashout$ruv4 <- vout
 
     return(ashout)
@@ -135,7 +143,6 @@ ash_ruv4 <- function(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
 #'
 #' @author David Gerard
 #'
-#' @export
 #'
 #' @seealso \code{\link{vruv2}} for the variance inflation in RUV2 and
 #'     \code{\link[ashr]{ash.workhorse}} for the adaptive shrinkage
@@ -165,13 +172,13 @@ ash_ruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     if (!requireNamespace("ashr", quietly = TRUE)) {
         stop("ashr must be installed to run ash_ruv2. To install, run in R:\n    install.packages(\"devtools\")\n    devtools::install_github(\"stephens999/ashr\")")
     }
-    
+
     likelihood <- match.arg(likelihood)
-    
+
     if (length(cov_of_interest) != 1) {
         stop("cov_of_interest must contain only one number")
     }
-    
+
     vout <- vruv2(Y = Y, X = X, ctl = ctl, k = k,
                   cov_of_interest = cov_of_interest,
                   likelihood = likelihood, limmashrink = limmashrink,
@@ -182,7 +189,7 @@ ash_ruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     betahat   <- c(vout$betahat)
     sebetahat <- c(vout$sebetahat)
     df        <- vout$degrees_freedom
-    
+
     ash_args$betahat   <- betahat
     ash_args$sebetahat <- sebetahat
     if (likelihood == "t") {

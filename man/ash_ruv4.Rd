@@ -8,7 +8,7 @@ inflation parameter, then run ASH.}
 ash_ruv4(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
   likelihood = c("t", "normal"), ash_args = list(), limmashrink = TRUE,
   degrees_freedom = NULL, include_intercept = TRUE, gls = TRUE,
-  fa_func = pca_naive, fa_args = list())
+  fa_func = pca_naive, fa_args = list(), scale_var = TRUE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -78,6 +78,11 @@ variances are just the column-wise mean square.}
 
 \item{fa_args}{A list. Additional arguments you want to pass to
 fa_func.}
+
+\item{scale_var}{A logical. Should we use the variance inflation
+parameter in the estimate standard errors when inserting into
+\code{\link[ashr]{ash.workhorse}} (\code{TRUE}) or not
+(\code{FALSE})?}
 }
 \value{
 Except for the list \code{ruv4}, the values returned are
