@@ -1,8 +1,9 @@
 language: r
 
+cache: packages
+
 env:
-  global:
-    - _R_CHECK_FORCE_SUGGESTS_="FALSE"
+  - _R_CHECK_FORCE_SUGGESTS_=false
 
 before_install:
   - Rscript -e "source('https://bioconductor.org/biocLite.R'); biocLite(c('limma', 'sva', 'impute'))"
