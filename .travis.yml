@@ -12,6 +12,3 @@ env:
 before_install:
   - Rscript -e "source('http://bioconductor.org/biocLite.R'); biocLite(c('limma', 'sva', 'impute'))"
 
-r_github_packages:
-  - jimhester/covr
-
