@@ -958,7 +958,6 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
     trash <- utils::capture.output(bfout <- bfa::bfa_gauss(form1, data = Y, num.factor = k,
                                                            keep.scores = TRUE, thin = keep,
                                                            nburn = burnin, nsim = nsamp,
-                                                           center.data = FALSE, scale.data = FALSE,
                                                            factor.scales = TRUE,
                                                            loading.prior = "normal",
                                                            print.status = print_status))
