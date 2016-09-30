@@ -6,7 +6,7 @@ env:
   global:
     - _R_CHECK_FORCE_SUGGESTS_=FALSE
 
-bioc_packages: limma sva impute
+bioc_packages: list("limma", "sva", "impute")
 
 r_github_packages:
   - jimhester/covr
