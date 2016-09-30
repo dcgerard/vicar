@@ -1,11 +1,9 @@
-#' \code{vicar}: (more than just) Variance Inflation for Confounder Adjustment in
-#' Regression.
+#' \code{vicar}: Methods for Confounder Adjustment in Regression.
 #'
-#' \code{vicar} does more than just variance inflation. This package
-#' contains function for implementing RUV3, and two versions of what
-#' we call RUV5: RUV-Bayes and RUV-impute. It also contains the
-#' function \code{\link{mouthwash}} for confounder adjustment when one
-#' does not have access to control genes.
+#' \code{vicar} contains functions for implementing RUV3 and two
+#' versions of what we call RUV5: RUV-Bayes and RUV-impute. It also
+#' contains the function \code{\link{mouthwash}} for confounder
+#' adjustment when one does not have access to control genes.
 #'
 #' @section \code{vicar} functions:
 #'
