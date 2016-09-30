@@ -87,28 +87,48 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
         }
 
         ## update pi_vals with ashr ------------------------------------------------------
-        ash_data <- ashr::set_data(betahat = c(betahat_ols - alpha_tilde %*% z_new),
-                                   sebetahat = c(sqrt(xi_new * S_diag)),
-                                   lik = ashr::t_lik(degrees_freedom),
-                                   alpha = 0)
-        ash_g <- ashr::unimix(pi = pi_new, a = a_seq, b = b_seq)
 
-        ## optmethod <- "mixEM"
-        if (requireNamespace(package = "Rmosek", quietly = TRUE)) {
-            optmethod <- "mixIP"
-        } else {
-            optmethod <- "mixEM"
-        }
-        control_default <- list(K = 1, method = 3, square = TRUE,
-                                step.min0 = 1, step.max0 = 1, mstep = 4, kr = 1, objfn.inc = 1,
-                                tol = 1e-07, maxiter = 500, trace = FALSE)
+        ## use ash directly --------------------------------------------------------------
+        ## ashr needs null component to be in first location
+        pi_temp <- c(pi_new[zero_spot], pi_new[-zero_spot])
+        a_temp  <- c(a_seq[zero_spot], a_seq[-zero_spot])
+        b_temp  <- c(b_seq[zero_spot], b_seq[-zero_spot])
 
-        ash_out <- ashr::estimate_mixprop(data = ash_data, g = ash_g, prior = lambda_seq,
-                                           optmethod = optmethod, control = list())
+        ash_g <- ashr::unimix(pi = pi_temp, a = a_temp, b = b_temp)
+        ashout <- ashr::ash.workhorse(betahat = c(betahat_ols - alpha_tilde %*% z_new),
+                                      sebetahat = c(sqrt(xi_new * S_diag)),
+                                      df = degrees_freedom,
+                                      g = ash_g,
+                                      prior = "nullbiased",
+                                      nullweight = lambda_seq[zero_spot],
+                                      outputlevel = 0,
+                                      alpha = 0)
+        pi_temp <- ashout$fitted_g$pi
+        pi_new  <- append(pi_temp[-1], pi_temp[1], zero_spot - 1)
 
-        pi_new <- ash_out$optreturn$pihat
+        ## ## old way -----------------------------------------------------------------------
+        ## ash_data <- ashr::set_data(betahat = c(betahat_ols - alpha_tilde %*% z_new),
+        ##                           sebetahat = c(sqrt(xi_new * S_diag)),
+        ##                           lik = ashr::t_lik(degrees_freedom),
+        ##                           alpha = 0)
+        ## ash_g <- ashr::unimix(pi = pi_new, a = a_seq, b = b_seq)
 
-        ## stoping criteria
+        ## ## optmethod <- "mixEM"
+        ## if (requireNamespace(package = "Rmosek", quietly = TRUE)) {
+        ##    optmethod <- "mixIP"
+        ## } else {
+        ##    optmethod <- "mixEM"
+        ## }
+        ## control_default <- list(K = 1, method = 3, square = TRUE,
+        ##                        step.min0 = 1, step.max0 = 1, mstep = 4, kr = 1, objfn.inc = 1,
+        ##                        tol = 1e-07, maxiter = 500, trace = FALSE)
+
+        ## ash_out <- ashr::estimate_mixprop(data = ash_data, g = ash_g, prior = lambda_seq,
+        ##                                   optmethod = optmethod, control = list())
+
+        ## pi_new2 <- ash_out$optreturn$pihat
+
+        ## stoping criteria ---------------------------------------------------------------
         llike_new <- uniform_mix_llike(pi_vals = pi_new, z2 = z_new, xi = xi_new,
                                    betahat_ols = betahat_ols, S_diag = S_diag,
                                    alpha_tilde = alpha_tilde, a_seq = a_seq,
@@ -116,7 +136,7 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                    degrees_freedom = degrees_freedom)
         llike_vec <- c(llike_vec, llike_new)
 
-        assertthat::assert_that((llike_new -llike_old) > - 10 ^ -14)
+        assertthat::assert_that((llike_new - llike_old) > - 10 ^ -12)
 
 
         err <- abs(llike_new / llike_old - 1)

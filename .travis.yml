@@ -1,8 +1,5 @@
 language: r
 
-r: 
-  - 3.1
-
 cache: packages
 
 env:
@@ -12,3 +9,8 @@ env:
 before_install:
   - Rscript -e "source('http://bioconductor.org/biocLite.R'); biocLite(c('limma', 'sva', 'impute'))"
 
+r_github_packages:
+  - jimhester/covr
+
+after_success:
+  - Rscript -e 'covr::coveralls()'
