@@ -8,3 +8,4 @@
 ^README.html
 ^News\.md$
 ^NEWS\.md$
+^appveyor\.yml$
