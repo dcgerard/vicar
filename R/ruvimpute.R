@@ -325,6 +325,9 @@ impute_block <- function(Y21, Y31, Y32, impute_func,
 #'
 #' @seealso \code{\link[softImpute]{softImpute}}
 softimpute_wrapper <- function(Y, max_rank) {
+    if (!requireNamespace("softImpute", quietly = TRUE)) {
+        stop("softImpute needs to be installed to use softimpute_wrapper.\nTo install softImpute, run in R:\n    install.packages(\"softImpute\")")
+    }
     ## lout <- softImpute::lambda0(x = Y)
     softout <- softImpute::softImpute(x = Y, rank.max = max_rank,
                                       lambda = 0, maxit = 1000,
@@ -346,6 +349,9 @@ softimpute_wrapper <- function(Y, max_rank) {
 #'
 #' @export
 missforest_wrapper <- function(Y) {
+    if (!requireNamespace("missForest", quietly = TRUE)) {
+        stop("missForest needs to be installed to use missforest_wrapper. To install, run in R:\n    install.packages(\"missForest\")")
+    }
     trash <- utils::capture.output(impout <- missForest::missForest(xmis = Y))
     return(impout$ximp)
 }
@@ -362,6 +368,9 @@ missforest_wrapper <- function(Y) {
 #'
 #' @export
 knn_wrapper <- function(Y) {
+    if (!requireNamespace("impute", quietly = TRUE)) {
+        stop("impute needs to be installed to use knn_wrapper.\nTo install impute, run in R:\n    source(\"https://bioconductor.org/biocLite.R\")\n    biocLite(\"impute\")")
+    }
     impout <- impute::impute.knn(data = Y, colmax = 1, rowmax = 1)
     return(impout$data)
 }

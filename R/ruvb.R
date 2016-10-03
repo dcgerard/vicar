@@ -361,6 +361,10 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
                  print_update = TRUE,
                  plot_update = FALSE) {
 
+    if (!requireNamespace("rstiefel", quietly = TRUE)) {
+        stop("rstiefel needs to be installed to run bsvd. To install, run in R:\n    install.packages(\"rstiefel\")")
+    }
+
     assertthat::are_equal(ncol(Y21), ncol(Y31))
     assertthat::are_equal(nrow(Y31), nrow(Y32))
     ncovs <- nrow(Y21)
