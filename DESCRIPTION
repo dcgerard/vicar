@@ -32,4 +32,5 @@ Suggests: testthat,
     softImpute,
     rstiefel,
     missForest,
-    leapp
+    leapp,
+    covr

@@ -9,3 +9,4 @@
 ^News\.md$
 ^NEWS\.md$
 ^appveyor\.yml$
+^codecov\.yml$
