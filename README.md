@@ -34,13 +34,13 @@ When one has control genes, there are many approaches to take. Such methods incl
 
 Please cite this package as:
 
-> Gerard, David. 2016. *vicar: (more than just) Variance Inflation for Confounder Adjustment in Regression*. <https://github.com/dcgerard/vicar>.
+> Gerard, David. 2016. *vicar: Methods for Confounder Adjustment in Regression*. <https://github.com/dcgerard/vicar>.
 
 Or, using BibTex:
 
 ``` tex
 @Manual{gerard2016vicar,
-    title = {{vicar}: (more than just) Variance Inflation for Confounder Adjustment in Regression},
+    title = {{vicar}: Methods for Confounder Adjustment in Regression},
     author = {David Gerard},
     year = {2016},
     note = {R package version 0.1.4},

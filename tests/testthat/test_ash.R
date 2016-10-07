@@ -32,6 +32,7 @@ test_that("ash_ruv4 works", {
 
     ## had a bug where t likelihood and k not specified gave error
     vout <- vruv4(Y = Y, X = X, ctl = ctl, likelihood = "t")
+    vout <- ash_ruv4(Y = Y, X = X, ctl = ctl, likelihood = "t")
 
 }
 )
