@@ -201,6 +201,7 @@ vruv4 <- function(Y, X, ctl, k = NULL,
                                fa_args = fa_args, do_factor = TRUE)
 
     betahat_ols     <- rotate_out$betahat_ols
+    k <- rotate_out$k
 
     ## Deal with degrees of freedom
     if (likelihood == "normal") {

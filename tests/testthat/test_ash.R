@@ -29,5 +29,9 @@ test_that("ash_ruv4 works", {
     vout <- vruv4(Y = Y, X = X, ctl = ctl, k = q, likelihood = "normal")
     vashout <- ash_ruv4(Y = Y, X = X, ctl = ctl, k = q, likelihood = "normal")
     expect_equal(vout, vashout$ruv4)
+
+    ## had a bug where t likelihood and k not specified gave error
+    vout <- vruv4(Y = Y, X = X, ctl = ctl, likelihood = "t")
+
 }
 )
