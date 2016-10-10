@@ -33,4 +33,5 @@ Suggests: testthat,
     rstiefel,
     missForest,
     leapp,
-    covr
+    covr,
+    qvalue
