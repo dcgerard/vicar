@@ -9,6 +9,7 @@ test_that("caw works", {
     ## data
     X     <- matrix(rnorm(n * q), nrow = n)
     beta  <- matrix(rnorm(q * p), nrow = q)
+    beta[, 1:29] <- 0
     Z     <- matrix(rnorm(n * k), nrow = n)
     alpha <- matrix(rnorm(k * p), nrow = k)
     E     <- matrix(rnorm(n * p), nrow = n)
@@ -24,6 +25,7 @@ test_that("caw works", {
     scale_var         <- TRUE
     include_intercept <- FALSE
 
-
+    cout <- caw(Y = Y, X = X, cov_of_interest = cov_of_interest, weight_init = "all_null")
+    cout$scale_val
 }
 )

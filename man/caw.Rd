@@ -6,10 +6,11 @@
 returns lfdrs.}
 \usage{
 caw(Y, X, k = NULL, cov_of_interest = ncol(X), limmashrink = TRUE,
-  weight_func = ashr::ash.workhorse, weight_args = list(),
-  fa_func = pca_naive, fa_args = list(), scale_var = TRUE,
-  include_intercept = TRUE, weight_init = c("uniform", "random", "limma"),
-  weight_func_input = c("summary2"))
+  weight_func = ash_wrap, weight_args = list(), fa_func = pca_naive,
+  fa_args = list(), scale_var = TRUE, include_intercept = TRUE,
+  weight_init = c("all_null", "random", "limma"),
+  weight_func_input = c("summary2"), degrees_freedom = NULL,
+  min_scale = 0.8)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -68,9 +69,9 @@ it will add an intercept term. If \code{FALSE}, then \code{X}
 will be unchanged.}
 
 \item{weight_init}{A character. How should we initialize the
-weights? The options are to give equal weight to all
-observations (\code{"uniform"}), draw the weights uniformly
-from the simplex (\code{"random"}), or run an iteration of
+weights? The options are to initialize in the all-null setting
+(\code{"all_null"}), draw the weights randomly form iid
+uniforms (\code{"random"}), or run an iteration of
 \code{weight_func} prior to the first round of estimating the
 confounders (\code{"limma"}). This last step uses limma-ebayes.}
 
@@ -90,6 +91,14 @@ covariance of the elements of \code{betamat[i, ]}, and a vector
 of degrees of freedom \code{dfvec}. If \code{weight_func_input
 = "full"}, then the input is just a response matrix \code{Y}
 and a covariate matrix \code{X}.}
+
+\item{degrees_freedom}{if \code{likelihood = "t"}, then this is the
+user-defined degrees of freedom for that distribution. If
+\code{degrees_freedom} is \code{NULL} then the degrees of
+freedom will be the sample size minus the number of covariates
+minus \code{k}.}
+
+\item{min_scale}{The minimum estimate for the variance inflation term.}
 }
 \description{
 Quoth the Raven "Caw, caw!"
