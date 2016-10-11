@@ -9,6 +9,7 @@ env:
 bioc_packages: limma
 bioc_packages: sva
 bioc_packages: impute
+bioc_packages: qvalue
 
 r_github_packages:
   - jimhester/covr

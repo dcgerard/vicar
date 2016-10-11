@@ -38,6 +38,8 @@
 #' @param min_scale The minimum estimate for the variance inflation term.
 #'
 #' @author David Gerard
+#'
+#' @export
 caw <- function(Y, X, k = NULL,
                 cov_of_interest = ncol(X),
                 limmashrink = TRUE,
