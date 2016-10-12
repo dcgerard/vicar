@@ -3,7 +3,14 @@ Type: Package
 Title: Methods for Confounder Adjustment in Regression
 Version: 0.1.4
 Authors@R: person("David", "Gerard", email = "dcgerard@uchicago.edu", role = c("aut", "cre"))
-Description: Calibrates popular confounder adjustment methods.
+Description: Implements many methods for accounting for unobserved confounding
+             in linear regression. If control genes are available, then the
+             following methods are implementable: a calibrated version of
+             CATE/RUV4 (vruv4), a Bayesian version of RUV (ruvb), a version of
+             RUV that unifies other versions of RUV (ruv3), and a generalized
+             version of RUV (ruvimpute). If control genes are not available,
+             then MOUTHWASH (mouthwash) is an excellent procedure to use as
+             long as only one covariate is of interest.
 URL: https://github.com/dcgerard/vicar
 BugReports: http://github.com/dcgerard/vicar/issues
 License: GPL-3
