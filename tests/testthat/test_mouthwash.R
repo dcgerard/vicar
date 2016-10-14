@@ -29,8 +29,8 @@ test_that("mouthwash works ok", {
     mout <- mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2,
                       likelihood = "t", mixing_dist = "uniform",
                       lambda0 = 10)
-    mold <- readRDS("old_mouth.Rds")
-    expect_equal(mout, mold)
+    ## mold <- readRDS("old_mouth.Rds")
+    ## expect_equal(mout, mold)
 
     tot_unif <- proc.time() - start_unif
 
