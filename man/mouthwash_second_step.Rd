@@ -8,7 +8,7 @@ mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, lambda_seq,
   tau2_seq = NULL, a_seq = NULL, b_seq = NULL, mixing_dist = c("normal",
   "uniform", "+uniform", "sym_uniform"), likelihood = c("normal", "t"),
   pi_init_type = c("zero_conc", "uniform", "random"), scale_var = TRUE,
-  degrees_freedom, plot_update = FALSE)
+  degrees_freedom, plot_update = FALSE, sprop = 0)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The OLS estimates of the
@@ -60,6 +60,12 @@ if \code{likelihood = "t"}.}
 \item{plot_update}{A logical. Should I plot the the path of the
 log-likelihood (\code{TRUE}) or not (\code{FALSE})? Only
 applicable when \code{mixing_dist} is not \code{"normal"}.}
+
+\item{sprop}{If \eqn{b} is an effect and \eqn{s} is an estimated
+standard error, then we model \eqn{b/s^{sprop}} as
+exchangeable. The default is 0. When \code{sprop = 1}, for
+identifiability reasons it must be the case that
+\code{scale_var = FALSE}.}
 }
 \description{
 The second step of MOUTHWASH.

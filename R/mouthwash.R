@@ -74,6 +74,11 @@
 #' @param plot_update A logical. Should I plot the the path of the
 #'     log-likelihood (\code{TRUE}) or not (\code{FALSE})? Only
 #'     applicable when \code{mixing_dist} is not \code{"normal"}.
+#' @param sprop If \eqn{b} is an effect and \eqn{s} is an estimated
+#'     standard error, then we model \eqn{b/s^{sprop}} as
+#'     exchangeable. The default is 0. When \code{sprop = 1}, for
+#'     identifiability reasons it must be the case that
+#'     \code{scale_var = FALSE}.
 #'
 #' @return A list with some or all of the following elements.
 #'
@@ -111,7 +116,7 @@
 #'       \item{lfsr}{The local false sign rates of each effect.}
 #'       \item{svalue}{The s-values, a measure of significance.}
 #'       \item{lfdr}{The local false discovery rates.}
-#'       \item{qvalue}{Teh q-values, a measure of significance.}
+#'       \item{qvalue}{The q-values, a measure of significance.}
 #'       \item{PosteriorMean}{The posterior means of the effects.}
 #'       \item{PosteriorSD}{The posterior standard deviations of the effects.}
 #'     }
@@ -129,7 +134,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       degrees_freedom = NULL, pi_init = NULL,
                       grid_seq = NULL, lambda_seq = NULL,
                       lambda0 = 10, scale_var = TRUE,
-                      plot_update = FALSE) {
+                      plot_update = FALSE,
+                      sprop = 0) {
 
 
     ## Make sure input is correct --------------------------------------------------------
@@ -143,6 +149,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(is.function(fa_func))
     assertthat::assert_that(is.list(fa_args))
     assertthat::assert_that(lambda0 >= 1)
+    assertthat::assert_that(sprop >= 0)
 
     likelihood   <- match.arg(likelihood)
     mixing_dist  <- match.arg(mixing_dist)
@@ -152,6 +159,10 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     if (likelihood == "t" & mixing_dist == "normal") {
         stop("normal mixtures not implemented for t-likelihood yet (or likely ever).")
     }
+    if (scale_var & sprop == 1) {
+        stop("sprop cannot be 1 when scale_var is TRUE")
+    }
+
 
     ## Rotate ---------------------------------------------------------------------------
     rotate_out <- rotate_model(Y = Y, X = X, k = k,
@@ -185,13 +196,25 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     S_diag      <- c(rotate_out$sig_diag / c(rotate_out$R22 ^ 2))
     betahat_ols <- matrix(rotate_out$betahat_ols, ncol = 1)
 
+    ## Exchangeable versions of the models ---------------------------------------------
+    if (sprop > 0) {
+        sgamma           <- S_diag ^ (-1 * sprop / 2)
+        alpha_tilde_star <- alpha_tilde * sgamma
+        betahat_ols_star <- betahat_ols * sgamma
+        S_diag_star      <- S_diag ^ (1 - sprop)
+    } else {
+        alpha_tilde_star <- alpha_tilde
+        betahat_ols_star <- betahat_ols
+        S_diag_star      <- S_diag
+    }
+
     ## Set grid and penalties ---------------------------------------------------------
     if (!is.null(lambda_seq) & is.null(grid_seq)) {
         stop("lambda_seq specified but grid_seq is NULL")
     }
 
     if (is.null(grid_seq)) {
-        grid_vals <- get_grid_var(betahat_ols = betahat_ols, S_diag = S_diag)
+        grid_vals <- get_grid_var(betahat_ols = betahat_ols_star, S_diag = S_diag_star)
         if (mixing_dist == "normal") {
             grid_seq <- sign(grid_vals$tau2_seq) * sqrt(abs(grid_vals$tau2_seq))
         } else {
@@ -236,13 +259,19 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     }
 
     ## Run MOUTHWASH -------------------------------------------------------------
-    val <- mouthwash_second_step(betahat_ols = betahat_ols, S_diag = S_diag,
-                                 alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
-                                 a_seq = a_seq, b_seq = b_seq,
+    val <- mouthwash_second_step(betahat_ols = betahat_ols_star,
+                                 S_diag = S_diag_star,
+                                 alpha_tilde = alpha_tilde_star,
+                                 tau2_seq = tau2_seq, a_seq = a_seq,
+                                 b_seq = b_seq,
                                  degrees_freedom = degrees_freedom,
-                                 lambda_seq = lambda_seq, mixing_dist = mixing_dist,
-                                 likelihood = likelihood, pi_init_type = pi_init_type,
-                                 scale_var = scale_var, plot_update = plot_update)
+                                 lambda_seq = lambda_seq,
+                                 mixing_dist = mixing_dist,
+                                 likelihood = likelihood,
+                                 pi_init_type = pi_init_type,
+                                 scale_var = scale_var,
+                                 plot_update = plot_update,
+                                 sprop = sprop)
 
     ## Estimate rest of the hidden confounders -----------------------------------
     Y1  <- rotate_out$Y1
@@ -305,7 +334,8 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                   likelihood = c("normal", "t"),
                                   pi_init_type = c("zero_conc", "uniform", "random"),
                                   scale_var = TRUE, degrees_freedom,
-                                  plot_update = FALSE) {
+                                  plot_update = FALSE,
+                                  sprop = 0) {
 
     ## Make sure input is correct -------------------------------------------------
     mixing_dist  <- match.arg(mixing_dist)
@@ -329,6 +359,11 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     assertthat::are_equal(length(betahat_ols), nrow(alpha_tilde))
     assertthat::are_equal(length(S_diag), length(betahat_ols))
     assertthat::are_equal(length(lambda_seq), M)
+    assertthat::assert_that(sprop >= 0)
+
+    if (sprop == 1 & scale_var) {
+        stop("if sprop is 1, then scale_var cannot be TRUE")
+    }
 
     ## initialize parameters and run EM --------------------------------------------
     z2_init <- matrix(stats::rnorm(k), ncol = 1)
@@ -366,7 +401,6 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 
 
 
-    az <- alpha_tilde %*% z2_final
 
     ## make mix object  --------------------------------------------------------------
     if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
@@ -388,48 +422,34 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
         ashr_df <- NULL
     }
 
-    val <- ashr::ash.workhorse(betahat = c(betahat_ols - az),
-                               sebetahat = c(sqrt(xi_final * S_diag)),
+
+    ## deal with non-zero sprop before returning ash output -------------------------
+    if (sprop > 0) {
+        sgamma <- S_diag ^ (sprop / 2)
+        betahat_ols_real <- betahat_ols * sgamma
+        alpha_tilde_real <- alpha_tilde * sgamma
+        S_diag_real      <- S_diag ^ (1 + sprop)
+    } else {
+        betahat_ols_real <- betahat_ols
+        alpha_tilde_real <- alpha_tilde
+        S_diag_real      <- S_diag
+    }
+
+    az <- alpha_tilde_real %*% z2_final
+
+    ## Call ashr for summaries ------------------------------------------------------
+    val <- ashr::ash.workhorse(betahat = c(betahat_ols_real - az),
+                               sebetahat = c(sqrt(xi_final * S_diag_real)),
                                df = ashr_df,
                                prior = "nullbiased",
                                nullweight = lambda_seq[zero_spot],
                                g = ghat,
                                fixg = TRUE,
-                               mixcompdist = mixcompdist)
+                               mixcompdist = mixcompdist,
+                               alpha = sprop) ## really need this
     val <- c(val, list(pi0 = pi_vals[zero_spot]))
     val <- c(val, list(z2 = z2_final))
     val <- c(val, list(xi = xi_final))
-
-    ## The following does the same as the call to ash
-    ## if (likelihood == "normal" & mixing_dist == "normal") {
-    ##     data <- ashr::set_data(betahat = c(betahat_ols - az),
-    ##                            sebetahat = c(sqrt(xi_final * S_diag)),
-    ##                            lik = ashr::normal_lik())
-    ## } else {
-    ##     data <- ashr::set_data(betahat = c(betahat_ols - az),
-    ##                            sebetahat = c(sqrt(xi_final * S_diag)),
-    ##                            lik = ashr::t_lik(degrees_freedom))
-    ## }
-    ## val <- list()
-    ## val <- c(val, list(fitted_g = ghat))
-    ## val <- c(val, list(loglik = ashr::calc_loglik(ghat, data)))
-    ## val <- c(val, list(logLR = ashr::calc_logLR(ghat, data)))
-    ## val <- c(val, list(data = data))
-    ## val <- c(val, list(pi0 = pi_vals[zero_spot]))
-    ## val <- c(val, list(z2 = z2_final))
-    ## val <- c(val, list(xi = xi_final))
-    ## NegativeProb  <- ashr:::calc_np(g = ghat, data = data)
-    ## PositiveProb  <- ashr:::calc_pp(g = ghat, data = data)
-    ## lfsr          <- ashr:::calc_lfsr(g = ghat, data = data)
-    ## svalue        <- ashr:::calc_svalue(g = ghat, data = data)
-    ## lfdr          <- ashr:::calc_lfdr(g = ghat, data = data)
-    ## qvalue        <- ashr:::calc_qvalue(g = ghat, data = data)
-    ## PosteriorMean <- ashr:::calc_pm(g = ghat, data = data)
-    ## PosteriorSD   <- ashr:::calc_psd(g = ghat, data = data)
-    ## result <- data.frame(NegativeProb, PositiveProb, lfsr, svalue, lfdr, qvalue,
-    ##                      PosteriorMean, PosteriorSD)
-    ## val <- c(val, list(result = result))
-    ## class(val) <- "ash"
 
     return(val)
 }

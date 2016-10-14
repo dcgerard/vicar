@@ -11,7 +11,7 @@ mouthwash(Y, X, k = NULL, cov_of_interest = ncol(X),
   lambda_type = c("zero_conc", "uniform"), pi_init_type = c("zero_conc",
   "uniform", "random"), degrees_freedom = NULL, pi_init = NULL,
   grid_seq = NULL, lambda_seq = NULL, lambda0 = 10, scale_var = TRUE,
-  plot_update = FALSE)
+  plot_update = FALSE, sprop = 0)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -109,6 +109,12 @@ parameter (\code{TRUE}) or not (\code{FALSE})?}
 \item{plot_update}{A logical. Should I plot the the path of the
 log-likelihood (\code{TRUE}) or not (\code{FALSE})? Only
 applicable when \code{mixing_dist} is not \code{"normal"}.}
+
+\item{sprop}{If \eqn{b} is an effect and \eqn{s} is an estimated
+standard error, then we model \eqn{b/s^{sprop}} as
+exchangeable. The default is 0. When \code{sprop = 1}, for
+identifiability reasons it must be the case that
+\code{scale_var = FALSE}.}
 }
 \value{
 A list with some or all of the following elements.
@@ -147,7 +153,7 @@ A list with some or all of the following elements.
       \item{lfsr}{The local false sign rates of each effect.}
       \item{svalue}{The s-values, a measure of significance.}
       \item{lfdr}{The local false discovery rates.}
-      \item{qvalue}{Teh q-values, a measure of significance.}
+      \item{qvalue}{The q-values, a measure of significance.}
       \item{PosteriorMean}{The posterior means of the effects.}
       \item{PosteriorSD}{The posterior standard deviations of the effects.}
     }

@@ -40,6 +40,16 @@ test_that("mouthwash works ok", {
     expect_error(mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2,
                            likelihood = "t", mixing_dist = "normal"))
 
+    mout2 <- mouthwash(Y = Y, X = X, k = 1, mixing_dist = "normal",
+                      likelihood = "normal", sprop = 0.5)
+
+    mout3 <- mouthwash(Y = Y, X = X, k = 1, mixing_dist = "normal",
+                       likelihood = "normal", sprop = 0.1)
+
+
+    mse1 <- sum((mout$result$PosteriorMean - mout2$result$PosteriorMean) ^ 2)
+    mse2 <- sum((mout$result$PosteriorMean - mout3$result$PosteriorMean) ^ 2)
+    expect_true(mse1 > mse2)
 }
 )
 
