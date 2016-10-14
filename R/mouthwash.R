@@ -424,6 +424,11 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 
 
     ## deal with non-zero sprop before returning ash output -------------------------
+    ## Recall that betahat_ols, alpha_tilde_ols, and S_diag are
+    ## actually modified based on sprop before being sent to
+    ## mouthwash_second_step. The following udoes this modification
+    ## before sending these values to ashr::ash.workhorse to obtain
+    ## summary values. Note that sprop for me = alpha for ashr.
     if (sprop > 0) {
         sgamma <- S_diag ^ (sprop / 2)
         betahat_ols_real <- betahat_ols * sgamma
