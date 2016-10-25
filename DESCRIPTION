@@ -1,6 +1,6 @@
 Package: vicar
 Type: Package
-Title: Methods for Confounder Adjustment in Regression
+Title: Various Ideas for Confounder Adjustment in Regression
 Version: 0.1.4
 Authors@R: person("David", "Gerard", email = "dcgerard@uchicago.edu", role = c("aut", "cre"))
 Description: Implements many methods for accounting for unobserved confounding

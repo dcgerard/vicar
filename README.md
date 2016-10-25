@@ -1,7 +1,7 @@
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
-Methods for Confounder Adjustment in Regression
-===============================================
+Various Ingenuities for Confounder Adjustment in Regression
+===========================================================
 
 [![Windows Build](https://ci.appveyor.com/api/projects/status/github/dcgerard/vicar?branch=master&svg=true)](https://ci.appveyor.com/project/dcgerard/vicar) [![Linux Build](https://travis-ci.org/dcgerard/vicar.svg?branch=master)](https://travis-ci.org/dcgerard/vicar) <!-- [![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master) --> [![Coverage](https://img.shields.io/codecov/c/github/dcgerard/vicar/master.svg)](https://codecov.io/github/dcgerard/vicar?branch=master)
 

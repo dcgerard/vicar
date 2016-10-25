@@ -193,11 +193,15 @@ analysis to the third part to estimate the confounding factors,
 then runs an EM (or coordinate-ascent) algorithm on the second part
 to estimate the coefficients of interest.
 
-Many forms of factor analyses are avaiable in this package. The
-default is PCA with the column-wise residual mean-squares as the
-estimates of the column-wise variances.
+There are a couple forms of factor analysis avaiable in this
+package. The default is PCA with the column-wise residual
+mean-squares as the estimates of the column-wise variances.
 }
 \author{
 David Gerard
+}
+\seealso{
+Factor analyses available in the \code{vicar} package:
+    \code{\link{pca_naive}}, \code{\link{fa_ml}}.
 }
 

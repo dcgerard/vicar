@@ -4,7 +4,7 @@
 \name{vicar}
 \alias{vicar}
 \alias{vicar-package}
-\title{\code{vicar}: Methods for Confounder Adjustment in Regression.}
+\title{\code{vicar}: Various Ideas for Confounder Adjustment in Regression.}
 \description{
 \code{vicar} contains functions for implementing RUV3 and two
 versions of what we call RUV5: RUV-Bayes and RUV-impute. It also

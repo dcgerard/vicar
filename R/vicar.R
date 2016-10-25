@@ -1,4 +1,4 @@
-#' \code{vicar}: Methods for Confounder Adjustment in Regression.
+#' \code{vicar}: Various Ideas for Confounder Adjustment in Regression.
 #'
 #' \code{vicar} contains functions for implementing RUV3 and two
 #' versions of what we call RUV5: RUV-Bayes and RUV-impute. It also
