@@ -229,7 +229,7 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 
     ## Initialize parameters ------------------------------------------------
     eigen_alpha <- eigen(crossprod(alpha_tilde, alpha_tilde), symmetric = TRUE)
-    a2_half_inv <- eigen_alpha$vectors %*% diag(1 / sqrt(eigen_alpha$values)) %*% t(eigen_alpha$vectors)
+    a2_half_inv <- eigen_alpha$vectors %*% diag(1 / sqrt(eigen_alpha$values), nrow = length(eigen_alpha$values)) %*% t(eigen_alpha$vectors)
     Amat <- alpha_tilde %*% a2_half_inv
 
     ## m1 <- Amat %*% t(Amat)
@@ -550,7 +550,7 @@ back_update_pi <- function(gamma_mat, lambda_seq) {
 back_update_v <- function(betahat_ols, S_diag, Amat, mubeta, xi, phi) {
 
   nfac <- ncol(Amat)
-  Sigma_v <- solve(crossprod(Amat, diag(1 / S_diag) %*% Amat) * (phi ^ 2) / xi + diag(nfac))
+  Sigma_v <- solve(crossprod(Amat, diag(1 / S_diag) %*% Amat) * (phi ^ 2) / xi + diag(nrow = nfac))
   muv     <- (phi / xi) * Sigma_v %*% crossprod(Amat, (betahat_ols - mubeta) / S_diag)
 
   return(list(muv = muv, Sigma_v = Sigma_v))

@@ -29,6 +29,7 @@ test_that("backwash works", {
     sprop = 0
 
     bout <- backwash(Y = Y, X = X, k = k, include_intercept = FALSE)
+    bout <- backwash(Y = Y, X = X, k = 1, include_intercept = FALSE)
 
 }
 )
