@@ -12,7 +12,7 @@
 #' first part then run \code{\link{mouthwash_second_step}} for the
 #' second part.
 #'
-#' The assumed mode is \deqn{Y = X\beta + Z\alpha + E.} \eqn{Y} is a
+#' The assumed model is \deqn{Y = X\beta + Z\alpha + E.} \eqn{Y} is a
 #' \eqn{n} by \code{p} matrix of response varaibles. For example, each
 #' row might be an array of log-transformed gene-expression data.
 #' \eqn{X} is a \eqn{n} by \eqn{q} matrix of observed covariates. It
@@ -30,7 +30,7 @@
 #'
 #' This function will first rotate \eqn{Y} and \eqn{X} using the QR
 #' decomposition. This separates the model into three parts. The first
-#' part only contains nuisance parameters, the second part contains
+#' part contains nuisance parameters, the second part contains
 #' the coefficients of interest, and the third part contains the
 #' confounders. \code{mouthwash} applies a user-provided factor
 #' analysis to the third part to estimate the confounding factors,

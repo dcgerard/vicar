@@ -2,9 +2,9 @@ context("Backwash")
 
 test_that("backwash works", {
 
-    set.seed(887)
+    set.seed(81)
     n <- 11
-    p <- 73
+    p <- 100
     q <- 3
     k <- 5
 
@@ -24,7 +24,7 @@ test_that("backwash works", {
     pi_init_type = "zero_conc"
     grid_seq = NULL
     lambda_seq = NULL
-    lambda0 = 10
+    lambda0 = 1
     scale_var = TRUE
     sprop = 0
 

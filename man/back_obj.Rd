@@ -22,7 +22,8 @@ squares estimates of the regression coefficients.}
 
 \item{tau2_seq}{The known grid of prior mixing variances.}
 
-\item{lambda_seq}{A vector of numerics greater than 1. The penalties for the prior mixing proportions.}
+\item{lambda_seq}{A vector of numerics greater than 1. The
+penalties for the prior mixing proportions.}
 
 \item{scale_var}{A logical. Should we estimate a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}

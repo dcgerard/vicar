@@ -3,14 +3,101 @@
 #' BACKWASH: Bayesian Adjustment for Confounding Knitted With Adaptive
 #' SHrinkage.
 #'
-#' This function implements the full BACKWASH method.
+#' This function implements the full BACKWASH method. This method is
+#' very similar to the \code{\link{mouthwash}} method with one very
+#' key difference: rather than estimate the confounders by maximum
+#' likelihood, backwash goes more Bayesian and places a g-like prior
+#' on the confounders. We fit the model by variational approximations.
+#'
+#' The assumed model is \deqn{Y = X\beta + Z\alpha + E.} \eqn{Y} is a
+#' \eqn{n} by \code{p} matrix of response varaibles. For example, each
+#' row might be an array of log-transformed gene-expression data.
+#' \eqn{X} is a \eqn{n} by \eqn{q} matrix of observed covariates. It
+#' is assumed that all but one column of which contains nuisance
+#' parameters. For example, the first column might be a vector of ones
+#' to include an intercept. \eqn{\beta} is a \eqn{q} by \eqn{p} matrix
+#' of corresponding coefficients.  \eqn{Z} is a \eqn{n} by \eqn{k}
+#' matrix of confounder variables. \eqn{\alpha} is the corresponding
+#' \eqn{k} by \eqn{p} matrix of coefficients for the unobserved
+#' confounders. \eqn{E} is a \eqn{n} by \eqn{p} matrix of error
+#' terms. \eqn{E} is assumed to be matrix normal with identity row
+#' covariance and diagonal column covariance \eqn{\Sigma}. That is,
+#' the columns are heteroscedastic while the rows are homoscedastic
+#' independent.
+#'
+#' This function will first rotate \eqn{Y} and \eqn{X} using the QR
+#' decomposition. This separates the model into three parts. The first
+#' part contains nuisance parameters, the second part contains the
+#' coefficients of interest, and the third part contains the
+#' confounders. \code{backwash} applies a user-provided factor
+#' analysis to the third part to estimate the confounding factors,
+#' then places a g-like prior on the confounders corresponding to the
+#' second equation.  It then jointly estimates the coefficients of
+#' interest and the posterior of the confounders using a VEM
+#' (Variational Expectation Maximization) algorithm.
+#'
+#' There are a couple forms of factor analysis avaiable in this
+#' package. The default is PCA with the column-wise residual
+#' mean-squares as the estimates of the column-wise variances.
 #'
 #' @author David Gerard
 #'
 #' @inheritParams vruv4
 #' @inheritParams mouthwash
+#' @param sprop This is not supported yet. This will determine on what
+#'     scale the effects are exchangeable.
+#'
+#' @return \code{backwash} returns a list with some or all of the
+#'     following elements:
+#'
+#'     \code{result}: A data frame with the following columns:
+#'     \itemize{
+#'         \item{\code{betahat}:}{ The ordinary least squares (OLS) coefficients for the variatle of interest.}
+#'         \item{\code{sebetahat}:}{ The standard errors of the OLS regression coefficients (with or without limma-shrinkage depending on the argument of \code{limmashrink}).}
+#'         \item{\code{NegativeProb}:}{ The posterior probability of an effect being less than zero.}
+#'         \item{\code{PositiveProb}:}{ The posterior probability of an effect being greater than zero.}
+#'         \item{\code{lfsr}:}{ The local false sign rate for the effects. See Stephens (2016).}
+#'         \item{\code{svalue}:}{ The estimated average error rate in sign detection.}
+#'         \item{\code{lfdr}:}{ The local false discovery rates.}
+#'         \item{\code{qvalue}:}{ The estimated average error rate in signal detection.}
+#'         \item{\code{PosteriorMean}:}{ The posterior means of the effects.}
+#'         \item{\code{PosteriorSD}:}{ The posterior standard deviations of the effects.}
+#'     }
+#'
+#'
+#'
+#'     \code{elbo}: The value of the evidence lower bound at the final
+#'     parameter values.
+#'
+#'     \code{xi}: The estimated variance scaling parameter.
+#'
+#'     \code{z2hat}: A function of the confounders. Mostly used for
+#'     debugging.
+#'
+#'     \code{pi0}: The estimated proportion of null effects.
+#'
+#'     \code{Zhat}: The estimate of the confounders.
+#'
+#'     \code{alphahat}: The estimate of the coefficients of the
+#'     confounders.
+#'
+#'     \code{sig_diag}: The estimate of the variances.
+#'
+#'     \code{fitted_g}: A list with the following elements:
+#'     \itemize{
+#'         \item{\code{pivec}:}{ The estimated prior mixing proportions.}
+#'         \item{\code{tau2_seq}:}{ The prior mixing variances.}
+#'         \item{\code{means}:}{ A matrix of the variational mixing means. The columns index the observations and the rows index the mixing distributions.}
+#'         \item{\code{variances}:}{ A matrix of the variational mixing variances. The columns index the observations and the rows index the mixing distributions.}
+#'         \item{\code{proportions}:}{ A matrix of the variational mixing proportions. The columns index the observations and the rows index the mixing distributions.}
+#'     }
 #'
 #' @export
+#'
+#' @seealso \code{\link{mouthwash}}
+#'
+#' @references Matthew Stephens. False discovery rates: a new deal. Biostatistics, 2016. doi: \href{http://dx.doi.org/10.1093/biostatistics/kxw041}{10.1093/biostatistics/kxw041}
+#'
 #'
 backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                      include_intercept = TRUE, limmashrink = TRUE,
@@ -234,13 +321,14 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 
     return_list                      <- list()
     return_list$result               <- result
-    return_list$elbo                 <- sqout$value.objfn
+    return_list$elbo                 <- -1 * sqout$value.objfn
     return_list$xi                   <- xi
     return_list$phi                  <- phi
     return_list$z2hat                <- a2_half_inv %*% muv
     return_list$pi0                  <- pi0
     return_list$fitted_g             <- list()
     return_list$fitted_g$pivec       <- pivec
+    return_list$fitted_g$tau2_seq    <- tau2_seq
     return_list$fitted_g$means       <- mubeta_matrix
     return_list$fitted_g$variances   <- sig2beta_matrix
     return_list$fitted_g$proportions <- gamma_mat
@@ -285,6 +373,9 @@ back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, s
   xi <- par_vec[length(par_vec)]
   mubeta <- rowSums(mubeta_matrix * gamma_mat)
 
+  assertthat::assert_that(all(pivec >= 0))
+  assertthat::are_equal(sum(pivec), 1)
+
   qbout <- back_update_qbeta(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat, pivec = pivec,
                              tau2_seq = tau2_seq, muv = muv, xi = xi, phi = phi)
   mubeta <- qbout$mubeta
@@ -325,7 +416,8 @@ back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, s
 #' @param par_vec A huge vector of parameters whose elements are in
 #'     the following order: pivec, mubeta_matrix, sig2beta_matrix,
 #'     gamma_mat, muv, Sigma_v, phi, xi
-#' @param lambda_seq A vector of numerics greater than 1. The penalties for the prior mixing proportions.
+#' @param lambda_seq A vector of numerics greater than 1. The
+#'     penalties for the prior mixing proportions.
 #'
 #' @author David Gerard
 back_obj <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, scale_var = TRUE) {
@@ -348,6 +440,9 @@ back_obj <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, s
   xi <- par_vec[length(par_vec)]
   mubeta <- rowSums(mubeta_matrix * gamma_mat)
 
+  assertthat::assert_that(all(pivec >= 0))
+  assertthat::are_equal(sum(pivec), 1)
+
   elbo <- back_elbo(betahat_ols = betahat_ols, S_diag = S_diag,
                     Amat = Amat, tau2_seq = tau2_seq,
                     pivec = pivec, lambda_seq = lambda_seq,
@@ -357,7 +452,7 @@ back_obj <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, s
                     gamma_mat = gamma_mat, muv = muv,
                     Sigma_v = Sigma_v, phi = phi, xi = xi)
 
-  return(elbo)
+  return(-1 * elbo)
 }
 
 #' Update for the variational density of beta
@@ -400,9 +495,15 @@ back_update_qbeta <- function(betahat_ols, S_diag, Amat, pivec, tau2_seq, muv, x
   dobs <- matrix(rep(r_vec, M), ncol = M, byrow = FALSE)
   dnorm_vals <- stats::dnorm(x = dobs, mean = 0, sd = dsds, log = TRUE)
 
-  ldmat <- sweep(x = dnorm_vals, MARGIN = 2, STATS = log(pivec), FUN = `+`)
-  ldmat <- exp(ldmat - apply(ldmat, 1, max))
-  gamma_mat <- ldmat / rowSums(ldmat)
+  if (any(pivec < -10 ^ -12) | any(pivec > 1 + 10 ^ -12)) {
+    gamma_mat <- matrix(NaN, nrow = length(betahat_ols), ncol = M)
+  } else {
+    ldmat <- sweep(x = dnorm_vals, MARGIN = 2, STATS = log(pivec), FUN = `+`)
+    ldmat <- exp(ldmat - apply(ldmat, 1, max))
+    ldmat[ldmat < -10^-12] <- 0
+    gamma_mat <- ldmat / rowSums(ldmat)
+  }
+
 
     ## temp <- exp(dnorm_vals) %*% diag(pivec)
     ## temp <- temp / rowSums(temp)
@@ -433,6 +534,7 @@ back_update_pi <- function(gamma_mat, lambda_seq) {
   assertthat::assert_that(all(lambda_seq >= 1))
 
   gvec <- colSums(gamma_mat) + lambda_seq - 1
+  gvec[gvec < 0] <- 0
 
   pivec <- gvec / sum(gvec)
 
@@ -522,6 +624,13 @@ back_elbo <- function(betahat_ols, S_diag, Amat, tau2_seq, pivec, lambda_seq, mu
                       mubeta_matrix, sig2beta_matrix,
                       gamma_mat, muv, Sigma_v, phi, xi) {
 
+  if (any(pivec < -10 ^ -12) | any(pivec > 1 + 10 ^ -12)) {
+    return(-Inf)
+  } else if (any(gamma_mat < -10^-12) | any(gamma_mat > 1 + 10 ^ -12)) {
+    return(-Inf)
+  }
+
+
   assertthat::are_equal(rowSums(mubeta_matrix * gamma_mat), mubeta)
 
   zero_spot <- which(abs(tau2_seq) < 10 ^ -14)
@@ -567,7 +676,7 @@ back_elbo <- function(betahat_ols, S_diag, Amat, tau2_seq, pivec, lambda_seq, mu
 
   s5 <- - sum(diag(Sigma_v)) / 2
 
-  ## Sixth summand ----------------------------------------------------------
+  ## Sixth summand ---------------------------------------------------------
   s6 <- sum(((lambda_seq - 1) * log(pivec))[!zeropi])
 
   ## Seventh summand --------------------------------------------------------
@@ -590,4 +699,3 @@ back_elbo <- function(betahat_ols, S_diag, Amat, tau2_seq, pivec, lambda_seq, mu
   return(elbo)
 
 }
-

@@ -85,16 +85,101 @@ zero if \code{lambda_type = "zero_conc"}.}
 \item{scale_var}{A logical. Should we estimate a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}
 
-\item{sprop}{If \eqn{b} is an effect and \eqn{s} is an estimated
-standard error, then we model \eqn{b/s^{sprop}} as
-exchangeable. The default is 0. When \code{sprop = 1}, for
-identifiability reasons it must be the case that
-\code{scale_var = FALSE}.}
+\item{sprop}{This is not supported yet. This will determine on what
+scale the effects are exchangeable.}
+}
+\value{
+\code{backwash} returns a list with some or all of the
+    following elements:
+
+    \code{result}: A data frame with the following columns:
+    \itemize{
+        \item{\code{betahat}:}{ The ordinary least squares (OLS) coefficients for the variatle of interest.}
+        \item{\code{sebetahat}:}{ The standard errors of the OLS regression coefficients (with or without limma-shrinkage depending on the argument of \code{limmashrink}).}
+        \item{\code{NegativeProb}:}{ The posterior probability of an effect being less than zero.}
+        \item{\code{PositiveProb}:}{ The posterior probability of an effect being greater than zero.}
+        \item{\code{lfsr}:}{ The local false sign rate for the effects. See Stephens (2016).}
+        \item{\code{svalue}:}{ The estimated average error rate in sign detection.}
+        \item{\code{lfdr}:}{ The local false discovery rates.}
+        \item{\code{qvalue}:}{ The estimated average error rate in signal detection.}
+        \item{\code{PosteriorMean}:}{ The posterior means of the effects.}
+        \item{\code{PosteriorSD}:}{ The posterior standard deviations of the effects.}
+    }
+
+
+
+    \code{elbo}: The value of the evidence lower bound at the final
+    parameter values.
+
+    \code{xi}: The estimated variance scaling parameter.
+
+    \code{z2hat}: A function of the confounders. Mostly used for
+    debugging.
+
+    \code{pi0}: The estimated proportion of null effects.
+
+    \code{Zhat}: The estimate of the confounders.
+
+    \code{alphahat}: The estimate of the coefficients of the
+    confounders.
+
+    \code{sig_diag}: The estimate of the variances.
+
+    \code{fitted_g}: A list with the following elements:
+    \itemize{
+        \item{\code{pivec}:}{ The estimated prior mixing proportions.}
+        \item{\code{tau2_seq}:}{ The prior mixing variances.}
+        \item{\code{means}:}{ A matrix of the variational mixing means. The columns index the observations and the rows index the mixing distributions.}
+        \item{\code{variances}:}{ A matrix of the variational mixing variances. The columns index the observations and the rows index the mixing distributions.}
+        \item{\code{proportions}:}{ A matrix of the variational mixing proportions. The columns index the observations and the rows index the mixing distributions.}
+    }
 }
 \description{
-This function implements the full BACKWASH method.
+This function implements the full BACKWASH method. This method is
+very similar to the \code{\link{mouthwash}} method with one very
+key difference: rather than estimate the confounders by maximum
+likelihood, backwash goes more Bayesian and places a g-like prior
+on the confounders. We fit the model by variational approximations.
+}
+\details{
+The assumed model is \deqn{Y = X\beta + Z\alpha + E.} \eqn{Y} is a
+\eqn{n} by \code{p} matrix of response varaibles. For example, each
+row might be an array of log-transformed gene-expression data.
+\eqn{X} is a \eqn{n} by \eqn{q} matrix of observed covariates. It
+is assumed that all but one column of which contains nuisance
+parameters. For example, the first column might be a vector of ones
+to include an intercept. \eqn{\beta} is a \eqn{q} by \eqn{p} matrix
+of corresponding coefficients.  \eqn{Z} is a \eqn{n} by \eqn{k}
+matrix of confounder variables. \eqn{\alpha} is the corresponding
+\eqn{k} by \eqn{p} matrix of coefficients for the unobserved
+confounders. \eqn{E} is a \eqn{n} by \eqn{p} matrix of error
+terms. \eqn{E} is assumed to be matrix normal with identity row
+covariance and diagonal column covariance \eqn{\Sigma}. That is,
+the columns are heteroscedastic while the rows are homoscedastic
+independent.
+
+This function will first rotate \eqn{Y} and \eqn{X} using the QR
+decomposition. This separates the model into three parts. The first
+part contains nuisance parameters, the second part contains the
+coefficients of interest, and the third part contains the
+confounders. \code{backwash} applies a user-provided factor
+analysis to the third part to estimate the confounding factors,
+then places a g-like prior on the confounders corresponding to the
+second equation.  It then jointly estimates the coefficients of
+interest and the posterior of the confounders using a VEM
+(Variational Expectation Maximization) algorithm.
+
+There are a couple forms of factor analysis avaiable in this
+package. The default is PCA with the column-wise residual
+mean-squares as the estimates of the column-wise variances.
 }
 \author{
 David Gerard
+}
+\references{
+Matthew Stephens. False discovery rates: a new deal. Biostatistics, 2016. doi: \href{http://dx.doi.org/10.1093/biostatistics/kxw041}{10.1093/biostatistics/kxw041}
+}
+\seealso{
+\code{\link{mouthwash}}
 }
 
