@@ -80,7 +80,28 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                 pi_init_type = pi_init_type,
                                 scale_var = scale_var)
 
+    Y1  <- rotate_out$Y1
+    Z2 <- val$z2hat
+    Z3 <- rotate_out$Z3
+    if (!is.null(Y1)) {
+      R12 <- rotate_out$R12
+      R11 <- rotate_out$R11
+      Q   <- rotate_out$Q
+      beta1_ols <- solve(R11) %*% (Y1 - R12 %*% t(betahat_ols))
+      resid_top <- Y1 - R12 %*% t(val$result$PosteriorMean) - R11 %*% beta1_ols
+      Z1  <- solve(t(alpha_tilde) %*% diag(1 / rotate_out$sig_diag) %*% alpha_tilde) %*%
+        t(alpha_tilde) %*% diag(1 / rotate_out$sig_diag) %*% t(resid_top)
+      Zhat <- Q %*% rbind(t(Z1), t(Z2), Z3)
+    } else {
+      Q   <- rotate_out$Q
+      Zhat <- Q %*% rbind(t(Z2), Z3)
+    }
 
+    val$Zhat <- Zhat
+    val$alphahat <- t(rotate_out$alpha)
+    val$sig_diag <- rotate_out$sig_diag
+
+    return(val)
 }
 
 #' Second step of the backwash procedure.
@@ -218,8 +239,8 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     return_list$phi                  <- phi
     return_list$z2hat                <- a2_half_inv %*% muv
     return_list$pi0                  <- pi0
-    return_list$fitted_g             <- list
-    fitted_g$pi                      <- pivec
+    return_list$fitted_g             <- list()
+    return_list$fitted_g$pivec       <- pivec
     return_list$fitted_g$means       <- mubeta_matrix
     return_list$fitted_g$variances   <- sig2beta_matrix
     return_list$fitted_g$proportions <- gamma_mat

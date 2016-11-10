@@ -2,19 +2,23 @@ context("Backwash")
 
 test_that("backwash works", {
 
-  set.seed(887)
+    set.seed(887)
     n <- 11
     p <- 73
     q <- 3
     k <- 5
 
-    X <- matrix(rnorm(n * q), nrow = n)
-    beta <- matrix(rnorm(q * p), nrow = q)
-    Y <- X %*% beta + matrix(rnorm(n * p), nrow = n)
+    X <- matrix(stats::rnorm(n * q), nrow = n)
+    beta <- matrix(stats::rnorm(q * p), nrow = q)
+    beta[, 1:37] <- 0
+    Z <- matrix(stats::rnorm(n * k), nrow = n)
+    alpha <- matrix(stats::rnorm(k *p), nrow = k)
+    E <- matrix(stats::rnorm(n * p), nrow = n)
+    Y <- X %*% beta + Z %*% alpha + E
     cov_of_interest = ncol(X)
-    include_intercept = TRUE
+    include_intercept = FALSE
     limmashrink = TRUE
-    fa_func = vicar::pca_naive
+    fa_func = pca_naive
     fa_args = list()
     lambda_type = "zero_conc"
     pi_init_type = "zero_conc"
@@ -23,6 +27,8 @@ test_that("backwash works", {
     lambda0 = 10
     scale_var = TRUE
     sprop = 0
+
+    bout <- backwash(Y = Y, X = X, k = k, include_intercept = FALSE)
 
 }
 )
