@@ -298,7 +298,6 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     val$alphahat <- t(rotate_out$alpha)
     val$sig_diag <- rotate_out$sig_diag
 
-
     return(val)
 }
 
@@ -502,7 +501,7 @@ get_grid_var <- function(betahat_ols, S_diag) {
 
     ## default grid to be same as in ASH ------------------------------
     tau2_min <- min(S_diag) / 100
-    tau2_max <- 4 * max(betahat_ols ^ 2 - S_diag)
+    tau2_max <- 16 * max(betahat_ols ^ 2 - S_diag) ## used to be 4 * max...
     if (tau2_max < 0) {
         tau2_max <- 64 * tau2_min
     }
