@@ -169,29 +169,62 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 
     par_vec <- c(pivec, mubeta_matrix, sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, xi)
 
-    sqout <- SQUAREM::squarem(par = par_vec, fixptfn = back_fix, betahat_ols = betahat_ols,
+    sqout <- SQUAREM::squarem(par = par_vec, fixptfn = back_fix, objfn = back_obj,
+                              betahat_ols = betahat_ols,
                               S_diag = S_diag, Amat = Amat, tau2_seq = tau2_seq,
                               lambda_seq = lambda_seq,
+                              scale_var = scale_var,
                               control = list(tol = 10 ^ -4))
 
     ## Get returned parameters -----------------------------------------------------------
 
-    pivec <- sqout$par[1:M] ## M vector
-    mubeta_matrix <- matrix(sqout$par[(M + 1):(M + p * M)], nrow = p) ## p by M matrix
+    pivec           <- sqout$par[1:M] ## M vector
+    mubeta_matrix   <- matrix(sqout$par[(M + 1):(M + p * M)], nrow = p) ## p by M matrix
     sig2beta_matrix <- matrix(sqout$par[(M + p * M + 1): (M + 2 * p * M)], nrow = p) ## another p by M matrix
-    gamma_mat <- matrix(sqout$par[(M + 2 * p * M + 1):(M + 3 * p * M)], nrow = p) ## yet another p by M matrix
-    muv <- matrix(sqout$par[(M + 3 * p * M + 1):(M + 3 * p * M + nfac)], ncol = 1) ## an nfac matrix
-    Sigma_v <- matrix(sqout$par[(M + 3 * p * M + nfac + 1):(M + 3 * p * M + nfac + nfac ^ 2)], nrow = nfac) ## an nfac by nfac matrix
-    phi <- sqout$par[length(sqout$par) - 1]
-    xi <- sqout$par[length(sqout$par)]
-    mubeta <- rowSums(mubeta_matrix * gamma_mat)
+    gamma_mat       <- matrix(sqout$par[(M + 2 * p * M + 1):(M + 3 * p * M)], nrow = p) ## yet another p by M matrix
+    muv             <- matrix(sqout$par[(M + 3 * p * M + 1):(M + 3 * p * M + nfac)], ncol = 1) ## an nfac matrix
+    Sigma_v         <- matrix(sqout$par[(M + 3 * p * M + nfac + 1):(M + 3 * p * M + nfac + nfac ^ 2)], nrow = nfac) ## an nfac by nfac matrix
+    phi             <- sqout$par[length(sqout$par) - 1]
+    xi              <- sqout$par[length(sqout$par)]
+    mubeta          <- rowSums(mubeta_matrix * gamma_mat)
 
     ## Posterior Summaries ---------------------------------------------------------------
     PosteriorMean <- mubeta
-    lfdr <- gamma_mat[, zero_spot]
-    pi0 <- pivec[zero_spot]
-    qvalue <- ashr::qval.from.lfdr(lfdr)
+    lfdr          <- gamma_mat[, zero_spot]
+    pi0           <- pivec[zero_spot]
+    qvalue        <- ashr::qval.from.lfdr(lfdr)
+    PositiveProb  <- rowSums(gamma_mat * (1 - stats::pnorm(q = 0, mean = mubeta_matrix, sd = sqrt(sig2beta_matrix))))
+    NegativeProb  <- 1 - PositiveProb - lfdr
+    ex2           <- rowSums(gamma_mat * (mubeta_matrix ^ 2 + sig2beta_matrix))
+    PosteriorSD   <- ex2 - PosteriorMean ^ 2
+    lfsr          <- pmin(PositiveProb, NegativeProb) + lfdr
+    svalue        <- ashr::qval.from.lfdr(lfsr)
 
+    result <- data.frame(betahat = betahat_ols,
+                         sebetahat = S_diag,
+                         NegativeProb = NegativeProb,
+                         PositiveProb = PositiveProb,
+                         lfsr = lfsr,
+                         svalue = svalue,
+                         lfdr = lfdr,
+                         qvalue = qvalue,
+                         PosteriorMean = PosteriorMean,
+                         PosteriorSD = PosteriorSD)
+
+    return_list                      <- list()
+    return_list$result               <- result
+    return_list$elbo                 <- sqout$value.objfn
+    return_list$xi                   <- xi
+    return_list$phi                  <- phi
+    return_list$z2hat                <- a2_half_inv %*% muv
+    return_list$pi0                  <- pi0
+    return_list$fitted_g             <- list
+    fitted_g$pi                      <- pivec
+    return_list$fitted_g$means       <- mubeta_matrix
+    return_list$fitted_g$variances   <- sig2beta_matrix
+    return_list$fitted_g$proportions <- gamma_mat
+
+    return(return_list)
 }
 
 
@@ -209,7 +242,7 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 #'
 #' @author David Gerard
 #'
-back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq) {
+back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, scale_var = TRUE) {
 
   # Parse par_vec -----------------------------------------------------------
   p <- length(S_diag)
@@ -249,13 +282,61 @@ back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq) {
   phi <- back_update_phi(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat,
                          mubeta = mubeta, muv = muv, Sigma_v= Sigma_v)
 
-  xi <- back_update_xi(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat, mubeta = mubeta,
-                       mubeta_matrix = mubeta_matrix, sig2beta_matrix = sig2beta_matrix,
-                       gamma_mat = gamma_mat, muv = muv, Sigma_v = Sigma_v, phi = phi)
+  if (scale_var){
+    xi <- back_update_xi(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat, mubeta = mubeta,
+                         mubeta_matrix = mubeta_matrix, sig2beta_matrix = sig2beta_matrix,
+                         gamma_mat = gamma_mat, muv = muv, Sigma_v = Sigma_v, phi = phi)
+  }
 
   par_vec <- c(pivec, mubeta_matrix, sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, xi)
 
   return(par_vec)
+}
+
+
+#' Objective function for BACKWASH.
+#'
+#' This is mostly so that I can use the SQUAREM package.
+#'
+#' @inheritParams backwash_second_step
+#' @param Amat The A matrix for the variational EM.
+#' @param tau2_seq The known grid of prior mixing variances.
+#' @param par_vec A huge vector of parameters whose elements are in
+#'     the following order: pivec, mubeta_matrix, sig2beta_matrix,
+#'     gamma_mat, muv, Sigma_v, phi, xi
+#' @param lambda_seq A vector of numerics greater than 1. The penalties for the prior mixing proportions.
+#'
+#' @author David Gerard
+back_obj <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, scale_var = TRUE) {
+  p <- length(S_diag)
+  nfac <- ncol(Amat)
+  M <- length(tau2_seq)
+
+  assertthat::are_equal(nrow(Amat), p)
+  assertthat::are_equal(length(betahat_ols), p)
+  assertthat::are_equal(length(tau2_seq), length(lambda_seq))
+  assertthat::are_equal(length(par_vec), M + 3 * p * M + nfac + nfac ^ 2 + 2)
+
+  pivec <- par_vec[1:M] ## M vector
+  mubeta_matrix <- matrix(par_vec[(M + 1):(M + p * M)], nrow = p) ## p by M matrix
+  sig2beta_matrix <- matrix(par_vec[(M + p * M + 1): (M + 2 * p * M)], nrow = p) ## another p by M matrix
+  gamma_mat <- matrix(par_vec[(M + 2 * p * M + 1):(M + 3 * p * M)], nrow = p) ## yet another p by M matrix
+  muv <- matrix(par_vec[(M + 3 * p * M + 1):(M + 3 * p * M + nfac)], ncol = 1) ## an nfac matrix
+  Sigma_v <- matrix(par_vec[(M + 3 * p * M + nfac + 1):(M + 3 * p * M + nfac + nfac ^ 2)], nrow = nfac) ## an nfac by nfac matrix
+  phi <- par_vec[length(par_vec) - 1]
+  xi <- par_vec[length(par_vec)]
+  mubeta <- rowSums(mubeta_matrix * gamma_mat)
+
+  elbo <- back_elbo(betahat_ols = betahat_ols, S_diag = S_diag,
+                    Amat = Amat, tau2_seq = tau2_seq,
+                    pivec = pivec, lambda_seq = lambda_seq,
+                    mubeta = mubeta,
+                    mubeta_matrix = mubeta_matrix,
+                    sig2beta_matrix = sig2beta_matrix,
+                    gamma_mat = gamma_mat, muv = muv,
+                    Sigma_v = Sigma_v, phi = phi, xi = xi)
+
+  return(elbo)
 }
 
 #' Update for the variational density of beta
