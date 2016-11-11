@@ -1,3 +1,10 @@
+# vicar 0.1.5
+
+This version added the function `backwash`. This is very similar in spirit to
+`mouthwash`, except that rather than estimate the confounders by maximum
+likelihood, `backwash` does so using a more Bayesian approach. `backwash`
+returns a variational approximation to the posterior.
+
 # vicar 0.1.4
 
 This version added the function `mouthwash` to adjust for hidden
