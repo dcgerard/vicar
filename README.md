@@ -34,7 +34,7 @@ When one has control genes, there are many approaches to take. Such methods incl
 
 Please cite this package as:
 
-> Gerard, David. 2016. *vicar: Methods for Confounder Adjustment in Regression*. <https://github.com/dcgerard/vicar>.
+> Gerard, David. 2016. *vicar: Various Ideas for Confounder Adjustment in Regression*. <https://github.com/dcgerard/vicar>.
 
 Or, using BibTex:
 
