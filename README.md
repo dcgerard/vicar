@@ -40,10 +40,10 @@ Or, using BibTex:
 
 ``` tex
 @Manual{gerard2016vicar,
-    title = {{vicar}: Methods for Confounder Adjustment in Regression},
+    title = {{vicar}: Various Ideas for Confounder Adjustment in Regression},
     author = {David Gerard},
     year = {2016},
-    note = {R package version 0.1.4},
+    note = {R package version 0.1.5},
     url = {https://github.com/dcgerard/vicar},
 }
 ```
