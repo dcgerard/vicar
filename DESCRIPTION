@@ -9,8 +9,8 @@ Description: Implements many methods for accounting for unobserved confounding
              CATE/RUV4 (vruv4), a Bayesian version of RUV (ruvb), a version of
              RUV that unifies other versions of RUV (ruv3), and a generalized
              version of RUV (ruvimpute). If control genes are not available,
-             then MOUTHWASH (mouthwash) is an excellent procedure to use as
-             long as only one covariate is of interest.
+             then MOUTHWASH (mouthwash) and BACKWASH (backwash) are excellent
+             procedures to use as long as only one covariate is of interest.
 URL: https://github.com/dcgerard/vicar
 BugReports: http://github.com/dcgerard/vicar/issues
 License: GPL-3

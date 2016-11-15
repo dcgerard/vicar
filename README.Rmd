@@ -38,11 +38,12 @@ result in poor control of false discovery rate. This package provides
 a suite of functions to adjust for hidden confounders, both when one
 has and does not have access to control genes.
 
-The function `mouthwash` can adjust for hidden confounding when one
-does not have access to control genes. It does so via a non-parametric
-empirical Bayes method that uses the powerful methodology of Adaptive
+The functions `mouthwash` and `backwash` can adjust for hidden confounding when one
+does not have access to control genes. They do so via non-parametric
+empirical Bayes methods that use the powerful methodology of Adaptive
 SHrinkage [@stephens2016false] within the factor-augmented regression
-framework described in @wang2015confounder.
+framework described in @wang2015confounder. `backwash` is a slightly more 
+Bayesian version of `mouthwash`.
 
 When one has control genes, there are many approaches to take. Such
 methods include RUV2 [@gagnon2012using], RUV4 [@gagnon2013removing],
