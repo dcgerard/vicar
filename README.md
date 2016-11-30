@@ -25,9 +25,9 @@ Not accounting for the hidden covariates, Z, can reduce power and result in poor
 
 The functions `mouthwash` and `backwash` can adjust for hidden confounding when one does not have access to control genes. They do so via non-parametric empirical Bayes methods that use the powerful methodology of Adaptive SHrinkage (Stephens 2016) within the factor-augmented regression framework described in Wang et al. (2015). `backwash` is a slightly more Bayesian version of `mouthwash`.
 
-When one has control genes, there are many approaches to take. Such methods include RUV2 (J. A. Gagnon-Bartsch and Speed 2012), RUV4 (J Gagnon-Bartsch, Jacob, and Speed 2013), and CATE (Wang et al. 2015). This package adds to the field of confounder adjustment with control genes by
+When one has control genes, there are many approaches to take. Such methods include RUV2 (J. A. Gagnon-Bartsch and Speed 2012), RUV4 (J. Gagnon-Bartsch, Jacob, and Speed 2013), and CATE (Wang et al. 2015). This package adds to the field of confounder adjustment with control genes by
 
-1.  Implementing a version of CATE that is calibrated using control genes similarly to the method in J Gagnon-Bartsch, Jacob, and Speed (2013). The function is called `vruv4`.
+1.  Implementing a version of CATE that is calibrated using control genes similarly to the method in J. Gagnon-Bartsch, Jacob, and Speed (2013). The function is called `vruv4`.
 2.  Introduces RUV3, a version of RUV that can be considered both RUV2 and RUV4. The function is called `ruv3`.
 3.  Introduces RUV-impute, a more general framework for accounting for hidden confounders in regression. The function is called `ruvimpute`
 4.  Introduces RUV-Bayes, a Bayesian version of RUV. The function is called `ruvb`.
@@ -48,7 +48,7 @@ Or, using BibTex:
 }
 ```
 
-See also the related R packages [`cate`](https://cran.r-project.org/web/packages/cate/index.html) (Wang and Zhao 2015) and [`ruv`](https://cran.r-project.org/web/packages/ruv/index.html) (Johann Gagnon-Bartsch 2015).
+See also the related R packages [`cate`](https://cran.r-project.org/web/packages/cate/index.html) (Wang and Zhao 2015) and [`ruv`](https://cran.r-project.org/web/packages/ruv/index.html) (J. Gagnon-Bartsch 2015).
 
 Check out [NEWS.md](NEWS.md) to see what's new with each version.
 
@@ -65,14 +65,14 @@ devtools::install_github("dcgerard/vicar")
 References
 ----------
 
-Gagnon-Bartsch, J, L Jacob, and TP Speed. 2013. “Removing Unwanted Variation from High Dimensional Data with Negative Controls.” Technical Report 820, Department of Statistics, University of California, Berkeley.
-
 Gagnon-Bartsch, Johann. 2015. *ruv: Detect and Remove Unwanted Variation Using Negative Controls*. <https://CRAN.R-project.org/package=ruv>.
 
-Gagnon-Bartsch, Johann A, and Terence P Speed. 2012. “Using Control Genes to Correct for Unwanted Variation in Microarray Data.” *Biostatistics* 13 (3). Biometrika Trust: 539–52.
+Gagnon-Bartsch, Johann A, and Terence P Speed. 2012. “Using Control Genes to Correct for Unwanted Variation in Microarray Data.” *Biostatistics* 13 (3). Biometrika Trust: 539–52. doi:[10.1093/biostatistics/kxr034](https://doi.org/10.1093/biostatistics/kxr034).
 
-Stephens, Matthew. 2016. “False Discovery Rates: A New Deal.” *BioRxiv*. Cold Spring Harbor Labs Journals. doi:[10.1101/038216](https://doi.org/10.1101/038216).
+Gagnon-Bartsch, Johann, Laurent Jacob, and Terence Speed. 2013. “Removing Unwanted Variation from High Dimensional Data with Negative Controls.” Technical Report 820, Department of Statistics, University of California, Berkeley. <http://statistics.berkeley.edu/tech-reports/820>.
+
+Stephens, Matthew. 2016. “False Discovery Rates: A New Deal.” *Biostatistics*. doi:[10.1093/biostatistics/kxw041](https://doi.org/10.1093/biostatistics/kxw041).
 
 Wang, Jingshu, and Qingyuan Zhao. 2015. *cate: High Dimensional Factor Analysis and Confounder Adjusted Testing and Estimation*. <https://CRAN.R-project.org/package=cate>.
 
-Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B Owen. 2015. “Confounder Adjustment in Multiple Hypotheses Testing.” *ArXiv Preprint ArXiv:1508.04178*.
+Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B Owen. 2015. “Confounder Adjustment in Multiple Hypothesis Testing.” *ArXiv Preprint ArXiv:1508.04178*. <https://arxiv.org/abs/1508.04178>.
