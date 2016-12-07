@@ -124,9 +124,97 @@ fa_func.}
     except for unit testing and debugging.
 }
 \description{
-This can be viewed both as a version of RUV2 and a version of RUV4.
+RUV2 (\code{\link[ruv]{RUV2}}) and RUV4 (\code{\link[cate]{cate}} or \code{\link[ruv]{RUV4}})
+are actually classes of methods indexed by the factor analysis used. RUV3 is the intersection of
+RUV2 and RUV4. That is, it is the class of methods that can be considered both RUV2 and RUV4.
+}
+\details{
+The model is \deqn{Y = XB + ZA + E,} where \eqn{Y} is a matrix of
+responses (e.g. log-transformed gene expression levels), \eqn{X} is
+a matrix of covariates, \eqn{B} is a matrix of coefficients,
+\eqn{Z} is a matrix of unobserved confounders, \eqn{A} is a matrix
+of unobserved coefficients of the unobserved confounders, and
+\eqn{E} is the noise matrix where the elements are independent
+Gaussian and each column shares a common variance. The rows of
+\eqn{Y} are the observations (e.g. individuals) and the columns of
+\eqn{Y} are the response variables (e.g. genes).
+}
+\examples{
+library(vicar)
+
+## Generate data and controls ---------------------------------------------
+set.seed(127)
+n <- 13
+p <- 201
+k <- 2
+q <- 3
+is_null       <- rep(FALSE, length = p)
+is_null[1:101] <- TRUE
+ctl           <- rep(FALSE, length = p)
+ctl[1:73]     <- TRUE
+
+X <- matrix(stats::rnorm(n * q), nrow = n)
+B <- matrix(stats::rnorm(q * p), nrow = q)
+B[2, is_null] <- 0
+Z <- X \%*\% matrix(stats::rnorm(q * k), nrow = q) +
+     matrix(rnorm(n * k), nrow = n)
+A <- matrix(stats::rnorm(k * p), nrow = k)
+E <- matrix(stats::rnorm(n * p, sd = 1 / 2), nrow = n)
+Y <- X \%*\% B + Z \%*\% A + E
+
+## Fit RUV3, CATE (RUV4), and RUV2 ----------------------------------------
+## The parameters chosen in CATE are to make the comparisons as close as possible.
+ruv3out <- ruv3(Y = Y, X = X, k = k, cov_of_interest = 2,
+                include_intercept = FALSE, ctl = ctl,
+                limmashrink = FALSE)
+ruv2out <- ruv::RUV2(Y = Y, X = X[, 2, drop = FALSE],
+                     Z = X[, -2, drop = FALSE], ctl = ctl, k = k)
+ruv4out <- cate::cate.fit(Y = Y, X.primary = X[, 2, drop = FALSE],
+                     X.nuis = X[, -2, drop = FALSE], r = k, fa.method = "pc",
+                     adj.method = "nc", nc = ctl, calibrate = FALSE,
+                     nc.var.correction = FALSE)
+
+ruv3p <- ruv3out$pvalues_unadjusted
+ruv2p <- ruv2out$p
+ruv4p <- ruv4out$beta.p.value
+
+## Control genes are known to be 0! ---------------------------------------
+ruv2p[ctl] <- NA
+ruv4p[ctl] <- NA
+
+## Plot ROC curves are very similar in this dataset------------------------
+order_ruv3 <- order(ruv3p, na.last = NA)
+order_ruv2 <- order(ruv2p, na.last = NA)
+order_ruv4 <- order(ruv4p, na.last = NA)
+
+nnull <- sum(is_null[!ctl])
+nsig  <- sum(!is_null[!ctl])
+fpr3 <- cumsum(is_null[order_ruv3]) / nnull
+tpr3 <- cumsum(!is_null[order_ruv3]) / nsig
+
+fpr2 <- cumsum(is_null[order_ruv2]) / nnull
+tpr2 <- cumsum(!is_null[order_ruv2]) / nsig
+
+fpr4 <- cumsum(is_null[order_ruv4]) / nnull
+tpr4 <- cumsum(!is_null[order_ruv4]) / nsig
+
+graphics::plot(fpr3, tpr3, type = "l", xlab = "False Positive Rate",
+               ylab = "True Positive Rate", main = "ROC Curves")
+graphics::lines(fpr2, tpr2, col = 3)
+graphics::lines(fpr4, tpr4, col = 4)
+graphics::legend("bottomright", legend = c("RUV2", "RUV3", "RUV4"),
+                 col = c(3, 1, 4), lty = 1)
+
 }
 \author{
 David Gerard
+}
+\seealso{
+\code{\link{vruv4}}, \code{\link[cate]{cate}}, \code{\link[ruv]{RUV4}} are
+    all different versions of RUV4.
+
+    \code{\link[ruv]{RUV2}} is a version of RUV2.
+
+    \code{\link{ruvimpute}} is a generalization of RUV2 and RUV4.
 }
 

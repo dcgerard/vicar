@@ -196,6 +196,72 @@ to estimate the coefficients of interest.
 There are a couple forms of factor analysis avaiable in this
 package. The default is PCA with the column-wise residual
 mean-squares as the estimates of the column-wise variances.
+See the description of the \code{fa_func} parameter for details
+on including your own factor analysis.
+}
+\examples{
+library(vicar)
+
+## Generate data ----------------------------------------------------------
+set.seed(116)
+n <- 13
+p <- 101
+k <- 2
+q <- 3
+is_null       <- rep(FALSE, length = p)
+is_null[1:57] <- TRUE
+
+X <- matrix(stats::rnorm(n * q), nrow = n)
+B <- matrix(stats::rnorm(q * p), nrow = q)
+B[2, is_null] <- 0
+Z <- X \%*\% matrix(stats::rnorm(q * k), nrow = q) +
+     matrix(rnorm(n * k), nrow = n)
+A <- matrix(stats::rnorm(k * p), nrow = k)
+E <- matrix(stats::rnorm(n * p, sd = 1 / 2), nrow = n)
+Y <- X \%*\% B + Z \%*\% A + E
+
+## Fit MOUTHWASH ----------------------------------------------------------
+mout <- mouthwash(Y = Y, X = X, k = k, cov_of_interest = 2,
+                  include_intercept = FALSE)
+mout$pi0 ## mouthwash estimate
+mean(is_null) ## truth
+
+## plot ordering
+order_lfdr <- order(mout$result$lfdr)
+graphics::plot(mout$result$lfdr[order_lfdr], col = is_null[order_lfdr] + 3,
+               ylab = "lfdr")
+graphics::legend("topleft", col = c(3, 4), legend = c("non-null", "null"),
+                 pch = 1)
+
+## Compare to ASH on OLS coefficients -------------------------------------
+lmout <- limma::lmFit(t(Y), X)
+betahat_ols <- lmout$coefficients[, 2]
+sebetahat_ols <- lmout$stdev.unscaled[, 2] * lmout$sigma
+aout <- ashr::ash.workhorse(betahat = betahat_ols, sebetahat = sebetahat_ols,
+                            optmethod = "mixEM")
+ashr::get_pi0(aout) ## ash estimate
+mean(is_null) ## truth
+
+ash_lfdr <- ashr::get_lfdr(aout)
+aorder_lfdr <- order(ash_lfdr)
+graphics::plot(ash_lfdr[aorder_lfdr], col = is_null[aorder_lfdr] + 3,
+               ylab = "lfdr")
+graphics::legend("topleft", col = c(3, 4), legend = c("non-null", "null"),
+                 pch = 1)
+
+## ROC Curves -------------------------------------------------------------
+afpr <- cumsum(is_null[aorder_lfdr]) / sum(is_null)
+atpr <- cumsum(!is_null[aorder_lfdr]) / sum(!is_null)
+mfpr <- cumsum(is_null[order_lfdr]) / sum(is_null)
+mtpr <- cumsum(!is_null[order_lfdr]) / sum(!is_null)
+graphics::plot(afpr, atpr, type = "l", xlab = "False Positive Rate",
+               ylab = "True Positive Rate", main = "ROC Curve", col = 3,
+               lty = 2)
+graphics::lines(mfpr, mtpr, col = 4, lty = 1)
+graphics::abline(0, 1, lty = 2, col = 1)
+graphics::legend("bottomright", legend = c("MOUTHWASH", "ASH"), col = c(4, 3),
+                 lty = c(1, 2))
+
 }
 \author{
 David Gerard
@@ -203,5 +269,8 @@ David Gerard
 \seealso{
 Factor analyses available in the \code{vicar} package:
     \code{\link{pca_naive}}, \code{\link{fa_ml}}.
+
+\code{\link{backwash}} for a similar method that puts a prior on the
+    unobserved confounders rather than maximizes over them.
 }
 

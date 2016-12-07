@@ -34,11 +34,14 @@
 #' then places a g-like prior on the confounders corresponding to the
 #' second equation.  It then jointly estimates the coefficients of
 #' interest and the posterior of the confounders using a VEM
-#' (Variational Expectation Maximization) algorithm.
+#' (Variational Expectation Maximization) algorithm, placing a
+#' g-prior on the hidden confounders.
 #'
 #' There are a couple forms of factor analysis avaiable in this
 #' package. The default is PCA with the column-wise residual
 #' mean-squares as the estimates of the column-wise variances.
+#' See the description of the \code{fa_func} parameter for details
+#' on including your own factor analysis.
 #'
 #' @author David Gerard
 #'
@@ -52,7 +55,7 @@
 #'
 #'     \code{result}: A data frame with the following columns:
 #'     \itemize{
-#'         \item{\code{betahat}:}{ The ordinary least squares (OLS) coefficients for the variatle of interest.}
+#'         \item{\code{betahat}:}{ The ordinary least squares (OLS) coefficients for the variable of interest.}
 #'         \item{\code{sebetahat}:}{ The standard errors of the OLS regression coefficients (with or without limma-shrinkage depending on the argument of \code{limmashrink}).}
 #'         \item{\code{NegativeProb}:}{ The posterior probability of an effect being less than zero.}
 #'         \item{\code{PositiveProb}:}{ The posterior probability of an effect being greater than zero.}
@@ -64,12 +67,12 @@
 #'         \item{\code{PosteriorSD}:}{ The posterior standard deviations of the effects.}
 #'     }
 #'
-#'
-#'
 #'     \code{elbo}: The value of the evidence lower bound at the final
 #'     parameter values.
 #'
 #'     \code{xi}: The estimated variance scaling parameter.
+#'
+#'     \code{phi}: The estimated "g" parameter in the g-prior on the confounders.
 #'
 #'     \code{z2hat}: A function of the confounders. Mostly used for
 #'     debugging.
@@ -94,10 +97,73 @@
 #'
 #' @export
 #'
-#' @seealso \code{\link{mouthwash}}
+#' @seealso \code{\link{mouthwash}} For a similar method that maximizes over the hidden confounders
+#'     rather than puts a prior on them.
 #'
 #' @references Matthew Stephens. False discovery rates: a new deal. Biostatistics, 2016. doi: \href{http://dx.doi.org/10.1093/biostatistics/kxw041}{10.1093/biostatistics/kxw041}
 #'
+#' @examples
+#' library(vicar)
+#'
+#' ## Generate data ----------------------------------------------------------
+#' set.seed(116)
+#' n <- 13
+#' p <- 101
+#' k <- 2
+#' q <- 3
+#' is_null       <- rep(FALSE, length = p)
+#' is_null[1:57] <- TRUE
+#'
+#' X <- matrix(stats::rnorm(n * q), nrow = n)
+#' B <- matrix(stats::rnorm(q * p), nrow = q)
+#' B[2, is_null] <- 0
+#' Z <- X %*% matrix(stats::rnorm(q * k), nrow = q) +
+#'      matrix(rnorm(n * k), nrow = n)
+#' A <- matrix(stats::rnorm(k * p), nrow = k)
+#' E <- matrix(stats::rnorm(n * p, sd = 1 / 2), nrow = n)
+#' Y <- X %*% B + Z %*% A + E
+#'
+#' ## Fit BACKWASH -----------------------------------------------------------
+#' bout <- backwash(Y = Y, X = X, k = k, include_intercept = FALSE,
+#'                  cov_of_interest = 2)
+#' bout$pi0 ## Estimate
+#' mean(is_null) ## Truth
+#'
+#' ## Fit MOUTHWASH ----------------------------------------------------------
+#' mout <- mouthwash(Y = Y, X = X, k = k, include_intercept = FALSE,
+#'                   cov_of_interest = 2)
+#' mout$pi0 ## Estimate
+#' mean(is_null) ## Truth
+#'
+#' ## Very Similar LFDR's ----------------------------------------------------
+#' graphics::plot(mout$result$lfdr, bout$result$lfdr, col = is_null + 3,
+#'                xlab = "MOUTHWASH", ylab = "BACKWASH", main = "LFDR's")
+#' graphics::abline(0, 1, lty = 2)
+#' graphics::legend("bottomright", legend = c("Null", "Non-null"), col = c(4, 3),
+#'                  pch = 1)
+#'
+#' ## Exact Same ROC Curves --------------------------------------------------
+#' morder_lfdr <- order(mout$result$lfdr)
+#' mfpr <- cumsum(is_null[morder_lfdr]) / sum(is_null)
+#' mtpr <- cumsum(!is_null[morder_lfdr]) / sum(!is_null)
+#'
+#' border_lfdr <- order(bout$result$lfdr)
+#' bfpr <- cumsum(is_null[border_lfdr]) / sum(is_null)
+#' btpr <- cumsum(!is_null[border_lfdr]) / sum(!is_null)
+#'
+#' graphics::plot(bfpr, btpr, type = "l", xlab = "False Positive Rate",
+#'                ylab = "True Positive Rate", main = "ROC Curve", col = 3,
+#'                lty = 2)
+#' graphics::lines(mfpr, mtpr, col = 4, lty = 1)
+#' graphics::abline(0, 1, lty = 2, col = 1)
+#' graphics::legend("bottomright", legend = c("MOUTHWASH", "BACKWASH"), col = c(4, 3),
+#'                  lty = c(1, 2))
+#'
+#' ## But slightly different ordering ----------------------------------------
+#' graphics::plot(morder_lfdr, border_lfdr, col = is_null + 3, xlab = "MOUTHWASH",
+#'                ylab = "BACKWASH", main = "Order")
+#' graphics::legend("bottomright", legend = c("Null", "Non-null"), col = c(4, 3),
+#'                  pch = 1)
 #'
 backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                      include_intercept = TRUE, limmashrink = TRUE,

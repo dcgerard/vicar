@@ -8,7 +8,7 @@
 \description{
 \code{vicar} contains functions for implementing RUV3 and two
 versions of what we call RUV5: RUV-Bayes and RUV-impute. It also
-contains the function \code{\link{mouthwash}} for confounder
+contains the functions \code{\link{mouthwash}} and \code{\link{backwash}} for confounder
 adjustment when one does not have access to control genes.
 }
 \section{\code{vicar} functions}{
@@ -22,7 +22,9 @@ adjustment when one does not have access to control genes.
 
     \code{\link{vruv4}}: Variance inflated version of CATE.
 
-    \code{\link{mouthwash}}: Confounder adjustment without control genes.
+    \code{\link{mouthwash}}: Empirical Bayesian confounder adjustment without control genes.
+
+    \code{\link{backwash}}: Variational Bayesian confounder adjustment without control genes.
 }
 \author{
 David Gerard

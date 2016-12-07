@@ -164,7 +164,80 @@ Gaussian and each column shares a common variance. The rows of
 
 This model is fit using a two-step approach proposed in
 Gagnon-Bartsch et al (2013) and described in Wang et al (2015),
-modified to include estimating a variance inflation parameter.
+modified to include estimating a variance inflation parameter. An
+additional modification is to use a t-likelihood in the second step
+of the procedure, improving robustness to model mispecification.
+}
+\examples{
+library(vicar)
+
+## Generate data and controls ---------------------------------------------
+set.seed(1327)
+n <- 13
+p <- 201
+k <- 2
+q <- 3
+is_null       <- rep(FALSE, length = p)
+is_null[1:101] <- TRUE
+ctl           <- rep(FALSE, length = p)
+ctl[1:73]     <- TRUE
+
+X <- matrix(stats::rnorm(n * q), nrow = n)
+B <- matrix(stats::rnorm(q * p), nrow = q)
+B[2, is_null] <- 0
+Z <- X \%*\% matrix(stats::rnorm(q * k), nrow = q) +
+     matrix(rnorm(n * k), nrow = n)
+A <- matrix(stats::rnorm(k * p), nrow = k)
+E <- matrix(stats::rnorm(n * p, sd = 1 / 2), nrow = n)
+Y <- X \%*\% B + Z \%*\% A + E
+
+## Fit RUV4 assuming only second covariate is of interest -----------------
+ruvout <- vruv4(Y = Y, X = X, ctl = ctl, k = k, include_intercept = FALSE,
+                likelihood = "normal", cov_of_interest = 2)
+graphics::plot(ruvout$pvalue, col = is_null + 3, ylab = "pvalues")
+graphics::legend("topleft", col = 3:4, legend = c("non-null", "null"),
+                 pch = 1)
+## should look uniform
+graphics::hist(ruvout$pvalue[is_null], xlab = "pvalues", main = NULL)
+
+## Compare to linear model ------------------------------------------------
+lmout <- coefficients(summary(stats::lm(Y ~ X)))
+lmp <- sapply(lmout, function(x) { x[3, 4] })
+graphics::plot(lmp, col = is_null + 3, ylab = "pvalues")
+graphics::legend("topleft", col = 3:4, legend = c("non-null", "null"),
+                 pch = 1)
+## should look uniform
+graphics::hist(lmp[is_null], xlab = "pvalues", main = NULL)
+
+## Other ways to fit RUV4 from various packages ------------------------------
+ruv4out <- cate::cate.fit(Y = Y, X.primary = X[, 2, drop = FALSE],
+                          X.nuis = X[, -2, drop = FALSE], r = k, fa.method = "pc",
+                          adj.method = "nc", nc = ctl, calibrate = FALSE,
+                          nc.var.correction = FALSE)
+vruv4out <- vruv4(Y = Y, X = X, k = k, cov_of_interest = 2,
+                  include_intercept = FALSE, ctl = ctl,
+                  limmashrink = FALSE, likelihood = "normal")
+vruv4ols <- vruv4(Y = Y, X = X, k = k, cov_of_interest = 2,
+                  include_intercept = FALSE, ctl = ctl,
+                  limmashrink = FALSE, likelihood = "normal",
+                  gls = FALSE)
+ruv4ols  <- ruv::RUV4(Y = Y, X = X[, 2, drop = FALSE],
+                      Z = X[, -2, drop = FALSE], ctl = ctl, k = k)
+
+ruv4p <- ruv4out$beta.p.value
+vruv4p <- vruv4out$pvalues
+ruv4olsp <- ruv4ols$p
+vruv4olsp <- vruv4ols$pvalues
+
+## These should be monotonically related
+## They often aren't because CATE often returns p-values that are exactly 0.
+graphics::plot(ruv4p, vruv4p)
+cor(c(ruv4p), c(vruv4p), method = "kendall")
+
+## These should be monotonically related
+graphics::plot(ruv4olsp, vruv4olsp)
+cor(c(ruv4olsp), c(vruv4olsp), method = "kendall")
+
 }
 \author{
 David Gerard

@@ -30,7 +30,7 @@ hidden confounders using the methods of Buja and Eyuboglu
 \item{fa_func}{A function that takes as input matrices named
 \code{Y21}, \code{Y31}, \code{Y32}, and \code{k} and returns a
 list, one of whose elements is called \code{Y22_array}. See
-\code{\link{bsvd}} for an example function.}
+\code{\link{bfa_gs_linked}} for an example function.}
 
 \item{fa_args}{A list of additional parameters to pass to
 \code{fa_func}.}
@@ -76,7 +76,8 @@ A list with with some or all of the following elements.
 
     \code{lfsr1} The empirical local false sign rate. This just
     counts the number of betas that are less than 0 before
-    calculating lfsr.
+    calculating lfsr. For the most significant genes, you should probably
+    use \code{lfsr2}.
 
     \code{lfsr2} The normal approximation for local false sign
     rate. This approximates the posterior of each beta by a normal,
@@ -85,7 +86,8 @@ A list with with some or all of the following elements.
     \code{t} The posterior means divided by the posterior standard
     deviations.
 
-    \code{svalues1} The svalues from lfsr1.
+    \code{svalues1} The svalues from lfsr1. For the most significant
+    genes, you should probably use \code{svalues2}.
 
     \code{svalues2} The svalues from lfsr2.
 
@@ -96,20 +98,94 @@ A list with with some or all of the following elements.
     used. Only returned if \code{return_mcmc} is \code{TRUE}.
 }
 \description{
+This function will take posterior draws from a Bayesian factor analysis
+(or, more generally, a Bayesian imputation approach)
+to propogate uncertainty when adjusting for unwanted variation. Useful
+summaries are returned, such as local false sign rates and posterior means.
+}
+\details{
+The model is \deqn{Y = XB + ZA + E,} where \eqn{Y} is a matrix of
+responses (e.g. log-transformed gene expression levels), \eqn{X} is
+a matrix of covariates, \eqn{B} is a matrix of coefficients,
+\eqn{Z} is a matrix of unobserved confounders, \eqn{A} is a matrix
+of unobserved coefficients of the unobserved confounders, and
+\eqn{E} is the noise matrix where the elements are independent
+Gaussian and each column shares a common variance. The rows of
+\eqn{Y} are the observations (e.g. individuals) and the columns of
+\eqn{Y} are the response variables (e.g. genes).
+
 Right now, this only allows you to use a uniform prior on the
 beta's. I plan on the future to allow you to input a function
 that's the prior.
-}
-\details{
+
 I have three versions of Bayesian factor analyses that I
 recommend. The first is \code{\link{bfa_gs_linked}}. This version
 links the variances between the factors and observations and is the
-version used in Gerard and Stephens (2016). The second,
+version used in Gerard and Stephens (2016). This version appears
+to work the best in practice. The second,
 \code{\link{bfa_gs}}, is the same as the first except it does not
 link the variances between the factors and the observations. The
 last is \code{bfa_wrapper}, which is just a wrapper for the R
 package bfa. The main thing about this version is that they do not
 use a hierarchical prior on the variances.
+}
+\examples{
+library(vicar)
+
+## Generate data and controls ---------------------------------------------
+set.seed(3425)
+n <- 13
+p <- 101
+k <- 2
+q <- 3
+is_null       <- rep(FALSE, length = p)
+is_null[1:51] <- TRUE
+ctl           <- rep(FALSE, length = p)
+ctl[1:37]     <- TRUE
+
+X <- matrix(stats::rnorm(n * q), nrow = n)
+B <- matrix(stats::rnorm(q * p), nrow = q)
+B[2, is_null] <- 0
+Z <- X \%*\% matrix(stats::rnorm(q * k), nrow = q) +
+     matrix(rnorm(n * k), nrow = n)
+A <- matrix(stats::rnorm(k * p), nrow = k)
+E <- matrix(stats::rnorm(n * p, sd = 1 / 2), nrow = n)
+Y <- X \%*\% B + Z \%*\% A + E
+
+## Fit RUVB ---------------------------------------------------------------
+## I use a much smaller number of samples than reccommended for time.
+ruvbout <- ruvb(Y = Y, X = X, k = k, ctl = ctl, cov_of_interest = 2,
+                include_intercept = FALSE,
+                fa_args = list(nsamp = 1000))
+ruvblfsr <- rep(NA, length = ncol(Y))
+ruvblfsr[!ctl] <- ruvbout$lfsr2
+
+## Compare to CATE/RUV4 ---------------------------------------------------
+ruv4out <- cate::cate.fit(Y = Y, X.primary = X[, 2, drop = FALSE],
+                          X.nuis = X[, -2, drop = FALSE], r = k, fa.method = "pc",
+                          adj.method = "nc", nc = ctl)
+ruv4p <- ruv4out$beta.p.value
+ruv4p[ctl] <- NA
+
+## Plot ROC curves --------------------------------------------------------
+order_ruv4 <- order(ruv4p, na.last = NA)
+order_ruvb <- order(ruvblfsr, na.last = NA)
+
+nnull <- sum(is_null[!ctl])
+nsig  <- sum(!is_null[!ctl])
+fpr4 <- cumsum(is_null[order_ruv4]) / nnull
+tpr4 <- cumsum(!is_null[order_ruv4]) / nsig
+fprb <- cumsum(is_null[order_ruvb]) / nnull
+tprb <- cumsum(!is_null[order_ruvb]) / nsig
+
+graphics::plot(fprb, tprb, type = "l", xlab = "False Positive Rate",
+               ylab = "True Positive Rate", main = "ROC Curves",
+               col = 3)
+graphics::lines(fpr4, tpr4, col = 4, lty = 2)
+graphics::legend("bottomright", legend = c("RUVB", "RUV4"), col = c(3, 4),
+                 lty = c(1, 2))
+graphics::abline(0, 1, lty = 2)
+
 }
 \author{
 David Gerard
