@@ -52,7 +52,7 @@ em_miss <- function(Y21, Y31, Y32, k, gls = TRUE, init_type = c("ml", "pca")) {
 
     ## em_miss_obj_fast(alpha_sigma = sqout$par, Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k)
 
-    sig_diag_final <- sqout$par[((k * p) + 1):length(sqout$par)]
+    sig_diag_final <- sqout$par[( (k * p) + 1):length(sqout$par)]
     alpha_final <- matrix(sqout$par[1:(k * p)], nrow = k, ncol = p)
 
     ## Estimate Z2hat ------------------------------------------------------
@@ -117,14 +117,14 @@ em_miss_fix_fast <- function(alpha_sigma, Y21, Y31, Y32, k) {
     alphamat <- matrix(alphavec, nrow = k, ncol = p)
     alphamat_c <- alphamat[, 1:ncontrols, drop = FALSE]
     alphamat_nc <- alphamat[, (ncontrols + 1):p, drop = FALSE]
-    sig_diag <- alpha_sigma[((k * p) + 1):length(alpha_sigma)]
+    sig_diag <- alpha_sigma[( (k * p) + 1):length(alpha_sigma)]
     sig_diag_c <- sig_diag[1:ncontrols]
     sig_diag_nc <- sig_diag[(ncontrols + 1):p]
 
     Y3 <- cbind(Y31, Y32)
 
     alpha_times_sigma <- sweep(alphamat, 2, 1 / sig_diag, `*`)
-    covpreinv <-  tcrossprod(alpha_times_sigma, alphamat)+ diag(k)
+    covpreinv <-  tcrossprod(alpha_times_sigma, alphamat) + diag(k)
     eigen_covpreinv <- eigen(covpreinv, symmetric = TRUE)
     delta_small <- eigen_covpreinv$vectors %*%
         sweep(crossprod(eigen_covpreinv$vectors, alpha_times_sigma), 1,
@@ -252,7 +252,7 @@ em_miss_obj_fast <- function(alpha_sigma, Y21, Y31, Y32, k) {
     tr_part2 <- sum(sweep(Y21, 2, sqrt(Sig_inv_c), `*`) ^ 2) -
         sum(sweep(sweep(Y21, 2, sqrt(Sig_inv_c), `*`) %*% svout_c$v, 2, svout_c$d, `*`) ^ 2)
 
-    det_part2 <- sum(log((1 - svout_c$d ^ 2))) + sum(log(Sig_inv_c))
+    det_part2 <- sum(log( (1 - svout_c$d ^ 2))) + sum(log(Sig_inv_c))
 
 
     llike <- (n - ncovs) * det_part1 - tr_part1 + ncovs * det_part2 - tr_part2
@@ -290,7 +290,7 @@ em_miss_fix <- function(alpha_sigma, S, S2, ncovs, ncontrols, n, p, k) {
     alphamat <- matrix(alphavec, nrow = k, ncol = p)
     alphamat_c <- alphamat[, 1:ncontrols, drop = FALSE]
     alphamat_nc <- alphamat[, (ncontrols + 1):p, drop = FALSE]
-    sig_diag <- alpha_sigma[((k * p) + 1):length(alpha_sigma)]
+    sig_diag <- alpha_sigma[( (k * p) + 1):length(alpha_sigma)]
     sig_diag_c <- sig_diag[1:ncontrols]
     sig_diag_nc <- sig_diag[(ncontrols + 1):p]
 
@@ -398,7 +398,7 @@ em_miss_obj <- function(alpha_sigma, S, S2, ncovs, ncontrols, n, p, k) {
     alphamat <- matrix(alphavec, nrow = k, ncol = p)
     alphamat_c <- alphamat[, 1:ncontrols, drop = FALSE]
     alphamat_nc <- alphamat[, (ncontrols + 1):p, drop = FALSE]
-    sig_diag <- alpha_sigma[((k * p) + 1):length(alpha_sigma)]
+    sig_diag <- alpha_sigma[( (k * p) + 1):length(alpha_sigma)]
     sig_diag_c <- sig_diag[1:ncontrols]
     sig_diag_nc <- sig_diag[(ncontrols + 1):p]
 
@@ -453,7 +453,7 @@ rubin_copy <- function(alpha_sigma, S, n, p, k) {
     assertthat::are_equal(length(alpha_sigma), k * p + p)
     alphavec <- alpha_sigma[1:(k * p)]
     alphamat <- matrix(alphavec, nrow = k, ncol = p)
-    sig_diag <- alpha_sigma[((k * p) + 1):length(alpha_sigma)]
+    sig_diag <- alpha_sigma[( (k * p) + 1):length(alpha_sigma)]
 
     delta_small <- solve(diag(sig_diag) + t(alphamat) %*% alphamat) %*% t(alphamat)
     Delta <- diag(k) - alphamat %*% delta_small
@@ -463,7 +463,7 @@ rubin_copy <- function(alpha_sigma, S, n, p, k) {
     alphamat_new <- solve(t(delta_small) %*% Cyy %*% delta_small + Delta) %*%
         t(delta_small) %*% t(Cyy)
     sig_diag_new <- diag(Cyy - Cyy %*% delta_small %*%
-                         solve((t(delta_small) %*% Cyy %*% delta_small + Delta)) %*%
+                         solve( (t(delta_small) %*% Cyy %*% delta_small + Delta)) %*%
                          t(delta_small) %*% t(Cyy))
 
     alpha_sigma_new <- c(c(alphamat_new), sig_diag_new)

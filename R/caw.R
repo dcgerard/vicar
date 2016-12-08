@@ -274,7 +274,7 @@ fix_caw <- function(w_current, Z2hat, scale_val, rotate_out,
 
     w_current <- do.call(what = weight_func, args = weight_args)
 
-    if(return_val == "params") {
+    if (return_val == "params") {
         return(list(w_current = w_current, Z2hat = Z2hat, scale_val = scale_val))
     } else if (return_val == "full") {
         return_list <- list()
@@ -297,7 +297,7 @@ fix_caw <- function(w_current, Z2hat, scale_val, rotate_out,
 qvalue_wrap <- function(pvalues, return_val = c("params", "full")) {
     return_val <- match.arg(return_val)
     if (requireNamespace("qvalue", quietly = TRUE)) {
-        if(return_val == "params") {
+        if (return_val == "params") {
             return(qvalue::qvalue(p = pvalues)$lfdr)
         } else if (return_val == "full") {
             return(qvalue::qvalue(p = pvalues))

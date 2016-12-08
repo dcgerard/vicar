@@ -133,7 +133,7 @@ use a hierarchical prior on the variances.
 library(vicar)
 
 ## Generate data and controls ---------------------------------------------
-set.seed(3425)
+set.seed(345)
 n <- 13
 p <- 101
 k <- 2

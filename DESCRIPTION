@@ -41,4 +41,8 @@ Suggests: testthat,
     missForest,
     leapp,
     covr,
-    qvalue
+    qvalue,
+    knitr,
+    rmarkdown,
+    ggplot2
+VignetteBuilder: knitr
