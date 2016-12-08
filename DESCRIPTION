@@ -20,6 +20,8 @@ Remotes: github::stephens999/ashr
 LinkingTo: Rcpp,
     RcppArmadillo,
     RcppProgress
+Depends:
+    R (>= 2.10)
 Imports: ruv,
     SQUAREM,
     limma,
@@ -44,5 +46,7 @@ Suggests: testthat,
     qvalue,
     knitr,
     rmarkdown,
-    ggplot2
+    ggplot2,
+    dplyr,
+    pROC
 VignetteBuilder: knitr
