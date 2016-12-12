@@ -62,6 +62,18 @@ install.packages("devtools")
 devtools::install_github("dcgerard/vicar")
 ```
 
+Vignettes
+---------
+
+I've provided two vignettes to help you get started with vicar. By default, the vignettes are not built when you use `install_github`. To build the vignettes during installation, run
+
+``` r
+install.packages("devtools")
+devtools::install_github("dcgerard/vicar", build_vignettes = TRUE)
+```
+
+Note that this will result in a quite-slow install. The first vignette, *sample\_analysis*, gives a sample analysis using vicar to account for hidden confounding. The second vignette, *customFA*, gives a few instructions on how to incorporate user-defined factor analyses with the confounder adjustment procedures implemented in vicar.
+
 References
 ----------
 
