@@ -3,7 +3,7 @@
 \docType{data}
 \name{sim_gtex}
 \alias{sim_gtex}
-\title{Modified subset of gtex muscle data.}
+\title{A simulated RNA-seq dataset.}
 \format{A list with the following elements
 \describe{
     \item{Y}{A matrix of gene expression levels whose rows index the samples and whose columns index the genes.}
@@ -13,14 +13,13 @@
     \item{which_null}{A logical vector where a \code{TRUE} indicates the location of a null gene.}
 }}
 \source{
-This is a heavily modified dataset. The raw data can be found at \url{http://www.gtexportal.org/home/}.
+If you want the real GTEx data, go to \url{http://www.gtexportal.org/home/}.
 }
 \usage{
 sim_gtex
 }
 \description{
-A cleaned, transformed, modified, and de-identified subset of the GTEx data. The data were modified to add a
-known signal between two groups.
+This is a simulated dataset that shares characteristics with the GTEx data.
 }
 \author{
 David Gerard

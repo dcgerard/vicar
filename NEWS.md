@@ -1,3 +1,15 @@
+# vicar 0.1.6
+
+This version mostly changes the documentation. Additions include:
+
+* Many examples in the main functions in vicar. Including examples in `vruv4`, `ruv3`, `ruvb`, `mouthwash`, and `backwash`.
+* Three new vignettes. One providing instructions and examples on how to customize your factor analysis, one providing instructions and
+examples on how to customize your prior specification in `ruvb`, and one giving a sample analysis using the functions in vicar and other confounder
+adjustment packages. Type `vignette(package = "vicar")` for the list of available vignettes.
+* New functions `fa_tester` and `fa_tester_ruvb` for testing whether a user-specified factor analysis is appropriate for the functions in vicar.
+* An example simulated dataset, "sim_gtex", based on the characteristics of the GTEx data. This is so that you can test our your confounder adjustment methods on some good test data. Type `data(sim_gtex)` to access the data or `?sim_gtex` for seeing details about the data.
+* I've removed `vruv2` from being exported as it was supplanted by `ruv3`.
+
 # vicar 0.1.5
 
 This version added the function `backwash`. This is very similar in spirit to
@@ -10,7 +22,7 @@ returns a variational approximation to the posterior.
 This version added the function `mouthwash` to adjust for hidden
 confounding when one does not have control genes. It applies the same
 prior from [ashr](https://github.com/stephens999/ashr/tree/general) to
-a factor-augmentred regression framework.
+a factor-augmented regression framework.
 
 # vicar 0.1.3
 

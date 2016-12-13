@@ -30,7 +30,9 @@ hidden confounders using the methods of Buja and Eyuboglu
 \item{fa_func}{A function that takes as input matrices named
 \code{Y21}, \code{Y31}, \code{Y32}, and \code{k} and returns a
 list, one of whose elements is called \code{Y22_array}. See
-\code{\link{bfa_gs_linked}} for an example function.}
+\code{\link{bfa_gs_linked}} for an example function. Type in R
+\code{utils::vignette("customFA", package = "vicar")} for
+instructions and examples.}
 
 \item{fa_args}{A list of additional parameters to pass to
 \code{fa_func}.}
@@ -47,11 +49,17 @@ will be unchanged.}
 
 \item{return_mcmc}{A logical. Should we return the MCMC draws?}
 
-\item{prior_fun}{A function. This should take as inpute a matrix
-and output a positive numeric, the density at said matrix. The
-matix name should be \code{beta_mat}. Additional arguments may
-be passed to \code{prior_fun} through the \code{prior_args}
-argument.}
+\item{prior_fun}{A function. This should take as input a matrix
+called \code{beta_mat} and output a positive numeric (if
+\code{return_log = TRUE}) or any numeric (if \code{return_log =
+FALSE}). This is the prior density (or log-density) of
+\code{beta_mat}.  Additional arguments may be passed to
+\code{prior_fun} through the \code{prior_args} argument. The
+default is to use an improper non-informative uniform prior,
+which is guaranteed to result in a proper posterior no matter
+the model for the unwanted variation. Type in R
+\code{utils::vignette("custom_prior", package = "vicar")} for
+instructions and examples.}
 
 \item{prior_args}{A list of arguments to pass to \code{prior_fun}.}
 
@@ -98,10 +106,11 @@ A list with with some or all of the following elements.
     used. Only returned if \code{return_mcmc} is \code{TRUE}.
 }
 \description{
-This function will take posterior draws from a Bayesian factor analysis
-(or, more generally, a Bayesian imputation approach)
-to propogate uncertainty when adjusting for unwanted variation. Useful
-summaries are returned, such as local false sign rates and posterior means.
+This function will take posterior draws from a Bayesian factor
+analysis (or, more generally, a Bayesian imputation approach) to
+propagate uncertainty when adjusting for unwanted variation. Useful
+summaries are returned, such as local false sign rates and
+posterior means.
 }
 \details{
 The model is \deqn{Y = XB + ZA + E,} where \eqn{Y} is a matrix of
@@ -114,20 +123,38 @@ Gaussian and each column shares a common variance. The rows of
 \eqn{Y} are the observations (e.g. individuals) and the columns of
 \eqn{Y} are the response variables (e.g. genes).
 
-Right now, this only allows you to use a uniform prior on the
-beta's. I plan on the future to allow you to input a function
-that's the prior.
-
 I have three versions of Bayesian factor analyses that I
 recommend. The first is \code{\link{bfa_gs_linked}}. This version
 links the variances between the factors and observations and is the
-version used in Gerard and Stephens (2016). This version appears
-to work the best in practice. The second,
+version used in Gerard and Stephens (2016). This version appears to
+work the best in practice and is thus the default. The second,
 \code{\link{bfa_gs}}, is the same as the first except it does not
 link the variances between the factors and the observations. The
 last is \code{bfa_wrapper}, which is just a wrapper for the R
 package bfa. The main thing about this version is that they do not
 use a hierarchical prior on the variances.
+
+The user can specify their own Bayesian factor analysis (or
+Bayesian model for missing data) using the \code{fa_func} and
+\code{fa_args} parameters. To see instructions and examples on how
+to do this, type the following in R:
+\code{utils::vignette("customFA", package = "vicar")}. If you see
+an error in the above code, then this probably means that the
+vignettes were not built during installation. In which case, see
+\url{https://github.com/dcgerard/vicar#vignettes}.
+
+The user can also specify their own priors for the second step of
+RUVB. To do so, use the parameters \code{prior_fun} and
+\code{prior_args}. To see instructions and an example on how to do
+this, run the following code in R:
+\code{utils::vignette("custom_prior", package = "vicar")}.  Again,
+if you see an error in the above code then you probably need to
+build the vignettes. Go to
+\url{https://github.com/dcgerard/vicar#vignettes} for
+instructions. If a prior is not specified, then the default is to
+use a non-informative uniform prior. Though improper, using this
+prior will result in a proper posterior no matter the model for the
+unwanted variation.
 }
 \examples{
 library(vicar)
@@ -192,6 +219,6 @@ David Gerard
 }
 \seealso{
 \code{\link{bfa_gs}}, \code{\link{bfl}}, and
-    \code{bfa_wrapper} for implemented Bayesian factor analyeses.
+    \code{bfa_wrapper} for implemented Bayesian factor analyses.
 }
 

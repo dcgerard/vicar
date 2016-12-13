@@ -21,7 +21,11 @@
 #' Gagnon-Bartsch et al (2013) and described in Wang et al (2015),
 #' modified to include estimating a variance inflation parameter. An
 #' additional modification is to use a t-likelihood in the second step
-#' of the procedure, improving robustness to model mispecification.
+#' of the procedure, improving robustness to model misspecification.
+#'
+#' For instructions and examples on how to specify your own factor analysis, run the following code in R:
+#' \code{utils::vignette("customFA", package = "vicar")}. If it doesn't work, then you probably haven't built
+#' the vignettes. To do so, see \url{https://github.com/dcgerard/vicar#vignettes}.
 #'
 #' @param Y A matrix of numerics. These are the response variables
 #'     where each column has its own variance. In a gene expression
@@ -145,6 +149,12 @@
 #'     removed in the future.
 #'
 #' @export
+#'
+#' @seealso \code{\link{ruv3}} for a version of RUV4 that can also be considered a version of RUV2.
+#'
+#'     \code{\link[ruv]{RUV4}} For the version of RUV4 in the ruv package.
+#'
+#'     \code{\link[cate]{cate}} For the version of RUV4 in the cate package.
 #'
 #' @author David Gerard
 #'

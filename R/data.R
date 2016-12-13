@@ -1,8 +1,7 @@
 
-#' Modified subset of gtex muscle data.
+#' A simulated RNA-seq dataset.
 #'
-#' A cleaned, transformed, modified, and de-identified subset of the GTEx data. The data were modified to add a
-#' known signal between two groups.
+#' This is a simulated dataset that shares characteristics with the GTEx data.
 #'
 #' @format A list with the following elements
 #' \describe{
@@ -12,7 +11,7 @@
 #'     \item{beta}{The two effect sizes for treatment vs control.}
 #'     \item{which_null}{A logical vector where a \code{TRUE} indicates the location of a null gene.}
 #' }
-#' @source This is a heavily modified dataset. The raw data can be found at \url{http://www.gtexportal.org/home/}.
+#' @source If you want the real GTEx data, go to \url{http://www.gtexportal.org/home/}.
 #'
 #' @author David Gerard
 #'

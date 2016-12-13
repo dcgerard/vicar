@@ -169,7 +169,7 @@ second part.
 }
 \details{
 The assumed model is \deqn{Y = X\beta + Z\alpha + E.} \eqn{Y} is a
-\eqn{n} by \code{p} matrix of response varaibles. For example, each
+\eqn{n} by \code{p} matrix of response variables. For example, each
 row might be an array of log-transformed gene-expression data.
 \eqn{X} is a \eqn{n} by \eqn{q} matrix of observed covariates. It
 is assumed that all but one column of which contains nuisance
@@ -193,11 +193,13 @@ analysis to the third part to estimate the confounding factors,
 then runs an EM (or coordinate-ascent) algorithm on the second part
 to estimate the coefficients of interest.
 
-There are a couple forms of factor analysis avaiable in this
+There are a couple forms of factor analysis available in this
 package. The default is PCA with the column-wise residual
 mean-squares as the estimates of the column-wise variances.
-See the description of the \code{fa_func} parameter for details
-on including your own factor analysis.
+
+For instructions and examples on how to specify your own factor analysis, run the following code in R:
+\code{utils::vignette("customFA", package = "vicar")}. If it doesn't work, then you probably haven't built
+the vignettes. To do so, see \url{https://github.com/dcgerard/vicar#vignettes}.
 }
 \examples{
 library(vicar)

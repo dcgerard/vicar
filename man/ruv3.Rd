@@ -71,12 +71,12 @@ fa_func.}
     \code{betahat}. The values corresponding to control genes are
     \code{NA}.
 
-    \code{tstats_unadajusted} The t-statistics corresponding to the
+    \code{tstats_unadjusted} The t-statistics corresponding to the
     coefficients of interest. These use \code{sebetahat_unadjusted}
     as the standard errors. The values corresponding to control
     genes are \code{NA}.
 
-    \code{pvalues_unadajusted} The p-values using said statistics
+    \code{pvalues_unadjusted} The p-values using said statistics
     above.
 
     \code{sebetahat_adjusted} The unadjusted standard errors of
@@ -89,7 +89,7 @@ fa_func.}
     as the standard errors. The values corresponding to control
     genes are \code{NA}.
 
-    \code{pvalues_unadajusted} The p-values using said statistics
+    \code{pvalues_unadjusted} The p-values using said statistics
     above.
 
     \code{betahat_ols} The ordinary least squares (OLS) estimates
@@ -108,7 +108,7 @@ fa_func.}
 
     \code{Zhat} The estimates of the confounders.
 
-    \code{alphahat} The esitmates of the coefficients of the confounders.
+    \code{alphahat} The estimates of the coefficients of the confounders.
 
     \code{multiplier} The estimate of the variance inflation parameter.
 
@@ -138,6 +138,10 @@ of unobserved coefficients of the unobserved confounders, and
 Gaussian and each column shares a common variance. The rows of
 \eqn{Y} are the observations (e.g. individuals) and the columns of
 \eqn{Y} are the response variables (e.g. genes).
+
+For instructions and examples on how to specify your own factor analysis, run the following code in R:
+\code{utils::vignette("customFA", package = "vicar")}. If it doesn't work, then you probably haven't built
+the vignettes. To do so, see \url{https://github.com/dcgerard/vicar#vignettes}.
 }
 \examples{
 library(vicar)

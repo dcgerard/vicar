@@ -1,7 +1,7 @@
 ---
 title: "Customizable Factor Analyses"
 author: "David Gerard"
-date: "`r Sys.Date()`"
+date: "2016-12-09"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Customizable Factor Analyses}
@@ -146,7 +146,7 @@ Let $n$ be the number of samples, $p$ be the number of genes, $m$ be the number 
 1. `Y22_array`, a three-way array of dimension $k$ by $p - m$ by the number of posterior draws.
 2. Any other parameters you wish to return. However, they won't be used in confounder adjustment.
 
-The default value for `fa_func` is `bfa_gs_linked`. We can test a factor anaysis for compatibility with `ruvb` using the function `fa_tester_ruvb`.
+The default value for `fa_func` is `bfa_gs_linked`. We can test a factor analysis for compatibility with `ruvb` using the function `fa_tester_ruvb`.
 ```{r}
 fa_tester_ruvb(fa_func = bfa_gs_linked, fa_args = list(nsamp = 20, display_progress = FALSE))
 ```
@@ -165,7 +165,3 @@ We can use `fa_stupid_ruvb` on the data in the previous section. But because it 
 ruvbout <- ruvb(Y = Y, X = X, ctl = ctl, fa_func = fa_stupid_ruvb)
 graphics::plot(table(ruvbout$lfsr2), type = "h", ylab = "lfsr")
 ```
-
-
-
-

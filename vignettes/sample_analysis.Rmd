@@ -1,7 +1,7 @@
 ---
 title: "Sample Analysis"
 author: "David Gerard"
-date: "`r Sys.Date()`"
+date: "2016-12-13"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Sample Analysis}
@@ -14,7 +14,8 @@ vignette: >
 In this vignette, I take an example simulated RNA-seq dataset and analyze it using the functions in the vicar R package. I compare their performances against the methods available in other packages.
 
 # Data
-The data comes from an extremely modified subset of the GTEx data \href{http://www.gtexportal.org/home/}{http://www.gtexportal.org/home/}.
+
+The data are simulated RNA-seq expression data based on the characteristics of the GTEx data: \href{http://www.gtexportal.org/home/}{http://www.gtexportal.org/home/}.
 The overall model for these data is
 $$
 Y = X\beta + Z\alpha + E,
@@ -27,8 +28,8 @@ where $Y$ contains the gene expression levels, $X$ contains the observed covaria
 - `ctl` A logical vector indicating the location of control genes.
 - `which_null` A logical vector indicating the location of null genes.
 
-I've added signal to the `Y` matrix in the manner described in Gerard and Stephens (2017), the amount of which is encoded in the vector `beta`. We can read in these data using the `data` function.
-```{r}
+I've added signal to the `Y` matrix, the amount of which is encoded in the vector `beta`. We can read in these data using the `data` function.
+```{r, results='hide'}
 library(vicar)
 library(ggplot2)
 library(dplyr)

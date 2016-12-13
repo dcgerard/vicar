@@ -166,7 +166,11 @@ This model is fit using a two-step approach proposed in
 Gagnon-Bartsch et al (2013) and described in Wang et al (2015),
 modified to include estimating a variance inflation parameter. An
 additional modification is to use a t-likelihood in the second step
-of the procedure, improving robustness to model mispecification.
+of the procedure, improving robustness to model misspecification.
+
+For instructions and examples on how to specify your own factor analysis, run the following code in R:
+\code{utils::vignette("customFA", package = "vicar")}. If it doesn't work, then you probably haven't built
+the vignettes. To do so, see \url{https://github.com/dcgerard/vicar#vignettes}.
 }
 \examples{
 library(vicar)
@@ -262,5 +266,12 @@ Gagnon-Bartsch, J., Laurent Jacob, and Terence
     Wang, J., Zhao, Q., Hastie, T., & Owen, A. B
     "Confounder Adjustment in Multiple Hypotheses Testing."
     arXiv preprint arXiv:1508.04178 (2015).
+}
+\seealso{
+\code{\link{ruv3}} for a version of RUV4 that can also be considered a version of RUV2.
+
+    \code{\link[ruv]{RUV4}} For the version of RUV4 in the ruv package.
+
+    \code{\link[cate]{cate}} For the version of RUV4 in the cate package.
 }
 

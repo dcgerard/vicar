@@ -1,0 +1,82 @@
+---
+title: "Custom Prior for RUVB"
+author: "David Gerard"
+date: "2016-12-13"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Custom Prior for RUVB}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Abstract
+
+I provide instructions on how to incorporate a user-specified prior into `ruvb`. 
+I provide an example with a simulated RNA-seq dataset.
+
+# Data
+
+We will use the simulated RNA-seq dataset described in the vignette _sample\_analysis_. To read a description about these data, run the following in R:
+```{r, eval = FALSE}
+utils::vignette("sample_analysis", package = "vicar")
+```
+
+We'll first load in these data:
+```{r, results='hide'}
+library(vicar)
+library(ggplot2)
+set.seed(2512)
+data(sim_gtex)
+Y <- sim_gtex$Y
+X <- sim_gtex$X
+ctl <- sim_gtex$ctl
+which_null <- sim_gtex$which_null
+beta <- sim_gtex$beta
+```
+
+As in _sample\_analysis_, we'll estimate the number of hidden confounders using the `num.sv` function from the sva R package.
+```{r}
+num_sv <- sva::num.sv(dat = t(Y), mod = X, method = "be")
+num_sv
+```
+
+# Specifying a Prior
+
+In the `ruvb` function, one can use the `prior_fun` and `prior_args` parameters to specify a prior in the second step of RUVB. If $p$ is the number of genes, $m$ is the number of control genes, and $k$ is the number of covariates of interest, then `prior_fun` takes the following as input
+
+1. `beta_mat`: An $k$ by $p - m$ matrix.
+2. Anything else the user desires, specified in the list `prior_args`.
+
+By specifying the `return_log` argument in `ruvb`, `prior_fun` can either return the density (a non-negative numeric scalar), or the log-density (a real numeric scalar). For numerical stability reasons, generally you should have `prior_fun` return the log-density and then set `return_log = TRUE`.
+
+# Example
+
+Suppose we had slightly stronger prior information that the signals are all relatively weak, so we'll put a $N(0, 5)$ prior on the effects. For numerical stability, we'll return the log-density.
+
+```{r}
+strong_prior <- function(beta_mat, sd_prior) {
+  sum(stats::dnorm(beta_mat, mean = 0, sd = sd_prior, log = TRUE))
+}
+```
+
+Since `sd_prior` is an argument we need to specify, we'll use the `prior_args` parameter to set `sd_prior = 5`. Now let us run `ruvb`. Note that you should run the MCMC for many more iterations than what I'm doing here.
+```{r}
+ruvbout <- ruvb(Y = Y, X = X, ctl = ctl, k = num_sv, cov_of_interest = 2,
+                prior_fun = strong_prior, prior_args = list(sd_prior = 5),
+                return_log = TRUE,
+                fa_args = list(display_progress = FALSE, nsamp = 1000, thin = 1))
+```
+
+We'll compare the results against just using the default uniform prior:
+```{r}
+ruvbout_unif <- ruvb(Y = Y, X = X, ctl = ctl, k = num_sv, cov_of_interest = 2,
+                     fa_args = list(display_progress = FALSE, nsamp = 1000, thin = 1))
+```
+
+They give about the same AUC's.
+```{r}
+aucnorm <- pROC::roc(response = which_null[!ctl], predictor = c(ruvbout$lfsr2))$auc
+aucunif <- pROC::roc(response = which_null[!ctl], predictor = c(ruvbout_unif$lfsr2))$auc
+aucdat <- data.frame(Prior = c("Normal", "Uniform"), AUC = c(aucnorm, aucunif))
+knitr::kable(x = aucdat)
+```

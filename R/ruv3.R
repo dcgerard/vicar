@@ -14,6 +14,9 @@
 #' \eqn{Y} are the observations (e.g. individuals) and the columns of
 #' \eqn{Y} are the response variables (e.g. genes).
 #'
+#' For instructions and examples on how to specify your own factor analysis, run the following code in R:
+#' \code{utils::vignette("customFA", package = "vicar")}. If it doesn't work, then you probably haven't built
+#' the vignettes. To do so, see \url{https://github.com/dcgerard/vicar#vignettes}.
 #'
 #' @inheritParams vruv4
 #'
@@ -24,12 +27,12 @@
 #'     \code{betahat}. The values corresponding to control genes are
 #'     \code{NA}.
 #'
-#'     \code{tstats_unadajusted} The t-statistics corresponding to the
+#'     \code{tstats_unadjusted} The t-statistics corresponding to the
 #'     coefficients of interest. These use \code{sebetahat_unadjusted}
 #'     as the standard errors. The values corresponding to control
 #'     genes are \code{NA}.
 #'
-#'     \code{pvalues_unadajusted} The p-values using said statistics
+#'     \code{pvalues_unadjusted} The p-values using said statistics
 #'     above.
 #'
 #'     \code{sebetahat_adjusted} The unadjusted standard errors of
@@ -42,7 +45,7 @@
 #'     as the standard errors. The values corresponding to control
 #'     genes are \code{NA}.
 #'
-#'     \code{pvalues_unadajusted} The p-values using said statistics
+#'     \code{pvalues_unadjusted} The p-values using said statistics
 #'     above.
 #'
 #'     \code{betahat_ols} The ordinary least squares (OLS) estimates
@@ -61,7 +64,7 @@
 #'
 #'     \code{Zhat} The estimates of the confounders.
 #'
-#'     \code{alphahat} The esitmates of the coefficients of the confounders.
+#'     \code{alphahat} The estimates of the coefficients of the confounders.
 #'
 #'     \code{multiplier} The estimate of the variance inflation parameter.
 #'
@@ -221,7 +224,7 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     alpha2 <- solve(t(Z3) %*% Z3) %*% t(Z3) %*% Y32
     sig_diag2 <- colSums((Y32 - Z3 %*% alpha2) ^ 2) / degrees_freedom
 
-    ## Get beta2 hat, consolodate estimates into big matrices ----------------
+    ## Get beta2 hat, consolidate estimates into big matrices ----------------
     beta2hat <- solve(R22) %*% (Y22 - Z2 %*% alpha2)
     beta2_ols <- rotate_out$betahat_ols
 
