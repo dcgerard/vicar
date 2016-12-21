@@ -206,3 +206,83 @@ plot.backwash <- function(x, ...) {
   }
 
 }
+
+
+#' Plotting method for \code{ruvb}.
+#'
+#' For the traceplots, the blue dashed line is a non-parameteric smoother.
+#' This should let you see if there are any major trends in the traceplot.
+#'
+#' @param x The output of \code{\link{ruvb}}, of class \code{ruvb}.
+#' @param ... Not used.
+#'
+#' @author David Gerard
+#'
+#'
+#' @seealso \code{\link{ruvb}}
+#'
+plot.ruvb <- function(x, ...) {
+  if (!requireNamespace("ggplot2", quietly = TRUE)) {
+    stop("To use this plotting method, you need to install ggplot2.")
+  }
+
+  if (is.null(x$betahat_post)) {
+    message("If you want traceplots, rerun ruvb with return_mcmc = TRUE")
+  } else {
+
+    effective_sizes <- apply(X = x$betahat_post, MARGIN = c(1, 2), FUN = coda::effectiveSize)
+    dfdat <- data.frame(effective_size = c(effective_sizes))
+    pl <- ggplot2::ggplot(data = dfdat, mapping = ggplot2::aes_string(x = "effective_size")) +
+      ggplot2::geom_histogram(bins = 30, col = "black", fill = "white") +
+      ggplot2::theme_bw() +
+      ggplot2::xlab("Effective Sample Size") +
+      ggplot2::ggtitle("Effective Sample Sizes")
+    print(pl)
+
+    cat("Would you care for a traceplot? Y/N")
+    line <- readline()
+    while (line == "Y" | line == "y" | line == "YES" | line == "Yes" | line == "yes") {
+      rownum <- sample(1:dim(x$betahat_post)[1], size = 1)
+      colnum <- sample(1:dim(x$betahat_post)[2], size = 1)
+
+      betahat_post <- x$betahat_post[rownum, colnum, ]
+      dfdat <- data.frame(index = 1:length(betahat_post), betahat = betahat_post)
+      pl <- ggplot2::ggplot(data = dfdat, mapping = ggplot2::aes_string(x = "index", y = "betahat")) +
+        ggplot2::geom_line() +
+        ggplot2::geom_smooth(method = "loess", se = FALSE, lty = 2) +
+        ggplot2::theme_bw() +
+        ggplot2::xlab("index") +
+        ggplot2::ylab("betahat") +
+        ggplot2::ggtitle(paste0("Traceplot of (", rownum, ", ", colnum, ")th Element"))
+      print(pl)
+
+      cat("Would you care for another traceplot? Y/N")
+      line <- readline()
+    }
+
+    cat("Would you care for a histogram? Y/N")
+    line <- readline()
+    while (line == "Y" | line == "y" | line == "YES" | line == "Yes" | line == "yes") {
+      rownum <- sample(1:dim(x$betahat_post)[1], size = 1)
+      colnum <- sample(1:dim(x$betahat_post)[2], size = 1)
+
+      betahat_post <- x$betahat_post[rownum, colnum, ]
+      dfdat <- data.frame(betahat = betahat_post)
+      pl <- ggplot2::ggplot(data = dfdat, mapping = ggplot2::aes_string(x = "betahat")) +
+        ggplot2::geom_histogram(fill = "white", color = "black", bins = 30) +
+        ggplot2::theme_bw() +
+        ggplot2::xlab("index") +
+        ggplot2::ylab("betahat") +
+        ggplot2::ggtitle(paste0("Histogram of (", rownum, ", ", colnum, ")th Element")) +
+        ggplot2::geom_vline(xintercept = mean(betahat_post), lty = 2, col = "red")
+      print(pl)
+
+      cat("Would you care for another histogram? Y/N")
+      line <- readline()
+    }
+  }
+
+}
+
+
+

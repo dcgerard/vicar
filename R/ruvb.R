@@ -287,6 +287,8 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
         return_list$fa <- faout
     }
 
+    class(return_list) <- "ruvb"
+
     return(return_list)
 }
 

@@ -7,5 +7,7 @@ test_that("plot.mouthwash works", {
   plot(mout)
   bout <- readRDS(file = "bout.RDS")
   plot(bout)
+  ruvbout <- readRDS(file = "ruvbout.RDS")
+  ##plot(ruvbout)
 }
 )
