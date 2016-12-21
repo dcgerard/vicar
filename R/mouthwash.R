@@ -105,7 +105,7 @@
 #'     \code{pi0} The estimate of the proportion of null genes.
 #'
 #'     \code{z2} The estimated confounders (after rotation)
-#'     corresponding the covariates of interest. Mostly output for
+#'     corresponding the covariates of interest (\code{z2}). Mostly output for
 #'     debugging reasons.
 #'
 #'     \code{xi} The estimated variance inflation parameter.
@@ -368,6 +368,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     val$Zhat <- Zhat
     val$alphahat <- t(rotate_out$alpha)
     val$sig_diag <- rotate_out$sig_diag
+
+    class(val) <- "mouthwash"
 
     return(val)
 }

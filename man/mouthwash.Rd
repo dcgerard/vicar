@@ -135,7 +135,7 @@ A list with some or all of the following elements.
     \code{pi0} The estimate of the proportion of null genes.
 
     \code{z2} The estimated confounders (after rotation)
-    corresponding the covariates of interest. Mostly output for
+    corresponding the covariates of interest (\code{z2}). Mostly output for
     debugging reasons.
 
     \code{xi} The estimated variance inflation parameter.

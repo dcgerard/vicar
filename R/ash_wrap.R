@@ -208,17 +208,40 @@ ash_ruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #' Random draw from a mixture of normals.
 #'
 #' @param n the number of samples to draw.
-#' @param mixdense An object of class \code{normalmix}.
+#' @param mixdense An object of class \code{\link[ashr]{normalmix}}.
 #'
 #' @author David Gerard
 #'
 #' @export
 rnormalmix <- function(n, mixdense) {
-    assertthat::are_equal(class(mixdense), "normalmix")
-    k <- length(mixdense$pi)
+  assertthat::are_equal(class(mixdense), "normalmix")
+  k <- length(mixdense$pi)
     which_norm <- sample(1:k, size = n, prob = mixdense$pi, replace = TRUE)
     samp <- stats::rnorm(n = n, mean = mixdense$mean[which_norm], sd = mixdense$sd[which_norm])
     return(samp)
+}
+
+#' Density of a mixture of normals
+#'
+#' @param x The quantile.
+#' @param mixdense An object of class \code{\link[ashr]{normalmix}}.
+#'
+#' @author David Gerard
+#'
+#' @export
+#'
+dnormalmix <- function(x, mixdense) {
+  assertthat::are_equal(class(mixdense), "normalmix")
+  k <- length(mixdense$pi)
+
+  dvec <- rep(NA, length = length(x))
+  for (index in 1:length(x)) {
+    univariate_dense <- stats::dnorm(x = x[index], mean = mixdense$mean, sd = mixdense$sd)
+    univariate_dense[is.infinite(univariate_dense)] <- 1
+    dvec[index] <- sum(mixdense$pi * univariate_dense)
+  }
+
+  return(dvec)
 }
 
 
