@@ -5,6 +5,7 @@ test_that("plot.mouthwash works", {
   plot(mout)
   mout <- readRDS(file = "unif_mout.RDS")
   plot(mout)
-
+  bout <- readRDS(file = "bout.RDS")
+  plot(bout)
 }
 )

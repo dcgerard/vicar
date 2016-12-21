@@ -257,6 +257,8 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     val$alphahat <- t(rotate_out$alpha)
     val$sig_diag <- rotate_out$sig_diag
 
+    class(val) <- "backwash"
+
     return(val)
 }
 
