@@ -122,7 +122,7 @@ roc_out <- list(
   pROC::roc(response = which_null, predictor = c(ruv4_vicar$pvalues)),
   pROC::roc(response = which_null, predictor = c(ruv4_cate$beta.p.value)),
   pROC::roc(response = which_null, predictor = c(ruv4_ruv$p)),
-  pROC::roc(response = which_null[!ctl], predictor = c(ruvb_vicar$lfsr2)))
+  pROC::roc(response = which_null, predictor = c(ruvb_vicar$lfsr2)))
 name_vec <- c("MOUTHWASH", "BACKWASH", "CATErr", "SVA", "LEAPP", "RUV2", "RUV3", "RUV4v", "RUV4c", "RUV4r", "RUVb")
 names(roc_out) <- name_vec
 

@@ -36,25 +36,44 @@ test_that("see if ruvb works ok. In particular, if uniform prior returns same re
                          return_log = FALSE,
                          fa_args = list(nsamp = 1000, thin = 1, display_progress = FALSE))
 
+    set.seed(73)
+    return_list3 <- ruvb(Y = Y, X = X, ctl = ctl, k = q,
+                        cov_of_interest = cov_of_interest,
+                        include_intercept = FALSE, prior_fun = NULL,
+                        fa_args = list(nsamp = 1000, thin = 1, display_progress = FALSE),
+                        pad_na = FALSE)
 
 
+    ## Check that prior specification is coded up correctly -----------------------------
     expect_equal(return_list$lfsr1, return_list2$lfsr1)
     expect_equal(return_list$means, return_list2$means)
     expect_equal(return_list$sd, return_list2$sd, tol = 10 ^ -3)
     expect_equal(return_list$lfsr2, return_list2$lfsr2, tol = 10 ^ -3)
 
-    expect_true(sum(abs(return_list$lower - return_list2$lower)) /
-                sum(abs(return_list$lower)) < 0.02)
-    expect_true(sum(abs(return_list$upper - return_list2$upper)) /
-                sum(abs(return_list$upper)) < 0.02)
+    expect_true(sum(abs(return_list$lower - return_list2$lower), na.rm = TRUE) /
+                sum(abs(return_list$lower), na.rm = TRUE) < 0.02)
+    expect_true(sum(abs(return_list$upper - return_list2$upper), na.rm = TRUE) /
+                sum(abs(return_list$upper), na.rm = TRUE) < 0.02)
+
+    ## Check that padding the NA's is coded up correctly --------------------------------
+
+    expect_equal(return_list3$means, return_list$means[, !ctl, drop = FALSE])
+    expect_equal(return_list3$sd, return_list$sd[, !ctl, drop = FALSE])
+    expect_equal(return_list3$medians, return_list$medians[, !ctl, drop = FALSE])
+    expect_equal(return_list3$upper, return_list$upper[, !ctl, drop = FALSE])
+    expect_equal(return_list3$lower, return_list$lower[, !ctl, drop = FALSE])
+    expect_equal(return_list3$lfsr1, return_list$lfsr1[, !ctl, drop = FALSE])
+    expect_equal(return_list3$lfsr2, return_list$lfsr2[, !ctl, drop = FALSE])
+    expect_equal(return_list3$svalues1, return_list$svalues1[, !ctl, drop = FALSE])
+    expect_equal(return_list3$svalues2, return_list$svalues2[, !ctl, drop = FALSE])
+    expect_equal(return_list3$t, return_list$t[, !ctl, drop = FALSE])
 
 
-
-    cout <- cate::cate.fit(X.primary = X[, cov_of_interest, drop = FALSE],
-                           X.nuis = X[, -cov_of_interest, drop = FALSE],
-                           Y = Y, r = q, adj.method = "nc", nc = ctl)
-    cate_sebetahat <- c(sqrt(cout$beta.cov.row * cout$beta.cov.col) /
-                        sqrt(nrow(X)))
+    # cout <- cate::cate.fit(X.primary = X[, cov_of_interest, drop = FALSE],
+    #                        X.nuis = X[, -cov_of_interest, drop = FALSE],
+    #                        Y = Y, r = q, adj.method = "nc", nc = ctl)
+    # cate_sebetahat <- c(sqrt(cout$beta.cov.row * cout$beta.cov.col) /
+    #                     sqrt(nrow(X)))
 
     ## library(ggplot2)
     ## dat <- data.frame(beta = c(beta[cov_of_interest, !ctl]),

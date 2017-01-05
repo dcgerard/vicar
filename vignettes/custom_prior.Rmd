@@ -75,8 +75,8 @@ ruvbout_unif <- ruvb(Y = Y, X = X, ctl = ctl, k = num_sv, cov_of_interest = 2,
 
 They give about the same AUC's.
 ```{r}
-aucnorm <- pROC::roc(response = which_null[!ctl], predictor = c(ruvbout$lfsr2))$auc
-aucunif <- pROC::roc(response = which_null[!ctl], predictor = c(ruvbout_unif$lfsr2))$auc
+aucnorm <- pROC::roc(response = which_null, predictor = c(ruvbout$lfsr2))$auc
+aucunif <- pROC::roc(response = which_null, predictor = c(ruvbout_unif$lfsr2))$auc
 aucdat <- data.frame(Prior = c("Normal", "Uniform"), AUC = c(aucnorm, aucunif))
 knitr::kable(x = aucdat)
 ```

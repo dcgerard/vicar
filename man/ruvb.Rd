@@ -7,7 +7,7 @@
 ruvb(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked, fa_args = list(),
   cov_of_interest = ncol(X), include_intercept = TRUE,
   return_mcmc = FALSE, prior_fun = NULL, prior_args = list(),
-  return_log = NULL)
+  return_log = NULL, pad_na = TRUE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -68,6 +68,10 @@ of the density (\code{"TRUE"}) or not (\code{"FALSE"})? For
 numerical stability reasons, you should probably make
 \code{prior_fun} return the log of the density and set this to
 \code{"TRUE"}.}
+
+\item{pad_na}{A logical. Should the indexing of the posterior summaries
+be the same as the data (\code{TRUE}) or should the control genes
+be removed (\code{FALSE})?}
 }
 \value{
 A list with with some or all of the following elements.

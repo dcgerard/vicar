@@ -76,6 +76,9 @@
 #'     \code{prior_fun} return the log of the density and set this to
 #'     \code{"TRUE"}.
 #' @param prior_args A list of arguments to pass to \code{prior_fun}.
+#' @param pad_na A logical. Should the indexing of the posterior summaries
+#'     be the same as the data (\code{TRUE}) or should the control genes
+#'     be removed (\code{FALSE})?
 #'
 #' @return A list with with some or all of the following elements.
 #'
@@ -180,7 +183,7 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
                  fa_args = list(), cov_of_interest = ncol(X),
                  include_intercept = TRUE, return_mcmc = FALSE,
                  prior_fun = NULL, prior_args = list(),
-                 return_log = NULL) {
+                 return_log = NULL, pad_na = TRUE) {
 
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.numeric(Y))
@@ -239,9 +242,9 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
         return_list$upper   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.975))
         return_list$lower   <- apply(betahat_post, c(1, 2), stats::quantile, c(0.025))
         return_list$lfsr1   <- apply(betahat_post, c(1, 2), calc_lfsr)
-        return_list$t       <- return_list$means / return_list$sd
         pless               <- stats::pnorm(q = 0, mean = return_list$means, sd = return_list$sd)
         return_list$lfsr2   <- pmin(pless, 1 - pless)
+        return_list$t       <- return_list$means / return_list$sd
     } else if (is.null(return_log)) {
         stop("if prior_fun is not NULL, then return_log needs to be a logical")
     } else {
@@ -268,6 +271,7 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
         return_list$lfsr1   <- apply(betahat_post, c(1, 2), calc_lfsr_g, g = g_vec)
         pless               <- stats::pnorm(q = 0, mean = return_list$means, sd = return_list$sd)
         return_list$lfsr2   <- pmin(pless, 1 - pless)
+        return_list$t       <- return_list$means / return_list$sd
     }
 
     lfsr1_order <- order(c(return_list$lfsr1))
@@ -282,6 +286,51 @@ ruvb <- function(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked,
                        nrow = nrow(return_list$lfsr2), ncol = ncol(return_list$lfsr2))
     return_list$svalues2 <- svalues2
 
+
+    ## pad with NA's ---------------------------------------------------------
+    if (pad_na) {
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$means
+      return_list$means <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$sd
+      return_list$sd <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$medians
+      return_list$medians <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$lower
+      return_list$lower <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$upper
+      return_list$upper <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$lfsr1
+      return_list$lfsr1 <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$lfsr2
+      return_list$lfsr2 <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$svalues1
+      return_list$svalues1 <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$svalues2
+      return_list$svalues2 <- temp
+
+      temp <- matrix(NA, nrow = length(cov_of_interest), ncol = length(ctl))
+      temp[, !ctl] <- return_list$t
+      return_list$t <- temp
+    }
+
+    ## Return MCMC output? --------------------------------------------------------------
     if (return_mcmc) {
         return_list$betahat_post <- betahat_post
         return_list$fa <- faout
