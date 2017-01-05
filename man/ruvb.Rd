@@ -188,8 +188,7 @@ Y <- X \%*\% B + Z \%*\% A + E
 ruvbout <- ruvb(Y = Y, X = X, k = k, ctl = ctl, cov_of_interest = 2,
                 include_intercept = FALSE,
                 fa_args = list(nsamp = 1000))
-ruvblfsr <- rep(NA, length = ncol(Y))
-ruvblfsr[!ctl] <- ruvbout$lfsr2
+ruvblfsr <- ruvbout$lfsr2
 
 ## Compare to CATE/RUV4 ---------------------------------------------------
 ruv4out <- cate::cate.fit(Y = Y, X.primary = X[, 2, drop = FALSE],
