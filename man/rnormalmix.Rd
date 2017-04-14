@@ -17,4 +17,3 @@ Random draw from a mixture of normals.
 \author{
 David Gerard
 }
-

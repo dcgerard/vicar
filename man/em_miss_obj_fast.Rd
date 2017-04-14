@@ -21,12 +21,11 @@ vectorization of alpha. The last elements are sig_diag.}
 \description{
 A faster version of em_miss_obj.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{em_miss_fix_fast}} for a fixed point iteration
     that will maximize this function. \code{\link{em_miss_obj}} for
     the slower version of this function.
 }
-
+\author{
+David Gerard
+}

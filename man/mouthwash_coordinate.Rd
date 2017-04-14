@@ -35,8 +35,7 @@ number of hidden confounders.}
 
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
-proportions. This can only be specified if \code{grid_seq} is
-also specified.}
+proportions.}
 
 \item{degrees_freedom}{The degrees of freedom of the t-distribution
 if \code{likelihood = "t"}.}
@@ -58,4 +57,3 @@ Set \code{degrees_freedom = Inf} if you want to use a normal likelihood.
 \author{
 David Gerard
 }
-

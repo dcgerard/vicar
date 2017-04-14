@@ -28,4 +28,3 @@ Update for the "g" hyperparameter.
 \author{
 David Gerard
 }
-

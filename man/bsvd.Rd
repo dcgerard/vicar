@@ -60,12 +60,11 @@ the RUV4 solution.
 The rejection sampler in \code{\link[rstiefel]{rbmf.matrix.gibbs}}
 almost always stalls, so I am removing it from exports for now.
 }
-\author{
-David Gerard
-}
 \references{
 Hoff, P. D. (2012). Model averaging and dimension
     selection for the singular value decomposition. Journal of the
     American Statistical Association.
 }
-
+\author{
+David Gerard
+}

@@ -24,4 +24,3 @@ Faster version of \code{\link{em_miss_fix}}.
 \author{
 David Gerard
 }
-

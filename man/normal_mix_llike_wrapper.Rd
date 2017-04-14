@@ -27,8 +27,7 @@ grid_seq in \code{\link{mouthwash_second_step}} if
 
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
-proportions. This can only be specified if \code{grid_seq} is
-also specified.}
+proportions.}
 
 \item{scale_var}{Not used. Only included in the arguments for
 SQUAREM application.}
@@ -36,10 +35,9 @@ SQUAREM application.}
 \description{
 This returns the negative log-liklihood for SQUAREM to use.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{normal_mix_llike}}
 }
-
+\author{
+David Gerard
+}

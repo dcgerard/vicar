@@ -265,9 +265,6 @@ graphics::legend("bottomright", legend = c("MOUTHWASH", "ASH"), col = c(4, 3),
                  lty = c(1, 2))
 
 }
-\author{
-David Gerard
-}
 \seealso{
 Factor analyses available in the \code{vicar} package:
     \code{\link{pca_naive}}, \code{\link{fa_ml}}.
@@ -275,4 +272,6 @@ Factor analyses available in the \code{vicar} package:
 \code{\link{backwash}} for a similar method that puts a prior on the
     unobserved confounders rather than maximizes over them.
 }
-
+\author{
+David Gerard
+}

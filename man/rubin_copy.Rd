@@ -25,4 +25,3 @@ Very inneficient copy of rubin and thayer iteration mostly meant for debugging.
 \author{
 David Gerard
 }
-

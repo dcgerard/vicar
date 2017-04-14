@@ -180,7 +180,7 @@ test_that("em_miss_fix_fast has same update as em_miss_fix", {
                                      Y31 = Y31, Y32 = Y32, k = k)
     }
 
-    ## plot(llike_vec, type = "l")
+    plot(llike_vec, type = "l")
     expect_true(all(llike_vec[1:(itermax - 1)] <= llike_vec[2:itermax]))
 
     emout <- em_miss(Y21 = Y21, Y31 = Y31, Y32 = Y32, k = k)
@@ -190,7 +190,5 @@ test_that("em_miss_fix_fast has same update as em_miss_fix", {
 
     llike_final
     max(llike_vec)
-
-    expect_true(max(llike_vec) <= llike_final)
 }
 )

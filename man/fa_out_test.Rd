@@ -17,4 +17,3 @@ Test output form fa_func.
 \author{
 David Gerard
 }
-

@@ -24,4 +24,3 @@ Quantile normalize stats to their theoretical distributions.
 \author{
 David Gerard
 }
-

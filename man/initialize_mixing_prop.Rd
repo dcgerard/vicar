@@ -23,4 +23,3 @@ Function for initializing mixing proportions.
 \author{
 David Gerard
 }
-

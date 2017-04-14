@@ -17,4 +17,3 @@ Density of a mixture of normals
 \author{
 David Gerard
 }
-

@@ -8,7 +8,7 @@ mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, lambda_seq,
   tau2_seq = NULL, a_seq = NULL, b_seq = NULL, mixing_dist = c("normal",
   "uniform", "+uniform", "sym_uniform"), likelihood = c("normal", "t"),
   pi_init_type = c("zero_conc", "uniform", "random"), scale_var = TRUE,
-  degrees_freedom, plot_update = FALSE, sprop = 0)
+  degrees_freedom = NULL, plot_update = FALSE, sprop = 0)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The OLS estimates of the
@@ -23,8 +23,7 @@ number of hidden confounders.}
 
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
-proportions. This can only be specified if \code{grid_seq} is
-also specified.}
+proportions.}
 
 \item{tau2_seq}{The grid of variances of the mixing distributions
 if \code{mixing_dist = "normal"}. Only one of \code{tau2_seq}
@@ -73,4 +72,3 @@ The second step of MOUTHWASH.
 \author{
 David Gerard
 }
-

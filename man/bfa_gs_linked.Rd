@@ -62,10 +62,9 @@ This also has parameter expansion impelemented and is written in
 compiled code. To see a slower version without paramaeter epansion,
 go to \code{\link{bfl}}.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{bfa_gs_linked}}.
 }
-
+\author{
+David Gerard
+}

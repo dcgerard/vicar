@@ -47,4 +47,3 @@ A fixed point iteration for CAW.
 \author{
 David Gerard
 }
-

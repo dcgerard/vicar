@@ -27,4 +27,3 @@ Update for the variational density of v.
 \author{
 David Gerard
 }
-

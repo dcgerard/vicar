@@ -47,4 +47,3 @@ Fixed point iteration when using t errors and a mixture of uniforms prior.
 \author{
 David Gerard
 }
-

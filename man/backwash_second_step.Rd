@@ -37,4 +37,3 @@ Second step of the backwash procedure.
 \author{
 David Gerard
 }
-

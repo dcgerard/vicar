@@ -17,4 +17,3 @@ Plotting method for \code{\link{backwash}}.
 \author{
 David Gerard
 }
-

@@ -39,9 +39,6 @@ likelihood, there is a simple latent variable representation that
 allows us to develop an EM algorithm. This is a very similar
 procedure to Lange et al (1989).
 }
-\author{
-David Gerard
-}
 \references{
 Lange, Kenneth L., Roderick JA Little, and Jeremy MG
     Taylor. "Robust statistical modeling using the t distribution."
@@ -53,4 +50,6 @@ Lange, Kenneth L., Roderick JA Little, and Jeremy MG
     this function maximizes, \code{\link{tregress_fix}} for the
     fixed point iteration that this function calls.
 }
-
+\author{
+David Gerard
+}

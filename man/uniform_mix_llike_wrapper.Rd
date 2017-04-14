@@ -42,4 +42,3 @@ This returns the negative log-likelihood for use in SQUAREM.
 \author{
 David Gerard
 }
-

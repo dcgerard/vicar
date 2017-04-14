@@ -32,4 +32,3 @@ Fixed point iteration for em algorithm with missing block.
 \author{
 David Gerard
 }
-

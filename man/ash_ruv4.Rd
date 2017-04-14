@@ -120,9 +120,6 @@ procedure, we estimate the coefficients using Adaptive SHrinkage
 coefficients of one covariate can be estimated using ASH. The rest
 are regressed out using OLS.
 }
-\author{
-David Gerard
-}
 \references{
 Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
@@ -147,4 +144,6 @@ Gagnon-Bartsch, J., Laurent Jacob, and Terence
     "Confounder Adjustment in Multiple Hypotheses Testing."
     arXiv preprint arXiv:1508.04178 (2015).
 }
-
+\author{
+David Gerard
+}

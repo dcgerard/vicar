@@ -32,4 +32,3 @@ The objective function for em with a missing block.
 \author{
 David Gerard
 }
-

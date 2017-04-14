@@ -44,4 +44,3 @@ Log-likelihood when using t errors and mixture of uniforms prior.
 \author{
 David Gerard
 }
-

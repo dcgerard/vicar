@@ -82,4 +82,3 @@ QR rotation to independent models.
 \author{
 David Gerard
 }
-

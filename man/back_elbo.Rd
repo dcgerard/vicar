@@ -49,4 +49,3 @@ The Evidence lower bound.
 \author{
 David Gerard
 }
-

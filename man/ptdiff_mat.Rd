@@ -16,10 +16,9 @@ ptdiff_mat(X, Y, degrees_freedom)
 \description{
 More stable way to calculate differences in T cdfs when input is a matrix.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{ptdiff}}.
 }
-
+\author{
+David Gerard
+}

@@ -22,4 +22,3 @@ equivalent), depending on which one is more numerically stable.
 \author{
 David Gerard
 }
-

@@ -43,10 +43,9 @@ will be unchanged.}
 \description{
 This is more friendly than \code{\link{ruvimpute}}.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{ruvimpute}}, \code{\link{em_miss}}.
 }
-
+\author{
+David Gerard
+}

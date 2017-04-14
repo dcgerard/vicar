@@ -24,4 +24,3 @@ A basic normal prior density function.
 \author{
 David Gerard
 }
-

@@ -21,14 +21,13 @@ errors.}
 length of betahat_ols. The number of columns should equal the
 number of hidden confounders.}
 
-\item{tau2_seq}{The grid of variances of the mixing distributions
-if \code{mixing_dist = "normal"}. Only one of \code{tau2_seq}
-or \code{a_seq} and \code{b_seq} need be specified.}
+\item{tau2_seq}{The grid of variances. This is the same thing as
+grid_seq in \code{\link{mouthwash_second_step}} if
+\code{likelihood = "normal"}.}
 
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
-proportions. This can only be specified if \code{grid_seq} is
-also specified.}
+proportions.}
 
 \item{scale_var}{Should we optimize over a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}
@@ -36,10 +35,9 @@ parameter (\code{TRUE}) or not (\code{FALSE})?}
 \description{
 Wrapper for \code{\link{normal_mix_fix}} so that I can use SQUAREM.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{normal_mix_fix}}
 }
-
+\author{
+David Gerard
+}

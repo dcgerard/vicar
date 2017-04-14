@@ -19,4 +19,3 @@ Calculate moments of pointmass rv's.
 \author{
 David Gerard
 }
-

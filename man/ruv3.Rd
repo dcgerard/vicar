@@ -210,9 +210,6 @@ graphics::legend("bottomright", legend = c("RUV2", "RUV3", "RUV4"),
                  col = c(3, 1, 4), lty = 1)
 
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{vruv4}}, \code{\link[cate]{cate}}, \code{\link[ruv]{RUV4}} are
     all different versions of RUV4.
@@ -221,4 +218,6 @@ David Gerard
 
     \code{\link{ruvimpute}} is a generalization of RUV2 and RUV4.
 }
-
+\author{
+David Gerard
+}

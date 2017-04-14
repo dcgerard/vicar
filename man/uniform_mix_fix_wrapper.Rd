@@ -42,4 +42,3 @@ Wrapper for \code{\link{uniform_mix_fix}}, mostly so I can use SQUAREM.
 \author{
 David Gerard
 }
-

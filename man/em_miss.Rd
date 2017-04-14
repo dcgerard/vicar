@@ -32,4 +32,3 @@ EM algorithm for factor analysis with missing block matrix.
 \author{
 David Gerard
 }
-

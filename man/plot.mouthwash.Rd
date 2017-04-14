@@ -14,10 +14,9 @@
 \description{
 This will produce
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{mouthwash}}.
 }
-
+\author{
+David Gerard
+}

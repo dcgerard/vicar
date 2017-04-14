@@ -29,4 +29,3 @@ Given mixing proportions \code{pi_vals}, and mixing standard
 deviations (not variances) \code{sd_seq}, this function will draw
 \code{p} samples from the mean zero mixture of normals.
 }
-

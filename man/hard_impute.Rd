@@ -32,4 +32,3 @@ My version of hard imputation that begins at the ruv estimates
 \author{
 David Gerard
 }
-

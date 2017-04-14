@@ -15,10 +15,9 @@ A matrix with the missing values imputed.
 \description{
 Wrapper for missForest package.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link[missForest]{missForest}}
 }
-
+\author{
+David Gerard
+}

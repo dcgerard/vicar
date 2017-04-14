@@ -15,10 +15,9 @@
 For the traceplots, the blue dashed line is a non-parameteric smoother.
 This should let you see if there are any major trends in the traceplot.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{ruvb}}
 }
-
+\author{
+David Gerard
+}

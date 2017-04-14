@@ -16,10 +16,9 @@ ptdiff_mat_log(X, Y, degrees_freedom)
 \description{
 Log version of \code{\link{ptdiff_mat}}.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{ptdiff_mat}}.
 }
-
+\author{
+David Gerard
+}

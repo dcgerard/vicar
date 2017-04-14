@@ -61,9 +61,6 @@ differences: (1) the prior is order invariant (though this makes
 the factors and factor loadings unidentified), and (2) we place
 hierarchical priors on the uniquenesses (variances).
 }
-\author{
-David Gerard
-}
 \references{
 Ghosh, Joyee, and David
     B. Dunson. "Default prior distributions and efficient posterior
@@ -74,4 +71,6 @@ Ghosh, Joyee, and David
 \seealso{
 \code{\link{gdfa}} for the slower R implementation.
 }
-
+\author{
+David Gerard
+}

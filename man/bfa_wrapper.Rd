@@ -30,10 +30,9 @@ discard.}
 This is just a wrapper for using the \code{\link[bfa]{bfa_gauss}}
 from the bfa package. Default settings are used.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link[bfa]{bfa_gauss}} for the workhorse function.
 }
-
+\author{
+David Gerard
+}

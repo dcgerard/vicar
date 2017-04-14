@@ -25,4 +25,3 @@ some constant.
 For separate parts of hte likelihood, this code borrows heavily
 from the function \code{\link[cate]{fa.em}}.
 }
-

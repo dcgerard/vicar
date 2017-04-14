@@ -106,4 +106,3 @@ Quoth the Raven "Caw, caw!"
 \author{
 David Gerard
 }
-

@@ -15,4 +15,3 @@ the upper triangular matrix has positive diagonal elements. This
 one will only work if the column dimension is less than or equal to
 the row dimension.
 }
-

@@ -30,12 +30,11 @@ of the t-distribution.}
 Fixed point iteration for EM algorithm for regression with
 t-errors where the variance is known up to scale.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{tregress_em}} where this function is called,
     \code{\link{tregress_obj}} for the objective function that this
     fixed-point iteration increases.
 }
-
+\author{
+David Gerard
+}

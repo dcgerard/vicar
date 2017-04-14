@@ -31,4 +31,3 @@ This is mostly so I can run \code{stats::optim} with just
 \author{
 David Gerard
 }
-

@@ -23,4 +23,3 @@ and 1.
 \author{
 David Gerard
 }
-

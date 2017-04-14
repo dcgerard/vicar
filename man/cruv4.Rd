@@ -41,4 +41,3 @@ version.
 \author{
 David Gerard
 }
-

@@ -30,4 +30,3 @@ estimated jointly.
 \author{
 David Gerard
 }
-

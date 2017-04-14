@@ -25,11 +25,10 @@ effect.}
 \description{
 This is mostly for use in SQUAREM.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{pca_ruv2}} \code{\link{pcaruv2_fix}} for the
     fixed point iteration that maximizes this objective function.
 }
-
+\author{
+David Gerard
+}

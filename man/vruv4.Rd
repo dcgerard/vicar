@@ -243,9 +243,6 @@ graphics::plot(ruv4olsp, vruv4olsp)
 cor(c(ruv4olsp), c(vruv4olsp), method = "kendall")
 
 }
-\author{
-David Gerard
-}
 \references{
 Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
@@ -274,4 +271,6 @@ Gagnon-Bartsch, J., Laurent Jacob, and Terence
 
     \code{\link[cate]{cate}} For the version of RUV4 in the cate package.
 }
-
+\author{
+David Gerard
+}

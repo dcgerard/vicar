@@ -19,4 +19,3 @@ Wrapper for \code{prior_fun} so that can be called in apply.
 \author{
 David Gerard
 }
-

@@ -39,7 +39,7 @@ adjustment when one does not have access to control genes.
     If the vignette code does not work, then you probably did not build them during install. See
     \url{https://github.com/dcgerard/vicar#vignettes}.
 }
+
 \author{
 David Gerard
 }
-

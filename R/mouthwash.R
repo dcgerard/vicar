@@ -396,6 +396,9 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 #' @param plot_update A logical. Should I plot the the path of the
 #'     log-likelihood (\code{TRUE}) or not (\code{FALSE})? Only
 #'     applicable when \code{mixing_dist} is not \code{"normal"}.
+#' @param lambda_seq A numeric vector with elements all greater than
+#'     or equal to 1. These are the tuning parameters for the mixing
+#'     proportions.
 #'
 #'
 #' @author David Gerard
@@ -408,14 +411,30 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                   mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform"),
                                   likelihood = c("normal", "t"),
                                   pi_init_type = c("zero_conc", "uniform", "random"),
-                                  scale_var = TRUE, degrees_freedom,
+                                  scale_var = TRUE,
+                                  degrees_freedom = NULL,
                                   plot_update = FALSE,
                                   sprop = 0) {
+
 
     ## Make sure input is correct -------------------------------------------------
     mixing_dist  <- match.arg(mixing_dist)
     likelihood   <- match.arg(likelihood)
     pi_init_type <- match.arg(pi_init_type)
+
+    ## Check df
+    if (likelihood == "normal") {
+      if (!is.null(degrees_freedom)) {
+        if (degrees_freedom != Inf) {
+         message('degrees_freedom provided but likelihood = "normal". Ignoring degrees_freedom.')
+        }
+      }
+      degrees_freedom <- Inf
+    } else if (likelihood == "t") {
+      if (is.null(degrees_freedom)) {
+        stop('likelihood = "t" but degrees_freedom not provided')
+      }
+    }
 
     if (mixing_dist == "normal") {
         assertthat::assert_that(!is.null(tau2_seq))

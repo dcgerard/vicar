@@ -19,4 +19,3 @@ Calculate quantiles of pointmass rv's.
 \author{
 David Gerard
 }
-

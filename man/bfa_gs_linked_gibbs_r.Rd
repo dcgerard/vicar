@@ -56,4 +56,3 @@ R implementation of \code{\link{bfa_gs_linked_gibbs}}.
 \author{
 David Gerard
 }
-

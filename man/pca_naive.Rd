@@ -19,4 +19,3 @@ rather than by \code{nrow(Y)}. I allow \code{r = 0}.
 \author{
 David Gerard
 }
-

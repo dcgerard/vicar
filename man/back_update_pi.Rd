@@ -21,4 +21,3 @@ Update for the prior mixing proportions.
 \author{
 David Gerard
 }
-

@@ -25,4 +25,3 @@ Hierarchical prior density function as described in Gerard and Stephens (2016)
 \author{
 David Gerard
 }
-

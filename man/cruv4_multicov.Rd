@@ -45,4 +45,3 @@ RUV4's second step.
 \author{
 David Gerard
 }
-

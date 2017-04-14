@@ -242,9 +242,6 @@ graphics::legend("bottomright", legend = c("Null", "Non-null"), col = c(4, 3),
                  pch = 1)
 
 }
-\author{
-David Gerard
-}
 \references{
 Matthew Stephens. False discovery rates: a new deal. Biostatistics, 2016. doi: \href{http://dx.doi.org/10.1093/biostatistics/kxw041}{10.1093/biostatistics/kxw041}
 }
@@ -252,4 +249,6 @@ Matthew Stephens. False discovery rates: a new deal. Biostatistics, 2016. doi: \
 \code{\link{mouthwash}} For a similar method that maximizes over the hidden confounders
     rather than puts a prior on them.
 }
-
+\author{
+David Gerard
+}

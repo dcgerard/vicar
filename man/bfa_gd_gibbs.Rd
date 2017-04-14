@@ -72,4 +72,3 @@ Fast Gibbs sampler for Bayesian factor analysis.
 \author{
 David Gerard
 }
-

@@ -32,10 +32,9 @@ that is the rank of the factor model if assuming a factor model.
 \code{fa_func} also needs to return \code{Y22_array} a three-way array whose first two dimensions are
 k and (p - m).
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{ruvb}}
 }
-
+\author{
+David Gerard
+}

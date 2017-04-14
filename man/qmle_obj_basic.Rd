@@ -23,4 +23,3 @@ Basic no optimized code objective function.
 \author{
 David Gerard
 }
-

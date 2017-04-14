@@ -58,4 +58,3 @@ very well in practice.
 \author{
 David Gerard
 }
-

@@ -29,4 +29,3 @@ EM for mixtures of normals prior.
 \author{
 David Gerard
 }
-

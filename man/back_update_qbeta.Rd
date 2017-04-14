@@ -32,4 +32,3 @@ Update for the variational density of beta
 \author{
 David Gerard
 }
-

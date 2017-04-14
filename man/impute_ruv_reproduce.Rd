@@ -27,4 +27,3 @@ This is a proof of concept function to inegrate
 \author{
 David Gerard
 }
-

@@ -27,4 +27,3 @@ given sig_diag and alpha.
 \author{
 David Gerard
 }
-

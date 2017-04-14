@@ -31,8 +31,7 @@ grid_seq in \code{\link{mouthwash_second_step}} if
 
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
-proportions. This can only be specified if \code{grid_seq} is
-also specified.}
+proportions.}
 }
 \description{
 Penalized MOUTHWASH likelihood when using a mixture of normals.
@@ -40,4 +39,3 @@ Penalized MOUTHWASH likelihood when using a mixture of normals.
 \author{
 David Gerard
 }
-

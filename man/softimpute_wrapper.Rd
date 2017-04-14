@@ -18,10 +18,9 @@ A matrix with the missing values imputed.
 \description{
 A wrapper for using the softImpute function from the softImpute package.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link[softImpute]{softImpute}}
 }
-
+\author{
+David Gerard
+}

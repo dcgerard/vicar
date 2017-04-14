@@ -146,9 +146,6 @@ You can provide your own factor analysis, but it must include an
 estimate for the variance inflation parameter. This turns out to be
 pretty hard. The way I do it now seems to work OK.
 }
-\author{
-David Gerard
-}
 \references{
 Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
@@ -164,4 +161,6 @@ Gagnon-Bartsch, J., Laurent Jacob, and Terence
 \code{\link{pca_2step}} for the special factor analysis
     that results in variance inflation in RUV2.
 }
-
+\author{
+David Gerard
+}

@@ -33,4 +33,3 @@ This is mostly so that I can use the SQUAREM package.
 \author{
 David Gerard
 }
-

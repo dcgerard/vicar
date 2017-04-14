@@ -217,11 +217,10 @@ graphics::legend("bottomright", legend = c("RUVB", "RUV4"), col = c(3, 4),
 graphics::abline(0, 1, lty = 2)
 
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{bfa_gs}}, \code{\link{bfl}}, and
     \code{bfa_wrapper} for implemented Bayesian factor analyses.
 }
-
+\author{
+David Gerard
+}

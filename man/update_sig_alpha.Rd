@@ -23,4 +23,3 @@ Fast update for sig_diag and alpha.
 \author{
 David Gerard
 }
-

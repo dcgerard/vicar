@@ -15,10 +15,9 @@ A matrix with the missing values imputed.
 \description{
 Wrapper for impute.knn
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link[impute]{impute.knn}}
 }
-
+\author{
+David Gerard
+}

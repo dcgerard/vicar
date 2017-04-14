@@ -15,4 +15,3 @@ Empirical estimate of lfsr based on posterior samples.
 \author{
 David Gerard
 }
-

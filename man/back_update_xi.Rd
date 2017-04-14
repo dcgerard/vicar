@@ -37,4 +37,3 @@ v.}
 \description{
 Update for the variance scaling parameter.
 }
-

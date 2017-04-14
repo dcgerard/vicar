@@ -71,9 +71,6 @@ Hence, this is just a wrapper for \code{\link{vruv4}}, but with a
 special choice for the number of confounders and forcing
 \code{limmashrink = TRUE}.
 }
-\author{
-David Gerard
-}
 \references{
 Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
@@ -81,4 +78,6 @@ Gagnon-Bartsch, J., Laurent Jacob, and Terence
     Berkeley: Department of Statistics. University of California
     (2013).
 }
-
+\author{
+David Gerard
+}

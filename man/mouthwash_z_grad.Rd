@@ -41,12 +41,11 @@ freedom of the t-distribution.}
 \description{
 Gradient wrt z of \code{\link{uniform_mix_llike}}.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{uniform_mix_llike}} for the objective function
     and \code{\link{mouthwash_coordinate}} for where this function
     is used.
 }
-
+\author{
+David Gerard
+}

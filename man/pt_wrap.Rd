@@ -19,4 +19,3 @@ t. Defaults to 1.}
 \description{
 Wrapper for pt with a non-zero mena and non-1 scale parameter.
 }
-

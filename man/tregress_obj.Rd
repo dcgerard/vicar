@@ -30,12 +30,11 @@ of the t-distribution.}
 The likelihood for regression with t-errors where the variance is
 known up to scale.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{tregress_em}} where this function is called,
     \code{\link{tregress_fix}} for the fixed point iteration that
     increases this objective function.
 }
-
+\author{
+David Gerard
+}

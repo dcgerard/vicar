@@ -21,4 +21,3 @@ Utility function for updating F in \code{gdfa}.
 \seealso{
 \code{\link{gdfa}}
 }
-

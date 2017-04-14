@@ -62,9 +62,6 @@ precisions.}
 See \code{\link{bfa_gs}} for a description. This is the same thing
 but a slower R implementation.
 }
-\author{
-David Gerard
-}
 \references{
 Ghosh, Joyee, and David
     B. Dunson. "Default prior distributions and efficient posterior
@@ -75,4 +72,6 @@ Ghosh, Joyee, and David
 \seealso{
 \code{\link{bfa_gs}}
 }
-
+\author{
+David Gerard
+}

@@ -102,9 +102,6 @@ Adaptive SHrinkage (ASH) (Stephens, 2016). In the current
 implementation, only the coefficients of one covariate can be
 estimated using ASH. The rest are regressed out using OLS.
 }
-\author{
-David Gerard
-}
 \references{
 Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
@@ -121,4 +118,6 @@ Gagnon-Bartsch, J., Laurent Jacob, and Terence
     \code{\link[ashr]{ash.workhorse}} for the adaptive shrinkage
     method.
 }
-
+\author{
+David Gerard
+}

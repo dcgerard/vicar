@@ -43,4 +43,3 @@ arbitrary.
 \author{
 David Gerard
 }
-

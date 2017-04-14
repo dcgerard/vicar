@@ -47,4 +47,3 @@ Constructs an overall matrix, then applies a given imputation function.
 \author{
 David Gerard
 }
-

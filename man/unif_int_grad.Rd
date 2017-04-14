@@ -41,4 +41,3 @@ Gradient wrt z2 of intermediate function in EM.
 \author{
 David Gerard
 }
-

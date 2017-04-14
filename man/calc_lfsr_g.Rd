@@ -17,4 +17,3 @@ Same as \code{\link{calc_lfsr}} except with a prior specification.
 \author{
 David Gerard
 }
-

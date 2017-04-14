@@ -33,8 +33,7 @@ grid_seq in \code{\link{mouthwash_second_step}} if
 
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
-proportions. This can only be specified if \code{grid_seq} is
-also specified.}
+proportions.}
 
 \item{scale_var}{Should we optimize over a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}
@@ -56,4 +55,3 @@ mixture of normals prior.
 \author{
 David Gerard
 }
-

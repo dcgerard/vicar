@@ -37,4 +37,3 @@ which differ by a scale factor from the rest of the rows.
 \author{
 David Gerard
 }
-

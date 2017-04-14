@@ -89,9 +89,6 @@ variances of the genes of interest (the non-control genes) you must
 use hierarchical shrinkage of the variances. That is, you must set
 \code{limmashrink = TRUE}.
 }
-\author{
-David Gerard
-}
 \references{
 Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
@@ -103,4 +100,6 @@ Gagnon-Bartsch, J., Laurent Jacob, and Terence
     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
     research, 27(4):509-540, 1992.
 }
-
+\author{
+David Gerard
+}

@@ -24,4 +24,3 @@ Wrapper for \code{\link[ashr]{ash.workhorse}} for use in \code{\link{caw}}.
 \author{
 David Gerard
 }
-

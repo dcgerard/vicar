@@ -14,13 +14,12 @@ fa_ml(Y, r)
 \description{
 Wrapper for cate's fa.em function.
 }
-\author{
-David Gerard
-}
 \references{
 Jingshu Wang and Qingyuan Zhao (2015). cate: High
     Dimensional Factor Analysis and Confounder Adjusted Testing and
     Estimation. R package version
     1.0.4. https://CRAN.R-project.org/package=cate
 }
-
+\author{
+David Gerard
+}

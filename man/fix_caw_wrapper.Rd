@@ -37,4 +37,3 @@ A wrapper for \code{\link{fix_caw}} so that I can use SQUAREM.
 \author{
 David Gerard
 }
-

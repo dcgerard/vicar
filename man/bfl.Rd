@@ -58,10 +58,9 @@ There is no parameter expansion in this one. To see one with
 parameter expansion, and a much faster version, see
 \code{\link{bfa_gs_linked}}.
 }
-\author{
-David Gerard
-}
 \seealso{
 \code{\link{bfa_gs_linked}}.
 }
-
+\author{
+David Gerard
+}

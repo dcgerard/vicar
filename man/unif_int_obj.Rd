@@ -41,4 +41,3 @@ Intermediate objective function in EM.
 \author{
 David Gerard
 }
-
