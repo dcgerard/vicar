@@ -201,8 +201,13 @@ mouthwash_z_grad <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, 
 
     fbar_mat <- tdiff_mat / denom_mat
 
-    fbar_mat[, zero_spot] <- dense_vec * resid_vec * (degrees_freedom + 1) /
+    if (degrees_freedom == Inf) {
+      fbar_mat[, zero_spot] <- dense_vec * resid_vec / (xi * S_diag)
+    } else {
+      fbar_mat[, zero_spot] <- dense_vec * resid_vec * (degrees_freedom + 1) /
         (degrees_freedom * xi * S_diag + resid_vec ^ 2)
+    }
+
 
     ## calcualte weights for rows of alpha_tilde ---------------------------
     weight_vec <- rowSums(sweep(fbar_mat, MARGIN = 2, STATS = pi_vals, FUN = `*`)) /

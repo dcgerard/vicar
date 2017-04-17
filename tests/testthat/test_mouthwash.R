@@ -275,3 +275,39 @@ test_that("mouthwash_coord works", {
                                  degrees_freedom = degrees_freedom, scale_var = scale_var)
 }
 )
+
+
+test_that("mouthwash_z_grad returns similar results for df large and df = Inf", {
+  set.seed(916)
+
+  p <- 103
+  k <- 3
+  S_diag <- stats::rchisq(p, 5)
+  alpha_tilde <- matrix(stats::rnorm(k * p), nrow = p)
+  z2 <- matrix(stats::rnorm(k), ncol = 1)
+  beta <- matrix(stats::rnorm(p), ncol = 1)
+  betahat_ols <- beta + alpha_tilde %*% z2 + rnorm(p, mean = 0, sd = sqrt(S_diag))
+
+  M             <- 23
+  a_seq         <- seq(-10, 0, length = M)
+  b_seq         <- seq(10, 0, length = M)
+  lambda_seq    <- rep(1, M)
+  lambda_seq[length(lambda_seq)] <- 10
+  pi_vals <- rep(1 / M, length = M)
+  xi <- 1
+  degrees_freedom <- 3
+  scale_var <- TRUE
+
+  mout_inf <- mouthwash_z_grad(pi_vals = pi_vals, z2 = z2, xi = xi,
+                               betahat_ols = betahat_ols, S_diag = S_diag,
+                               alpha_tilde = alpha_tilde, a_seq = a_seq, b_seq = b_seq,
+                               lambda_seq = lambda_seq, degrees_freedom = Inf)
+
+  mout_10000 <- mouthwash_z_grad(pi_vals = pi_vals, z2 = z2, xi = xi,
+                                 betahat_ols = betahat_ols, S_diag = S_diag,
+                                 alpha_tilde = alpha_tilde, a_seq = a_seq, b_seq = b_seq,
+                                 lambda_seq = lambda_seq, degrees_freedom = 10000)
+
+  expect_equal(mout_inf, mout_10000, tolerance = 10 ^ -4)
+}
+)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/mouthwash.R
 \name{dt_wrap}
 \alias{dt_wrap}
-\title{Wrapper for dt with a non-zero mena and non-1 scale parameter.}
+\title{Wrapper for dt with a non-zero mean and non-1 scale parameter.}
 \usage{
 dt_wrap(x, df, mean = 0, sd = 1, log = FALSE)
 }
@@ -20,5 +20,5 @@ t. Defaults to 1.}
 (\code{TRUE}) or the density (\code{FALSE})?}
 }
 \description{
-Wrapper for dt with a non-zero mena and non-1 scale parameter.
+Wrapper for dt with a non-zero mean and non-1 scale parameter.
 }

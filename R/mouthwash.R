@@ -609,7 +609,7 @@ get_grid_var <- function(betahat_ols, S_diag) {
 }
 
 
-#' Wrapper for dt with a non-zero mena and non-1 scale parameter.
+#' Wrapper for dt with a non-zero mean and non-1 scale parameter.
 #'
 #' @param x A numeric. Where to evaluate the density function.
 #' @param df A positive numeric. The degrees of freedom.
