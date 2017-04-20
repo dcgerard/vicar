@@ -272,7 +272,7 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     mult_matrix <- solve(t(XZ) %*% XZ)[cov_of_interest, cov_of_interest, drop = FALSE]
     sebetahat_unadjusted <- sqrt(outer(diag(mult_matrix), sig_diag_long, FUN = "*"))
     sebetahat_unadjusted[, ctl] <- NA
-    sebetahat_adjusted <- sebetahat_unadjusted * multiplier
+    sebetahat_adjusted <- sebetahat_unadjusted * sqrt(multiplier)
 
     ## OLS statistics --------------------------------------------------------
     sigma2_ols <- colSums((Y - rotate_out$X %*% betahat_ols) ^ 2) / (nrow(X) - ncol(X))
