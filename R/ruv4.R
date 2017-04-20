@@ -426,7 +426,8 @@ cruv4_multicov <- function(Y2, alpha, sig_diag, ctl, R22, degrees_freedom,
     }
 
     ## Gaussian MLE of variance inflation parameter.
-    multiplier <- mean(resid_mat ^ 2 / sig_diag[ctl])
+    assertthat::are_equal(ncol(resid_mat), sum(ctl))
+    multiplier <- mean(t(resid_mat ^ 2) / sig_diag[ctl])
 
     ## multiplier should be the exact same as below
     ## sum(diag(t(resid_mat) %*% diag(1 / sig_diag[ctl]) %*% resid_mat)) / prod(dim(resid_mat))
