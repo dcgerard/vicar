@@ -79,6 +79,8 @@
 #'     \code{debuglist} A list of elements that aren't really useful
 #'     except for unit testing and debugging.
 #'
+#'     \code{resid_mat}  Y21 - Z2 %*% alpha1
+#'
 #' @export
 #'
 #' @author David Gerard
@@ -310,6 +312,7 @@ ruv3 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
     }
     return_list$debuglist$Z2         <- Z2
     return_list$debuglist$Z3         <- Z3
+    return_list$resid_mat  <- resid_mat
 
     return(return_list)
 }

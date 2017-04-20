@@ -122,6 +122,8 @@ fa_func.}
 
     \code{debuglist} A list of elements that aren't really useful
     except for unit testing and debugging.
+
+    \code{resid_mat}  Y21 - Z2 %*% alpha1
 }
 \description{
 RUV2 (\code{\link[ruv]{RUV2}}) and RUV4 (\code{\link[cate]{cate}} or \code{\link[ruv]{RUV4}})
