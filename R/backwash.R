@@ -177,10 +177,6 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                      lambda0 = 10, scale_var = TRUE,
                      sprop = 0) {
 
-  if (sprop != 0) {
-    stop("sprop != 0 not supported yet.")
-  }
-
     ## Check input -----------------------------------------------------------
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(X))
@@ -255,7 +251,7 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                 tau2_seq = tau2_seq,
                                 lambda_seq = lambda_seq,
                                 pi_init_type = pi_init_type,
-                                scale_var = scale_var)
+                                scale_var = scale_var, sprop = sprop)
 
     Y1  <- rotate_out$Y1
     Z2 <- val$z2hat
@@ -303,7 +299,7 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                  tau2_seq, lambda_seq,
                                  pi_init_type = c("zero_conc", "uniform", "random"),
-                                 scale_var = TRUE) {
+                                 scale_var = TRUE, sprop = 0) {
 
     ## Check input -----------------------------------------------------------
     assertthat::assert_that(is.numeric(betahat_ols))
@@ -401,6 +397,19 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     PosteriorSD   <- ex2 - PosteriorMean ^ 2
     lfsr          <- pmin(PositiveProb, NegativeProb) + lfdr
     svalue        <- ashr::qval.from.lfdr(lfsr)
+
+    ## modify posterior based on sprop ---------------------------------------------------
+    ## Recall that betahat_ols, S_diag, and alpha_tilde were modified prior to being sent to
+    ## backwash second step. We need to adjust some (but not all) posterior summaries.
+    if (sprop > 0) {
+      sgamma        <- S_diag ^ (sprop / (2 * (1 - sprop)))
+      S_diag        <- S_diag ^ (1 / (1 - sprop))
+      PosteriorMean <- PosteriorMean * sgamma
+      PosteriorSD   <- PosteriorSD * sgamma
+      betahat_ols   <- betahat_ols * sgamma
+    }
+
+
 
     result <- data.frame(betahat = betahat_ols,
                          sebetahat = S_diag,

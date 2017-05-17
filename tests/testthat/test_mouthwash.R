@@ -25,6 +25,8 @@ test_that("mouthwash works ok", {
     lambda_seq        <- NULL
     lambda0           <- 10
 
+    betahat_ols <- (solve(t(X) %*% X) %*% t(X) %*% Y)[3, ]
+
     start_unif <- proc.time()
     mout <- mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2,
                       likelihood = "t", mixing_dist = "uniform",
@@ -48,6 +50,9 @@ test_that("mouthwash works ok", {
 
     mout3 <- mouthwash(Y = Y, X = X, k = 1, mixing_dist = "normal",
                        likelihood = "normal", sprop = 0.1)
+
+    expect_equal(mout$result$betahat, mout2$result$betahat, tol = 10^-5)
+    expect_equal(mout$result$betahat, mout3$result$betahat, tol = 10^-5)
 
 
     mse1 <- sum((mout$result$PosteriorMean - mout2$result$PosteriorMean) ^ 2)

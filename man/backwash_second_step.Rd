@@ -5,7 +5,8 @@
 \title{Second step of the backwash procedure.}
 \usage{
 backwash_second_step(betahat_ols, S_diag, alpha_tilde, tau2_seq, lambda_seq,
-  pi_init_type = c("zero_conc", "uniform", "random"), scale_var = TRUE)
+  pi_init_type = c("zero_conc", "uniform", "random"), scale_var = TRUE,
+  sprop = 0)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The oridinary least
@@ -30,6 +31,9 @@ or by sampling uniformly on the simplex (\code{"random"})?}
 
 \item{scale_var}{A logical. Should we estimate a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}
+
+\item{sprop}{This is not supported yet. This will determine on what
+scale the effects are exchangeable.}
 }
 \description{
 Second step of the backwash procedure.

@@ -524,10 +524,10 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     ## before sending these values to ashr::ash.workhorse to obtain
     ## summary values. Note that sprop for me = alpha for ashr.
     if (sprop > 0) {
-        sgamma <- S_diag ^ (sprop / 2)
-        betahat_ols_real <- betahat_ols * sgamma
-        alpha_tilde_real <- alpha_tilde * sgamma
-        S_diag_real      <- S_diag ^ (1 + sprop)
+      S_diag_real      <- S_diag ^ (1 / (1 - sprop))
+      sgamma           <- S_diag_real ^ (sprop / 2)
+      betahat_ols_real <- betahat_ols * sgamma
+      alpha_tilde_real <- alpha_tilde * sgamma
     } else {
         betahat_ols_real <- betahat_ols
         alpha_tilde_real <- alpha_tilde
