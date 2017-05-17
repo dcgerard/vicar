@@ -177,6 +177,10 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                      lambda0 = 10, scale_var = TRUE,
                      sprop = 0) {
 
+  if (sprop != 0) {
+    stop("sprop != 0 not supported yet.")
+  }
+
     ## Check input -----------------------------------------------------------
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(X))
@@ -188,6 +192,11 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(is.list(fa_args))
     assertthat::assert_that(lambda0 >= 1)
     assertthat::assert_that(is.logical(scale_var))
+    assertthat::assert_that(sprop >= 0)
+
+    if (scale_var & sprop == 1) {
+      stop("sprop cannot be 1 when scale_var is TRUE")
+    }
 
     lambda_type <- match.arg(lambda_type)
     pi_init_type <- match.arg(pi_init_type)
@@ -204,13 +213,25 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     S_diag      <- c(rotate_out$sig_diag / c(rotate_out$R22 ^ 2))
     betahat_ols <- matrix(rotate_out$betahat_ols, ncol = 1)
 
+    ## Exchangeable versions of the models ---------------------------------------------
+    if (sprop > 0) {
+      sgamma           <- S_diag ^ (-1 * sprop / 2)
+      alpha_tilde_star <- alpha_tilde * sgamma
+      betahat_ols_star <- betahat_ols * sgamma
+      S_diag_star      <- S_diag ^ (1 - sprop)
+    } else {
+      alpha_tilde_star <- alpha_tilde
+      betahat_ols_star <- betahat_ols
+      S_diag_star      <- S_diag
+    }
+
     ## Set grid and penalties ------------------------------------------------
     if (!is.null(lambda_seq) & is.null(grid_seq)) {
         stop("lambda_seq specified but grid_seq is NULL")
     }
 
     if (is.null(grid_seq)) {
-        grid_vals <- get_grid_var(betahat_ols = betahat_ols, S_diag = S_diag)
+        grid_vals <- get_grid_var(betahat_ols = betahat_ols_star, S_diag = S_diag_star)
         tau2_seq <- sign(grid_vals$tau2_seq) * sqrt(abs(grid_vals$tau2_seq))
     } else {
         tau2_seq <- grid_seq
@@ -228,9 +249,9 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
         }
     }
 
-    val <- backwash_second_step(betahat_ols = betahat_ols,
-                                S_diag = S_diag,
-                                alpha_tilde = alpha_tilde,
+    val <- backwash_second_step(betahat_ols = betahat_ols_star,
+                                S_diag = S_diag_star,
+                                alpha_tilde = alpha_tilde_star,
                                 tau2_seq = tau2_seq,
                                 lambda_seq = lambda_seq,
                                 pi_init_type = pi_init_type,
@@ -342,9 +363,11 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     phi <- back_update_phi(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat,
                            mubeta = mubeta, muv = muv, Sigma_v= Sigma_v)
 
-    xi <- back_update_xi(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat, mubeta = mubeta,
-                         mubeta_matrix = mubeta_matrix, sig2beta_matrix = sig2beta_matrix,
-                         gamma_mat = gamma_mat, muv = muv, Sigma_v = Sigma_v, phi = phi)
+    if (scale_var) {
+      xi <- back_update_xi(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat, mubeta = mubeta,
+                           mubeta_matrix = mubeta_matrix, sig2beta_matrix = sig2beta_matrix,
+                           gamma_mat = gamma_mat, muv = muv, Sigma_v = Sigma_v, phi = phi)
+    }
 
     par_vec <- c(pivec, mubeta_matrix, sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, xi)
 
