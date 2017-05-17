@@ -85,8 +85,11 @@ zero if \code{lambda_type = "zero_conc"}.}
 \item{scale_var}{A logical. Should we estimate a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}
 
-\item{sprop}{This is not supported yet. This will determine on what
-scale the effects are exchangeable.}
+\item{sprop}{If \eqn{b} is an effect and \eqn{s} is an estimated
+standard error, then we model \eqn{b/s^{sprop}} as
+exchangeable. The default is 0. When \code{sprop = 1}, for
+identifiability reasons it must be the case that
+\code{scale_var = FALSE}.}
 }
 \value{
 \code{backwash} returns a list with some or all of the

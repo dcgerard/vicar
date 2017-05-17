@@ -50,8 +50,6 @@
 #'
 #' @inheritParams vruv4
 #' @inheritParams mouthwash
-#' @param sprop This is not supported yet. This will determine on what
-#'     scale the effects are exchangeable.
 #'
 #' @return \code{backwash} returns a list with some or all of the
 #'     following elements:
