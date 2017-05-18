@@ -173,7 +173,7 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                      pi_init_type = c("zero_conc", "uniform", "random"),
                      grid_seq = NULL, lambda_seq = NULL,
                      lambda0 = 10, scale_var = TRUE,
-                     sprop = 0) {
+                     sprop = 0, var_inflate_pen = 0) {
 
     ## Check input -----------------------------------------------------------
     assertthat::assert_that(is.matrix(Y))
@@ -187,9 +187,10 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(lambda0 >= 1)
     assertthat::assert_that(is.logical(scale_var))
     assertthat::assert_that(sprop >= 0)
+    assertthat::assert_that(var_inflate_pen >= 0)
 
-    if (scale_var & sprop == 1) {
-      stop("sprop cannot be 1 when scale_var is TRUE")
+    if (scale_var & sprop == 1 & var_inflate_pen == 0) {
+      stop("sprop cannot be 1 when scale_var is TRUE and var_inflate_pen = 0.")
     }
 
     lambda_type <- match.arg(lambda_type)
@@ -249,7 +250,8 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                 tau2_seq = tau2_seq,
                                 lambda_seq = lambda_seq,
                                 pi_init_type = pi_init_type,
-                                scale_var = scale_var, sprop = sprop)
+                                scale_var = scale_var, sprop = sprop,
+                                var_inflate_pen = var_inflate_pen)
 
     Y1  <- rotate_out$Y1
     Z2 <- val$z2hat
@@ -297,7 +299,8 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                  tau2_seq, lambda_seq,
                                  pi_init_type = c("zero_conc", "uniform", "random"),
-                                 scale_var = TRUE, sprop = 0) {
+                                 scale_var = TRUE, sprop = 0,
+                                 var_inflate_pen = 0) {
 
     ## Check input -----------------------------------------------------------
     assertthat::assert_that(is.numeric(betahat_ols))
@@ -360,7 +363,8 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     if (scale_var) {
       xi <- back_update_xi(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat, mubeta = mubeta,
                            mubeta_matrix = mubeta_matrix, sig2beta_matrix = sig2beta_matrix,
-                           gamma_mat = gamma_mat, muv = muv, Sigma_v = Sigma_v, phi = phi)
+                           gamma_mat = gamma_mat, muv = muv, Sigma_v = Sigma_v, phi = phi,
+                           var_inflate_pen = var_inflate_pen)
     }
 
     par_vec <- c(pivec, mubeta_matrix, sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, xi)
@@ -370,7 +374,8 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                               S_diag = S_diag, Amat = Amat, tau2_seq = tau2_seq,
                               lambda_seq = lambda_seq,
                               scale_var = scale_var,
-                              control = list(tol = 10 ^ -4))
+                              control = list(tol = 10 ^ -4),
+                              var_inflate_pen = var_inflate_pen)
 
     ## Get returned parameters -----------------------------------------------------------
 
@@ -452,7 +457,8 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 #'
 #' @author David Gerard
 #'
-back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, scale_var = TRUE) {
+back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, scale_var = TRUE,
+                     var_inflate_pen = 0) {
 
   # Parse par_vec -----------------------------------------------------------
   p <- length(S_diag)
@@ -498,7 +504,8 @@ back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, s
   if (scale_var){
     xi <- back_update_xi(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat, mubeta = mubeta,
                          mubeta_matrix = mubeta_matrix, sig2beta_matrix = sig2beta_matrix,
-                         gamma_mat = gamma_mat, muv = muv, Sigma_v = Sigma_v, phi = phi)
+                         gamma_mat = gamma_mat, muv = muv, Sigma_v = Sigma_v, phi = phi,
+                         var_inflate_pen = var_inflate_pen)
   }
 
   par_vec <- c(pivec, mubeta_matrix, sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, xi)
@@ -521,7 +528,9 @@ back_fix <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, s
 #'     penalties for the prior mixing proportions.
 #'
 #' @author David Gerard
-back_obj <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, scale_var = TRUE) {
+back_obj <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, scale_var = TRUE,
+                     var_inflate_pen = 0) {
+
   p <- length(S_diag)
   nfac <- ncol(Amat)
   M <- length(tau2_seq)
@@ -551,7 +560,8 @@ back_obj <- function(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq, s
                     mubeta_matrix = mubeta_matrix,
                     sig2beta_matrix = sig2beta_matrix,
                     gamma_mat = gamma_mat, muv = muv,
-                    Sigma_v = Sigma_v, phi = phi, xi = xi)
+                    Sigma_v = Sigma_v, phi = phi, xi = xi,
+                    var_inflate_pen = var_inflate_pen)
 
   return(-1 * elbo)
 }
@@ -689,9 +699,12 @@ back_update_phi <- function(betahat_ols, S_diag, Amat, mubeta, muv, Sigma_v) {
 #'     densities of the betas.
 #' @param Sigma_v The current covariance matrix of the latent v.
 #' @param phi The current "g" hyperparameter.
+#' @param var_inflate_pen The penalty to apply on the variance inflation parameter.
+#'     Defaults to 0, but should be something non-zero when \code{alpha = 1}
+#'     and \code{scale_var = TRUE}.
 #'
 back_update_xi <- function(betahat_ols, S_diag, Amat, mubeta, mubeta_matrix, sig2beta_matrix,
-                           gamma_mat, muv, Sigma_v, phi) {
+                           gamma_mat, muv, Sigma_v, phi, var_inflate_pen = 0) {
 
   t1 <- sum((betahat_ols ^ 2) / S_diag)
 
@@ -707,7 +720,8 @@ back_update_xi <- function(betahat_ols, S_diag, Amat, mubeta, mubeta_matrix, sig
 
   t6 <- 2 * phi * sum(mubeta * Amuv / S_diag)
 
-  xi <- c((t1 + t2 + t3 - t4 - t5 + t6) / length(betahat_ols))
+  xi <- c((t1 + t2 + t3 - t4 - t5 + t6) / length(betahat_ols)) +
+    2 * var_inflate_pen / length(betahat_ols) ## inflation caused by penalty
 
   return(xi)
 }
@@ -718,12 +732,15 @@ back_update_xi <- function(betahat_ols, S_diag, Amat, mubeta, mubeta_matrix, sig
 #' @inheritParams back_update_xi
 #' @param lambda_seq A vector of numerics greater than 1. The
 #'     penalties on the pi's.
+#' @param var_inflate_pen The penalty to apply on the variance inflation parameter.
+#'     Defaults to 0, but should be something non-zero when \code{alpha = 1}
+#'     and \code{scale_var = TRUE}.
 #'
 #' @author David Gerard
 #'
 back_elbo <- function(betahat_ols, S_diag, Amat, tau2_seq, pivec, lambda_seq, mubeta,
                       mubeta_matrix, sig2beta_matrix,
-                      gamma_mat, muv, Sigma_v, phi, xi) {
+                      gamma_mat, muv, Sigma_v, phi, xi, var_inflate_pen = 0) {
 
   if (any(pivec < -10 ^ -12) | any(pivec > 1 + 10 ^ -12)) {
     return(-Inf)
@@ -793,9 +810,12 @@ back_elbo <- function(betahat_ols, S_diag, Amat, tau2_seq, pivec, lambda_seq, mu
   tmat[gamma_mat < 10 ^ -14] <- 0 ## no support
   s8 <- - sum(tmat * gamma_mat)
 
+  ## variance inflation penalty
+  vpen <- -var_inflate_pen / xi
+
   ## Compute ELBO -----------------------------------------------------------
 
-  elbo <- s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8
+  elbo <- s1 + s2 + s3 + s4 + s5 + s6 + s7 + s8 + vpen
 
   return(elbo)
 

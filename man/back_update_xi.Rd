@@ -5,7 +5,7 @@
 \title{Update for the variance scaling parameter.}
 \usage{
 back_update_xi(betahat_ols, S_diag, Amat, mubeta, mubeta_matrix,
-  sig2beta_matrix, gamma_mat, muv, Sigma_v, phi)
+  sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, var_inflate_pen = 0)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The oridinary least
@@ -33,6 +33,10 @@ v.}
 \item{Sigma_v}{The current covariance matrix of the latent v.}
 
 \item{phi}{The current "g" hyperparameter.}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 Update for the variance scaling parameter.

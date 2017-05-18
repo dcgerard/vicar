@@ -5,7 +5,8 @@
 \title{The Evidence lower bound.}
 \usage{
 back_elbo(betahat_ols, S_diag, Amat, tau2_seq, pivec, lambda_seq, mubeta,
-  mubeta_matrix, sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, xi)
+  mubeta_matrix, sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, xi,
+  var_inflate_pen = 0)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The oridinary least
@@ -42,6 +43,10 @@ v.}
 \item{phi}{A numeric. The "g" hyperparameter.}
 
 \item{xi}{A positive numeric. The current value of xi.}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 The Evidence lower bound.

@@ -5,7 +5,7 @@
 \title{Objective function for BACKWASH.}
 \usage{
 back_obj(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq,
-  scale_var = TRUE)
+  scale_var = TRUE, var_inflate_pen = 0)
 }
 \arguments{
 \item{par_vec}{A huge vector of parameters whose elements are in
@@ -27,6 +27,10 @@ penalties for the prior mixing proportions.}
 
 \item{scale_var}{A logical. Should we estimate a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 This is mostly so that I can use the SQUAREM package.
