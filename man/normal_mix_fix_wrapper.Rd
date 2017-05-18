@@ -5,7 +5,7 @@
 \title{Wrapper for \code{\link{normal_mix_fix}} so that I can use SQUAREM.}
 \usage{
 normal_mix_fix_wrapper(pizxi_vec, betahat_ols, S_diag, alpha_tilde, tau2_seq,
-  lambda_seq, scale_var = TRUE)
+  lambda_seq, scale_var = TRUE, var_inflate_pen = 0)
 }
 \arguments{
 \item{pizxi_vec}{A vector whose first M elements are pi_vals, next
@@ -31,6 +31,10 @@ proportions.}
 
 \item{scale_var}{Should we optimize over a variance inflation
 parameter (\code{TRUE}) or not (\code{FALSE})?}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 Wrapper for \code{\link{normal_mix_fix}} so that I can use SQUAREM.

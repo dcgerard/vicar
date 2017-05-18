@@ -6,7 +6,7 @@
 \usage{
 mouthwash_coordinate(pi_init, z_init, xi_init, betahat_ols, S_diag, alpha_tilde,
   a_seq, b_seq, lambda_seq, degrees_freedom, scale_var = TRUE, tol = 10^-6,
-  maxit = 100, plot_update = FALSE)
+  maxit = 100, plot_update = FALSE, var_inflate_pen = 0)
 }
 \arguments{
 \item{pi_init}{The intial values of the mixing proportions. A
@@ -50,6 +50,10 @@ optimization scheme.}
 
 \item{plot_update}{A logical. Should I plot the the path of the
 log-likelihood (\code{TRUE}) or not (\code{FALSE})?}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 Set \code{degrees_freedom = Inf} if you want to use a normal likelihood.

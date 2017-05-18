@@ -22,7 +22,8 @@
 mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                  alpha_tilde, a_seq, b_seq, lambda_seq,
                                  degrees_freedom, scale_var = TRUE,
-                                 tol = 10 ^ -6, maxit = 100, plot_update = FALSE) {
+                                 tol = 10 ^ -6, maxit = 100, plot_update = FALSE,
+                                 var_inflate_pen = 0) {
 
     ## Make sure input is correct ---------------------------------------------
     M <- length(a_seq)
@@ -51,7 +52,8 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                    betahat_ols = betahat_ols, S_diag = S_diag,
                                    alpha_tilde = alpha_tilde, a_seq = a_seq,
                                    b_seq = b_seq, lambda_seq = lambda_seq,
-                                   degrees_freedom = degrees_freedom)
+                                   degrees_freedom = degrees_freedom,
+                                   var_inflate_pen = var_inflate_pen)
 
     llike_vec <- llike_new
     err <- tol + 1
@@ -69,7 +71,8 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                   S_diag = S_diag, alpha_tilde = alpha_tilde, a_seq = a_seq,
                                   b_seq = b_seq, lambda_seq = lambda_seq,
                                   degrees_freedom = degrees_freedom,
-                                  control = list(fnscale = -1))
+                                  control = list(fnscale = -1),
+                                  var_inflate_pen = var_inflate_pen)
 
         z_new <- optim_out$par
 
@@ -81,7 +84,8 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                       S_diag = S_diag, alpha_tilde = alpha_tilde, a_seq = a_seq,
                                       b_seq = b_seq, lambda_seq = lambda_seq,
                                       degrees_freedom = degrees_freedom,
-                                      control = list(fnscale = -1))
+                                      control = list(fnscale = -1),
+                                      var_inflate_pen = var_inflate_pen)
 
             xi_new <- optim_out$par
         }
@@ -133,7 +137,8 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
                                    betahat_ols = betahat_ols, S_diag = S_diag,
                                    alpha_tilde = alpha_tilde, a_seq = a_seq,
                                    b_seq = b_seq, lambda_seq = lambda_seq,
-                                   degrees_freedom = degrees_freedom)
+                                   degrees_freedom = degrees_freedom,
+                                   var_inflate_pen = var_inflate_pen)
         llike_vec <- c(llike_vec, llike_new)
 
         assertthat::assert_that((llike_new - llike_old) > - 10 ^ -12)
@@ -155,6 +160,8 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
 #' Gradient wrt z of \code{\link{uniform_mix_llike}}.
 #'
 #' @inheritParams uniform_mix_fix
+#' @param var_inflate_pen Not used here. Just here for compatability
+#'     with \code{\link[stats]{optim}} in \code{\link{mouthwash_coordinate}}.
 #'
 #' @author David Gerard
 #'
@@ -162,7 +169,7 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
 #'     and \code{\link{mouthwash_coordinate}} for where this function
 #'     is used.
 mouthwash_z_grad <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq, b_seq,
-                             lambda_seq, degrees_freedom){
+                             lambda_seq, degrees_freedom, var_inflate_pen = 0){
 
     ## Make sure input is OK --------------------------------------------------
     M <- length(a_seq)
@@ -207,7 +214,6 @@ mouthwash_z_grad <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, 
       fbar_mat[, zero_spot] <- dense_vec * resid_vec * (degrees_freedom + 1) /
         (degrees_freedom * xi * S_diag + resid_vec ^ 2)
     }
-
 
     ## calcualte weights for rows of alpha_tilde ---------------------------
     weight_vec <- rowSums(sweep(fbar_mat, MARGIN = 2, STATS = pi_vals, FUN = `*`)) /

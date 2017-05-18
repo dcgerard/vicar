@@ -316,3 +316,38 @@ test_that("mouthwash_z_grad returns similar results for df large and df = Inf", 
   expect_equal(mout_inf, mout_10000, tolerance = 10 ^ -4)
 }
 )
+
+
+
+
+
+
+test_that("var_inflate_pen works for mouthwash", {
+  set.seed(68)
+  n <- 20
+  p <- 102
+  k <- 3
+  q <- 1
+  cov_of_interest <- 2
+  X <- matrix(stats::rnorm(n * k), nrow = n)
+  beta <- matrix(stats::rnorm(k * p, sd = 2), nrow = k)
+  beta[, 1:round(p/2)] <- 0
+  E <- matrix(stats::rnorm(n * p), nrow = n)
+  Z <- matrix(stats::rnorm(q * n), nrow = n)
+  alpha <- matrix(stats::rnorm(q * p), ncol = p)
+  Y <- X %*% beta + Z %*% alpha + E
+
+  mout1 <- mouthwash(Y = Y, X = X, k = q, mixing_dist = "normal", likelihood = "normal",
+                    var_inflate_pen = 0)
+  mout2 <- mouthwash(Y = Y, X = X, k = q, mixing_dist = "normal", likelihood = "normal",
+                     var_inflate_pen = 10)
+
+  expect_true(mout1$xi <= mout2$xi)
+
+  mout5 <- mouthwash(Y = Y, X = X, k = q, mixing_dist = "uniform", likelihood = "t",
+                     var_inflate_pen = 1, sprop = 0, limmashrink = FALSE)
+  mout6 <- mouthwash(Y = Y, X = X, k = q, mixing_dist = "uniform", likelihood = "t",
+                     var_inflate_pen = 10, sprop = 0, limmashrink = FALSE)
+  expect_true(mout5$xi <= mout6$xi)
+}
+)

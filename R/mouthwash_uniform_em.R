@@ -252,10 +252,13 @@ uniform_mix_fix_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde,
 #' Log-likelihood when using t errors and mixture of uniforms prior.
 #'
 #' @inheritParams uniform_mix_fix
+#' @param var_inflate_pen The penalty to apply on the variance inflation parameter.
+#'     Defaults to 0, but should be something non-zero when \code{alpha = 1}
+#'     and \code{scale_var = TRUE}.
 #'
 #' @author David Gerard
 uniform_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq, b_seq,
-                              lambda_seq, degrees_freedom) {
+                              lambda_seq, degrees_freedom, var_inflate_pen = 0) {
 
     ## Make sure input is correct ----------------------------------------------
     zero_spot <- which(abs(a_seq) < 10 ^ -14 & abs(b_seq) < 10 ^ -14)
@@ -305,7 +308,9 @@ uniform_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde,
         pen <- sum(log(pi_vals[lambda_seq > 1]) * (lambda_seq[lambda_seq > 1] - 1))
     }
 
-    return(llike + pen)
+    vpen <- -var_inflate_pen / xi
+
+    return(llike + pen + vpen)
 }
 
 #' Wrapper for \code{\link{uniform_mix_llike}}, mostly for the SQUAREM package.

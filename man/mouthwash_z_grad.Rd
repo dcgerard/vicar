@@ -5,7 +5,7 @@
 \title{Gradient wrt z of \code{\link{uniform_mix_llike}}.}
 \usage{
 mouthwash_z_grad(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq,
-  b_seq, lambda_seq, degrees_freedom)
+  b_seq, lambda_seq, degrees_freedom, var_inflate_pen = 0)
 }
 \arguments{
 \item{pi_vals}{A vector of non-negative numerics that sums to
@@ -37,6 +37,9 @@ penalties on the mixing proportions.}
 \item{degrees_freedom}{A positive scalar or a vector of positive
 scalars the length of \code{betahat_ols}. The degrees of
 freedom of the t-distribution.}
+
+\item{var_inflate_pen}{Not used here. Just here for compatability
+with \code{\link[stats]{optim}} in \code{\link{mouthwash_coordinate}}.}
 }
 \description{
 Gradient wrt z of \code{\link{uniform_mix_llike}}.

@@ -5,7 +5,7 @@
 \title{Penalized MOUTHWASH likelihood when using a mixture of normals.}
 \usage{
 normal_mix_llike(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, tau2_seq,
-  lambda_seq)
+  lambda_seq, var_inflate_pen = 0)
 }
 \arguments{
 \item{pi_vals}{The current values of the mixing proportions.}
@@ -32,6 +32,10 @@ grid_seq in \code{\link{mouthwash_second_step}} if
 \item{lambda_seq}{A numeric vector with elements all greater than
 or equal to 1. These are the tuning parameters for the mixing
 proportions.}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 Penalized MOUTHWASH likelihood when using a mixture of normals.

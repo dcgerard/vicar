@@ -11,7 +11,7 @@ mouthwash(Y, X, k = NULL, cov_of_interest = ncol(X),
   lambda_type = c("zero_conc", "uniform"), pi_init_type = c("zero_conc",
   "uniform", "random"), degrees_freedom = NULL, pi_init = NULL,
   grid_seq = NULL, lambda_seq = NULL, lambda0 = 10, scale_var = TRUE,
-  plot_update = FALSE, sprop = 0)
+  plot_update = FALSE, sprop = 0, var_inflate_pen = 0)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -115,6 +115,10 @@ standard error, then we model \eqn{b/s^{sprop}} as
 exchangeable. The default is 0. When \code{sprop = 1}, for
 identifiability reasons it must be the case that
 \code{scale_var = FALSE}.}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \value{
 A list with some or all of the following elements.

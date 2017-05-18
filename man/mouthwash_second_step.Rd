@@ -8,7 +8,8 @@ mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, lambda_seq,
   tau2_seq = NULL, a_seq = NULL, b_seq = NULL, mixing_dist = c("normal",
   "uniform", "+uniform", "sym_uniform"), likelihood = c("normal", "t"),
   pi_init_type = c("zero_conc", "uniform", "random"), scale_var = TRUE,
-  degrees_freedom = NULL, plot_update = FALSE, sprop = 0)
+  degrees_freedom = NULL, plot_update = FALSE, sprop = 0,
+  var_inflate_pen = 0)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The OLS estimates of the
@@ -65,6 +66,10 @@ standard error, then we model \eqn{b/s^{sprop}} as
 exchangeable. The default is 0. When \code{sprop = 1}, for
 identifiability reasons it must be the case that
 \code{scale_var = FALSE}.}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 The second step of MOUTHWASH.

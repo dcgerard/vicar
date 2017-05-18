@@ -86,6 +86,9 @@
 #'     exchangeable. The default is 0. When \code{sprop = 1}, for
 #'     identifiability reasons it must be the case that
 #'     \code{scale_var = FALSE}.
+#' @param var_inflate_pen The penalty to apply on the variance inflation parameter.
+#'     Defaults to 0, but should be something non-zero when \code{alpha = 1}
+#'     and \code{scale_var = TRUE}.
 #'
 #' @return A list with some or all of the following elements.
 #'
@@ -209,7 +212,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       grid_seq = NULL, lambda_seq = NULL,
                       lambda0 = 10, scale_var = TRUE,
                       plot_update = FALSE,
-                      sprop = 0) {
+                      sprop = 0, var_inflate_pen = 0) {
 
 
     ## Make sure input is correct --------------------------------------------------------
@@ -224,6 +227,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(is.list(fa_args))
     assertthat::assert_that(lambda0 >= 1)
     assertthat::assert_that(sprop >= 0)
+    assertthat::assert_that(var_inflate_pen >= 0)
 
     likelihood   <- match.arg(likelihood)
     mixing_dist  <- match.arg(mixing_dist)
@@ -233,8 +237,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     if (likelihood == "t" & mixing_dist == "normal") {
         stop("normal mixtures not implemented for t-likelihood yet (or likely ever).")
     }
-    if (scale_var & sprop == 1) {
-        stop("sprop cannot be 1 when scale_var is TRUE")
+    if (sprop == 1 & scale_var & var_inflate_pen < 10 ^ -6) {
+      stop("if sprop is 1 and scale_var = TRUE, then var_inflate_pen should be > 0")
     }
 
 
@@ -345,7 +349,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                  pi_init_type = pi_init_type,
                                  scale_var = scale_var,
                                  plot_update = plot_update,
-                                 sprop = sprop)
+                                 sprop = sprop,
+                                 var_inflate_pen = var_inflate_pen)
 
     ## Estimate rest of the hidden confounders -----------------------------------
     Y1  <- rotate_out$Y1
@@ -414,7 +419,7 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                   scale_var = TRUE,
                                   degrees_freedom = NULL,
                                   plot_update = FALSE,
-                                  sprop = 0) {
+                                  sprop = 0, var_inflate_pen = 0) {
 
 
     ## Make sure input is correct -------------------------------------------------
@@ -454,9 +459,10 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     assertthat::are_equal(length(S_diag), length(betahat_ols))
     assertthat::are_equal(length(lambda_seq), M)
     assertthat::assert_that(sprop >= 0)
+    assertthat::assert_that(var_inflate_pen >= 0)
 
-    if (sprop == 1 & scale_var) {
-        stop("if sprop is 1, then scale_var cannot be TRUE")
+    if (sprop == 1 & scale_var & var_inflate_pen < 10 ^ -6) {
+        stop("if sprop is 1 and scale_var = TRUE, then var_inflate_pen should be > 0")
     }
 
     ## initialize parameters and run EM --------------------------------------------
@@ -470,7 +476,8 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                   objfn = normal_mix_llike_wrapper, betahat_ols = betahat_ols,
                                   S_diag = S_diag, alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
                                   lambda_seq = lambda_seq, scale_var = scale_var,
-                                  control = list(tol = 10 ^ -4))
+                                  control = list(tol = 10 ^ -4),
+                                  var_inflate_pen = var_inflate_pen)
         pi_vals  <- sqout$par[1:M]
         z2_final <- sqout$par[(M + 1):(M + k)]
         xi_final <- sqout$par[M + k + 1]
@@ -487,7 +494,8 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                         alpha_tilde = alpha_tilde, a_seq = a_seq,
                                         b_seq = b_seq, lambda_seq = lambda_seq,
                                         degrees_freedom = degrees_freedom, scale_var = scale_var,
-                                        plot_update = plot_update)
+                                        plot_update = plot_update,
+                                        var_inflate_pen = var_inflate_pen)
         pi_vals  <- opt_out$pi_vals
         z2_final <- opt_out$z2
         xi_final <- opt_out$xi

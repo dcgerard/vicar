@@ -17,7 +17,7 @@
 #'
 #' @seealso \code{\link{normal_mix_llike}}
 normal_mix_llike_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde, tau2_seq,
-                                     lambda_seq, scale_var = TRUE) {
+                                     lambda_seq, scale_var = TRUE, var_inflate_pen = 0) {
 
     ## Make sure input is correct
     p <- length(betahat_ols)
@@ -34,7 +34,7 @@ normal_mix_llike_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde
     xi      <- pizxi_vec[length(pizxi_vec)]
     nout <- normal_mix_llike(pi_vals = pi_vals, z2 = z2, xi = xi, betahat_ols = betahat_ols,
                              S_diag = S_diag, alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
-                             lambda_seq = lambda_seq)
+                             lambda_seq = lambda_seq, var_inflate_pen = var_inflate_pen)
     return(-1 * nout)
 }
 
@@ -51,7 +51,7 @@ normal_mix_llike_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde
 #'
 #' @author David Gerard
 normal_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, tau2_seq,
-                             lambda_seq) {
+                             lambda_seq, var_inflate_pen = 0) {
     ## Make sure input is correct ------------------------------------------------------
     M <- length(tau2_seq)
     zero_spot <- which(abs(tau2_seq) < 10 ^ -14)
@@ -88,7 +88,9 @@ normal_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, 
         pen <- sum(log(pi_vals[lambda_seq > 1]) * (lambda_seq[lambda_seq > 1] - 1))
     }
 
-    return(llike + pen)
+    vpen <- -var_inflate_pen / xi
+
+    return(llike + pen + vpen)
 }
 
 #' Wrapper for \code{\link{normal_mix_fix}} so that I can use SQUAREM.
@@ -103,7 +105,7 @@ normal_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, 
 #'
 #' @author David Gerard
 normal_mix_fix_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde, tau2_seq,
-                                   lambda_seq, scale_var = TRUE) {
+                                   lambda_seq, scale_var = TRUE, var_inflate_pen = 0) {
 
     ## Make sure input is correct
     p <- length(betahat_ols)
@@ -120,7 +122,8 @@ normal_mix_fix_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde, 
     xi      <- pizxi_vec[length(pizxi_vec)]
     nout <- normal_mix_fix(pi_vals = pi_vals, z2 = z2, xi = xi, betahat_ols = betahat_ols,
                            S_diag = S_diag, alpha_tilde = alpha_tilde, tau2_seq = tau2_seq,
-                           lambda_seq = lambda_seq, scale_var = scale_var)
+                           lambda_seq = lambda_seq, scale_var = scale_var,
+                           var_inflate_pen = var_inflate_pen)
 
     pizxi_new <- c(nout$pi_vals, nout$z2, nout$xi)
     return(pizxi_new)
@@ -144,7 +147,7 @@ normal_mix_fix_wrapper <- function(pizxi_vec, betahat_ols, S_diag, alpha_tilde, 
 #'
 #' @author David Gerard
 normal_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, tau2_seq,
-                           lambda_seq, scale_var = TRUE) {
+                           lambda_seq, scale_var = TRUE, var_inflate_pen = 0) {
     ## Make sure input is correct ------------------------------------------------------
     M <- length(tau2_seq)
     p <- length(betahat_ols)
@@ -202,7 +205,8 @@ normal_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, ta
             oout <- stats::optim(par = xi_old, fn = brent_obj_norm, method = "Brent",
                                  qvals = qvals, S_diag = S_diag, tau2_seq = tau2_seq,
                                  resid_vec = resid_vec, lower = 10 ^ -14, upper = 10,
-                                 control = list(fnscale = -1, maxit = 10))
+                                 control = list(fnscale = -1, maxit = 10),
+                                 var_inflate_pen = var_inflate_pen)
             xi_new <- max(oout$par, 10 ^ -14)
 
             mix_var  <- outer(xi_new * S_diag, tau2_seq, FUN = `+`)
@@ -227,7 +231,7 @@ normal_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, ta
 #'     term induced by the confounders.
 #'
 #' @author David Gerard
-brent_obj_norm <- function(xi, qvals, S_diag, tau2_seq, resid_vec) {
+brent_obj_norm <- function(xi, qvals, S_diag, tau2_seq, resid_vec, var_inflate_pen = 0) {
 
     ## Make sure input is correct.
     p <- length(S_diag)
@@ -242,5 +246,6 @@ brent_obj_norm <- function(xi, qvals, S_diag, tau2_seq, resid_vec) {
     theta_diag <- rowSums(qvals / mix_var)
     obj <- sum(theta_diag * resid_vec ^ 2) + sum(qvals * log(mix_var))
     obj <- -obj / 2
-    return(obj)
+    vpen <- -var_inflate_pen / xi
+    return(obj + vpen)
 }

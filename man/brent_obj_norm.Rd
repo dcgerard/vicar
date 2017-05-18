@@ -5,7 +5,7 @@
 \title{Objective function for updating variance inflation parameter during
 EM for mixtures of normals prior.}
 \usage{
-brent_obj_norm(xi, qvals, S_diag, tau2_seq, resid_vec)
+brent_obj_norm(xi, qvals, S_diag, tau2_seq, resid_vec, var_inflate_pen = 0)
 }
 \arguments{
 \item{xi}{The current value of the variance inflation parameter.}
@@ -21,6 +21,10 @@ grid_seq in \code{\link{mouthwash_second_step}} if
 
 \item{resid_vec}{The residuals from the OLS estimates and the bias
 term induced by the confounders.}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 Objective function for updating variance inflation parameter during

@@ -5,7 +5,7 @@
 \title{Log-likelihood when using t errors and mixture of uniforms prior.}
 \usage{
 uniform_mix_llike(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq,
-  b_seq, lambda_seq, degrees_freedom)
+  b_seq, lambda_seq, degrees_freedom, var_inflate_pen = 0)
 }
 \arguments{
 \item{pi_vals}{A vector of non-negative numerics that sums to
@@ -37,6 +37,10 @@ penalties on the mixing proportions.}
 \item{degrees_freedom}{A positive scalar or a vector of positive
 scalars the length of \code{betahat_ols}. The degrees of
 freedom of the t-distribution.}
+
+\item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
+Defaults to 0, but should be something non-zero when \code{alpha = 1}
+and \code{scale_var = TRUE}.}
 }
 \description{
 Log-likelihood when using t errors and mixture of uniforms prior.
