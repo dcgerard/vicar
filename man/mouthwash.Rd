@@ -11,7 +11,8 @@ mouthwash(Y, X, k = NULL, cov_of_interest = ncol(X),
   lambda_type = c("zero_conc", "uniform"), pi_init_type = c("zero_conc",
   "uniform", "random"), degrees_freedom = NULL, pi_init = NULL,
   grid_seq = NULL, lambda_seq = NULL, lambda0 = 10, scale_var = TRUE,
-  plot_update = FALSE, sprop = 0, var_inflate_pen = 0)
+  plot_update = FALSE, sprop = 0, var_inflate_pen = 0,
+  subsample = FALSE, num_sub = min(1000, ncol(Y)), same_grid = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -119,6 +120,19 @@ identifiability reasons it must be the case that
 \item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
 Defaults to 0, but should be something non-zero when \code{alpha = 1}
 and \code{scale_var = TRUE}.}
+
+\item{subsample}{A logical. Should we only use a subsample of the genes to estimate
+the hidden covariates (\code{TRUE}) or use all of the genes (\code{FALSE})? If
+\code{TRUE}, then \code{\link[ashr]{ash}} will be re-run on the residuals (after
+subtracting out the contribution from the unobserved confounders) to obtain the
+estimated prior.}
+
+\item{num_sub}{The number of genes to subsample if \code{subsample = TRUE}. Not used if
+\code{subsample = FALSE}.}
+
+\item{same_grid}{A logical. If \code{subsample = FALSE}, should we use the same grid as
+when we estimated the unobserved confounders (\code{TRUE}) or the default grid from
+\code{\link[ashr]{ash.workhorse}} (\code{FALSE})?}
 }
 \value{
 A list with some or all of the following elements.

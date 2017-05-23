@@ -89,6 +89,16 @@
 #' @param var_inflate_pen The penalty to apply on the variance inflation parameter.
 #'     Defaults to 0, but should be something non-zero when \code{alpha = 1}
 #'     and \code{scale_var = TRUE}.
+#' @param subsample A logical. Should we only use a subsample of the genes to estimate
+#'     the hidden covariates (\code{TRUE}) or use all of the genes (\code{FALSE})? If
+#'     \code{TRUE}, then \code{\link[ashr]{ash}} will be re-run on the residuals (after
+#'     subtracting out the contribution from the unobserved confounders) to obtain the
+#'     estimated prior.
+#' @param num_sub The number of genes to subsample if \code{subsample = TRUE}. Not used if
+#'     \code{subsample = FALSE}.
+#' @param same_grid A logical. If \code{subsample = FALSE}, should we use the same grid as
+#'     when we estimated the unobserved confounders (\code{TRUE}) or the default grid from
+#'     \code{\link[ashr]{ash.workhorse}} (\code{FALSE})?
 #'
 #' @return A list with some or all of the following elements.
 #'
@@ -212,7 +222,10 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       grid_seq = NULL, lambda_seq = NULL,
                       lambda0 = 10, scale_var = TRUE,
                       plot_update = FALSE,
-                      sprop = 0, var_inflate_pen = 0) {
+                      sprop = 0, var_inflate_pen = 0,
+                      subsample = FALSE,
+                      num_sub = min(1000, ncol(Y)),
+                      same_grid = FALSE) {
 
 
     ## Make sure input is correct --------------------------------------------------------
@@ -228,6 +241,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(lambda0 >= 1)
     assertthat::assert_that(sprop >= 0)
     assertthat::assert_that(var_inflate_pen >= 0)
+    assertthat::assert_that(num_sub >= 1, num_sub <= ncol(Y))
 
     likelihood   <- match.arg(likelihood)
     mixing_dist  <- match.arg(mixing_dist)
@@ -337,20 +351,74 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     }
 
     ## Run MOUTHWASH -------------------------------------------------------------
-    val <- mouthwash_second_step(betahat_ols = betahat_ols_star,
-                                 S_diag = S_diag_star,
-                                 alpha_tilde = alpha_tilde_star,
-                                 tau2_seq = tau2_seq, a_seq = a_seq,
-                                 b_seq = b_seq,
-                                 degrees_freedom = degrees_freedom,
-                                 lambda_seq = lambda_seq,
-                                 mixing_dist = mixing_dist,
-                                 likelihood = likelihood,
-                                 pi_init_type = pi_init_type,
-                                 scale_var = scale_var,
-                                 plot_update = plot_update,
-                                 sprop = sprop,
-                                 var_inflate_pen = var_inflate_pen)
+    if (!subsample) {
+      val <- mouthwash_second_step(betahat_ols = betahat_ols_star,
+                                   S_diag = S_diag_star,
+                                   alpha_tilde = alpha_tilde_star,
+                                   tau2_seq = tau2_seq, a_seq = a_seq,
+                                   b_seq = b_seq,
+                                   degrees_freedom = degrees_freedom,
+                                   lambda_seq = lambda_seq,
+                                   mixing_dist = mixing_dist,
+                                   likelihood = likelihood,
+                                   pi_init_type = pi_init_type,
+                                   scale_var = scale_var,
+                                   plot_update = plot_update,
+                                   sprop = sprop,
+                                   var_inflate_pen = var_inflate_pen)
+    } else {
+      col_keep <- sort(sample(x = 1:ncol(Y), size = num_sub))
+      betahat_ols_star <- betahat_ols_star[col_keep]
+      S_diag_star <- S_diag_star[col_keep]
+      alpha_tilde_star <- alpha_tilde_star[col_keep, , drop = FALSE]
+
+      val2 <- mouthwash_second_step(betahat_ols = betahat_ols_star,
+                                   S_diag = S_diag_star,
+                                   alpha_tilde = alpha_tilde_star,
+                                   tau2_seq = tau2_seq, a_seq = a_seq,
+                                   b_seq = b_seq,
+                                   degrees_freedom = degrees_freedom,
+                                   lambda_seq = lambda_seq,
+                                   mixing_dist = mixing_dist,
+                                   likelihood = likelihood,
+                                   pi_init_type = pi_init_type,
+                                   scale_var = scale_var,
+                                   plot_update = plot_update,
+                                   sprop = sprop,
+                                   var_inflate_pen = var_inflate_pen)
+
+      az <- alpha_tilde %*% val2$z2
+
+      mixcompdist <- mixing_dist
+      if (mixcompdist == "uniform") {
+        mixcompdist <- "halfuniform"
+      } else if (mixcompdist == "sym_uniform") {
+        mixcompdist <- "uniform"
+      }
+
+      ashr_df <- degrees_freedom
+      if (likelihood == "normal") {
+        ashr_df <- NULL
+      }
+
+      if (same_grid) {
+        ash_g <- val2$fitted_g
+      } else {
+        ash_g <- NULL
+      }
+
+      val <- ashr::ash.workhorse(betahat = c(betahat_ols - az),
+                                 sebetahat = c(sqrt(val2$xi * S_diag)),
+                                 df = ashr_df,
+                                 prior = "nullbiased",
+                                 nullweight = lambda_seq[zero_spot],
+                                 mixcompdist = mixcompdist,
+                                 g = ash_g,
+                                 alpha = sprop)
+      val$pi0 <- val2$pi0
+      val$xi  <- val2$xi
+      val$z2  <- val2$z2
+    }
 
     ## Estimate rest of the hidden confounders -----------------------------------
     Y1  <- rotate_out$Y1
