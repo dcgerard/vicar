@@ -255,6 +255,10 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
       stop("if sprop is 1 and scale_var = TRUE, then var_inflate_pen should be > 0")
     }
 
+    if (!subsample & ncol(Y) >= 20000) {
+      message("This will take awhile. To speed things up, try setting `subsample = TRUE`")
+    }
+
 
     ## Rotate ---------------------------------------------------------------------------
     rotate_out <- rotate_model(Y = Y, X = X, k = k,
