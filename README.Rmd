@@ -16,9 +16,9 @@ knitr::opts_chunk$set(
 # Various Ideas for Confounder Adjustment in Regression
 [![Windows Build](https://ci.appveyor.com/api/projects/status/github/dcgerard/vicar?branch=master&svg=true)](https://ci.appveyor.com/project/dcgerard/vicar)
 [![Linux Build](https://travis-ci.org/dcgerard/vicar.svg?branch=master)](https://travis-ci.org/dcgerard/vicar)
-<!-- [![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master) -->
-[![Coverage](https://img.shields.io/codecov/c/github/dcgerard/vicar/master.svg)](https://codecov.io/github/dcgerard/vicar?branch=master)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0)
+[![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master)
+<!--[![Coverage](https://img.shields.io/codecov/c/github/dcgerard/vicar/master.svg)](https://codecov.io/github/dcgerard/vicar?branch=master)
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](http://www.gnu.org/licenses/gpl-3.0) -->
 
 ## Description
 Let
@@ -56,7 +56,32 @@ confounder adjustment with control genes by
 3. Introduces RUV-impute, a more general framework for accounting for hidden confounders in regression. The function is called `ruvimpute`
 4. Introduces RUV-Bayes, a Bayesian version of RUV. The function is called `ruvb`.
 
-Please cite this package as:
+See also the related R packages
+[`cate`](https://cran.r-project.org/web/packages/cate/index.html)
+[@wang2015cate] and
+[`ruv`](https://cran.r-project.org/web/packages/ruv/index.html)
+[@bartsch2015ruv].
+
+Check out [NEWS.md](NEWS.md) to see what's new with each version.
+
+## How to cite
+
+If you use any of the control-gene based methods, please cite:
+
+> Gerard, D., & Stephens, M. 2017. *Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls*. arXiv preprint 	arXiv:1705.08393 [https://arxiv.org/abs/1705.08393](https://arxiv.org/abs/1705.08393).
+
+Or, using BibTex:
+``` tex
+@article{gerard2017unifying,
+  title={Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls},
+  author={Gerard, David and Stephens, Matthew},
+  journal={arXiv preprint arXiv:1705.08393},
+  url={https://arxiv.org/abs/1705.08393},
+  year={2017}
+}
+```
+
+Otherwise, please cite this package as:
 
 > Gerard, David. 2016. *vicar: Various Ideas for Confounder Adjustment in Regression*. [https://github.com/dcgerard/vicar](https://github.com/dcgerard/vicar).
 
@@ -70,14 +95,6 @@ Or, using BibTex:
     url = {https://github.com/dcgerard/vicar},
 }
 ```
-
-See also the related R packages
-[`cate`](https://cran.r-project.org/web/packages/cate/index.html)
-[@wang2015cate] and
-[`ruv`](https://cran.r-project.org/web/packages/ruv/index.html)
-[@bartsch2015ruv].
-
-Check out [NEWS.md](NEWS.md) to see what's new with each version.
 
 ## Installation
 To install, run in R:
