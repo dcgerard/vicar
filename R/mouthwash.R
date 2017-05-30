@@ -99,6 +99,9 @@
 #' @param same_grid A logical. If \code{subsample = FALSE}, should we use the same grid as
 #'     when we estimated the unobserved confounders (\code{TRUE}) or the default grid from
 #'     \code{\link[ashr]{ash.workhorse}} (\code{FALSE})?
+#' @param use_t_adjust A logical. Should we adjust the variance estimates so that the p-values
+#'     from the z-statistics match the corresponding p-values from the original
+#'     t-statistics (\code{TRUE}) or not (\code{FALSE})?
 #'
 #' @return A list with some or all of the following elements.
 #'
@@ -225,7 +228,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       sprop = 0, var_inflate_pen = 0,
                       subsample = FALSE,
                       num_sub = min(1000, ncol(Y)),
-                      same_grid = FALSE) {
+                      same_grid = FALSE,
+                      use_t_adjust = FALSE) {
 
 
     ## Make sure input is correct --------------------------------------------------------
@@ -248,8 +252,12 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     pi_init_type <- match.arg(pi_init_type)
     lambda_type  <- match.arg(lambda_type)
 
-    if (likelihood == "t" & mixing_dist == "normal") {
-        stop("normal mixtures not implemented for t-likelihood yet (or likely ever).")
+    if (use_t_adjust & likelihood == "normal") {
+      stop("to use the use_t_adjust option, please set likelihood = 't'")
+    }
+
+    if (likelihood == "t" & mixing_dist == "normal" & !use_t_adjust) {
+        stop("normal mixtures not implemented for t-likelihood unless use_t_adjust = TRUE.")
     }
     if (sprop == 1 & scale_var & var_inflate_pen < 10 ^ -6) {
       stop("if sprop is 1 and scale_var = TRUE, then var_inflate_pen should be > 0")
@@ -291,6 +299,14 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     alpha_tilde <- rotate_out$alpha / c(rotate_out$R22)
     S_diag      <- c(rotate_out$sig_diag / c(rotate_out$R22 ^ 2))
     betahat_ols <- matrix(rotate_out$betahat_ols, ncol = 1)
+
+    ## use adjust_by_t to use normal --------------------------------------------------
+    if (use_t_adjust) {
+      S_diag <- adjust_by_t(betahat = betahat_ols, sebetahat = sqrt(S_diag),
+                            df = degrees_freedom) ^ 2
+      likelihood <- "normal" ## should switch from t to normal likelihood
+      degrees_freedom <- Inf ## because dealt with degrees_freedom earlier, so need to do it here after changing the likelihood.
+    }
 
     ## Exchangeable versions of the models ---------------------------------------------
     if (sprop > 0) {
@@ -718,3 +734,28 @@ pt_wrap <- function(x, df, mean = 0, sd = 1) {
     pval <- stats::pt(x_new, df = df)
     return(pval)
 }
+
+#' Returns adjusted sebetahat's based on t likelihood so that we can use a normal likelihood.
+#'
+#' @param betahat The estimates of the effects.
+#' @param sebetahat The estimates of the standard errors of \code{betahat}.
+#' @param df The degrees of freedom of the t. Can either be of length 1 or the same length of
+#'     \code{betahat}.
+#'
+#' @author David Gerard
+#'
+adjust_by_t <- function(betahat, sebetahat, df) {
+  ## Check input -----------------------------------------
+  assertthat::are_equal(length(betahat), length(sebetahat))
+  assertthat::assert_that(length(betahat) == length(df) | length(df) == 1)
+  assertthat::assert_that(df > 0)
+
+  ## Convert t to z --------------------------------------
+  zstats <- stats::qnorm(stats::pt(q = betahat / sebetahat, df = df))
+  snew <- betahat / zstats
+
+  return(snew)
+}
+
+
+

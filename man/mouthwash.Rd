@@ -12,7 +12,8 @@ mouthwash(Y, X, k = NULL, cov_of_interest = ncol(X),
   "uniform", "random"), degrees_freedom = NULL, pi_init = NULL,
   grid_seq = NULL, lambda_seq = NULL, lambda0 = 10, scale_var = TRUE,
   plot_update = FALSE, sprop = 0, var_inflate_pen = 0,
-  subsample = FALSE, num_sub = min(1000, ncol(Y)), same_grid = FALSE)
+  subsample = FALSE, num_sub = min(1000, ncol(Y)), same_grid = FALSE,
+  use_t_adjust = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -133,6 +134,10 @@ estimated prior.}
 \item{same_grid}{A logical. If \code{subsample = FALSE}, should we use the same grid as
 when we estimated the unobserved confounders (\code{TRUE}) or the default grid from
 \code{\link[ashr]{ash.workhorse}} (\code{FALSE})?}
+
+\item{use_t_adjust}{A logical. Should we adjust the variance estimates so that the p-values
+from the z-statistics match the corresponding p-values from the original
+t-statistics (\code{TRUE}) or not (\code{FALSE})?}
 }
 \value{
 A list with some or all of the following elements.

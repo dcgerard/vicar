@@ -351,3 +351,13 @@ test_that("var_inflate_pen works for mouthwash", {
   expect_true(mout5$xi <= mout6$xi)
 }
 )
+
+
+test_that("adjust_by_t works", {
+  betahat <- stats::rnorm(100)
+  sebetahat <- sqrt(stats::rchisq(100, df = 2) / 2)
+  df <- 2
+  snew <- adjust_by_t(betahat = betahat, sebetahat = sebetahat, df = df)
+  expect_equal(stats::pnorm(betahat / snew), stats::pt(betahat / sebetahat, df = df))
+}
+)
