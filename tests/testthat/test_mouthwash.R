@@ -44,6 +44,8 @@ test_that("mouthwash works ok", {
 
     expect_error(mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2,
                            likelihood = "t", mixing_dist = "normal"))
+    mouthwash(Y = Y, X = X, k = 1, degrees_freedom = 2,
+              likelihood = "t", mixing_dist = "normal", use_t_adjust = TRUE)
 
     mout2 <- mouthwash(Y = Y, X = X, k = 1, mixing_dist = "normal",
                       likelihood = "normal", sprop = 0.5)

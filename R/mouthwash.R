@@ -752,7 +752,7 @@ adjust_by_t <- function(betahat, sebetahat, df) {
 
   ## Convert t to z --------------------------------------
   zstats <- stats::qnorm(stats::pt(q = betahat / sebetahat, df = df))
-  snew <- betahat / zstats
+  snew <- c(betahat / zstats)
 
   return(snew)
 }
