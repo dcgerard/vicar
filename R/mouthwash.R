@@ -246,6 +246,11 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(sprop >= 0)
     assertthat::assert_that(var_inflate_pen >= 0)
     assertthat::assert_that(num_sub >= 1, num_sub <= ncol(Y))
+    check_same <- apply(Y, 2, stats::sd) > 0
+    if (!all(check_same)) {
+      stop(paste0("Columns [", paste(which(!check_same, arr.ind = TRUE), collapse = ", "), "] of Y have sample SD of 0. This is prohibited."))
+    }
+
 
     likelihood   <- match.arg(likelihood)
     mixing_dist  <- match.arg(mixing_dist)
@@ -257,7 +262,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     }
 
     if (likelihood == "t" & mixing_dist == "normal" & !use_t_adjust) {
-        stop("normal mixtures not implemented for t-likelihood unless use_t_adjust = TRUE.")
+      stop("normal mixtures not implemented for t-likelihood unless use_t_adjust = TRUE.")
     }
     if (sprop == 1 & scale_var & var_inflate_pen < 10 ^ -6) {
       stop("if sprop is 1 and scale_var = TRUE, then var_inflate_pen should be > 0")
