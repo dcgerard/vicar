@@ -8,7 +8,7 @@ using namespace Rcpp;
 
 // bfa_gd_gibbs
 List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_init, double phi_init, NumericVector zeta_init, NumericVector theta_init, double kappa_init, NumericMatrix Y22init, NumericMatrix Y21, NumericMatrix Y31, NumericMatrix Y32, int nsamp, int burnin, int thin, double rho_0, double alpha_0, double delta_0, double lambda_0, double nu_0, double beta_0, double eta_0, double tau_0, bool hetero_factors, bool display_progress);
-RcppExport SEXP vicar_bfa_gd_gibbs(SEXP LinitSEXP, SEXP FinitSEXP, SEXP xi_initSEXP, SEXP phi_initSEXP, SEXP zeta_initSEXP, SEXP theta_initSEXP, SEXP kappa_initSEXP, SEXP Y22initSEXP, SEXP Y21SEXP, SEXP Y31SEXP, SEXP Y32SEXP, SEXP nsampSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP rho_0SEXP, SEXP alpha_0SEXP, SEXP delta_0SEXP, SEXP lambda_0SEXP, SEXP nu_0SEXP, SEXP beta_0SEXP, SEXP eta_0SEXP, SEXP tau_0SEXP, SEXP hetero_factorsSEXP, SEXP display_progressSEXP) {
+RcppExport SEXP _vicar_bfa_gd_gibbs(SEXP LinitSEXP, SEXP FinitSEXP, SEXP xi_initSEXP, SEXP phi_initSEXP, SEXP zeta_initSEXP, SEXP theta_initSEXP, SEXP kappa_initSEXP, SEXP Y22initSEXP, SEXP Y21SEXP, SEXP Y31SEXP, SEXP Y32SEXP, SEXP nsampSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP rho_0SEXP, SEXP alpha_0SEXP, SEXP delta_0SEXP, SEXP lambda_0SEXP, SEXP nu_0SEXP, SEXP beta_0SEXP, SEXP eta_0SEXP, SEXP tau_0SEXP, SEXP hetero_factorsSEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -42,7 +42,7 @@ END_RCPP
 }
 // bfa_gs_linked_gibbs
 List bfa_gs_linked_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_init, double phi_init, NumericVector zeta_init, NumericMatrix Y22init, NumericMatrix Y21, NumericMatrix Y31, NumericMatrix Y32, int nsamp, int burnin, int thin, double rho_0, double alpha_0, double beta_0, double eta_0, double tau_0, bool display_progress);
-RcppExport SEXP vicar_bfa_gs_linked_gibbs(SEXP LinitSEXP, SEXP FinitSEXP, SEXP xi_initSEXP, SEXP phi_initSEXP, SEXP zeta_initSEXP, SEXP Y22initSEXP, SEXP Y21SEXP, SEXP Y31SEXP, SEXP Y32SEXP, SEXP nsampSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP rho_0SEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP eta_0SEXP, SEXP tau_0SEXP, SEXP display_progressSEXP) {
+RcppExport SEXP _vicar_bfa_gs_linked_gibbs(SEXP LinitSEXP, SEXP FinitSEXP, SEXP xi_initSEXP, SEXP phi_initSEXP, SEXP zeta_initSEXP, SEXP Y22initSEXP, SEXP Y21SEXP, SEXP Y31SEXP, SEXP Y32SEXP, SEXP nsampSEXP, SEXP burninSEXP, SEXP thinSEXP, SEXP rho_0SEXP, SEXP alpha_0SEXP, SEXP beta_0SEXP, SEXP eta_0SEXP, SEXP tau_0SEXP, SEXP display_progressSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -70,8 +70,8 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"vicar_bfa_gd_gibbs", (DL_FUNC) &vicar_bfa_gd_gibbs, 24},
-    {"vicar_bfa_gs_linked_gibbs", (DL_FUNC) &vicar_bfa_gs_linked_gibbs, 18},
+    {"_vicar_bfa_gd_gibbs", (DL_FUNC) &_vicar_bfa_gd_gibbs, 24},
+    {"_vicar_bfa_gs_linked_gibbs", (DL_FUNC) &_vicar_bfa_gs_linked_gibbs, 18},
     {NULL, NULL, 0}
 };
 

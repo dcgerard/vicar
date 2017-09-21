@@ -102,6 +102,8 @@
 #' @param use_t_adjust A logical. Should we adjust the variance estimates so that the p-values
 #'     from the z-statistics match the corresponding p-values from the original
 #'     t-statistics (\code{TRUE}) or not (\code{FALSE})?
+#' @param detailed_output A logical. Should we return a lot of output (\code{TRUE}) or the standard
+#'     output (\code{FALSE}). Most users should only need this set to (\code{FALSE}).
 #'
 #' @return A list with some or all of the following elements.
 #'
@@ -142,6 +144,7 @@
 #'       \item{qvalue}{The q-values, a measure of significance.}
 #'       \item{PosteriorMean}{The posterior means of the effects.}
 #'       \item{PosteriorSD}{The posterior standard deviations of the effects.}
+#'       \item{extra}{If \code{detailed_output = TRUE}, this list is returned with some extra output. Mostly used for debugging.}
 #'     }
 #'
 #' @export
@@ -229,7 +232,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       subsample = FALSE,
                       num_sub = min(1000, ncol(Y)),
                       same_grid = FALSE,
-                      use_t_adjust = FALSE) {
+                      use_t_adjust = FALSE,
+                      detailed_output = FALSE) {
 
 
     ## Make sure input is correct --------------------------------------------------------
@@ -468,6 +472,16 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     val$sig_diag <- rotate_out$sig_diag
 
     class(val) <- "mouthwash"
+
+    if (detailed_output) {
+      val$extra                  <- list()
+      val$extra$az               <- az
+      val$extra$alpha_tilde      <- alpha_tilde
+      val$extra$alpha_tilde_star <- alpha_tilde_star
+      val$extra$rotate_out       <- rotate_out
+    } else {
+      val$z2 <- NULL
+    }
 
     return(val)
 }

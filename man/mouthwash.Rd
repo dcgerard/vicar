@@ -13,7 +13,7 @@ mouthwash(Y, X, k = NULL, cov_of_interest = ncol(X),
   grid_seq = NULL, lambda_seq = NULL, lambda0 = 10, scale_var = TRUE,
   plot_update = FALSE, sprop = 0, var_inflate_pen = 0,
   subsample = FALSE, num_sub = min(1000, ncol(Y)), same_grid = FALSE,
-  use_t_adjust = FALSE)
+  use_t_adjust = FALSE, detailed_output = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -138,6 +138,9 @@ when we estimated the unobserved confounders (\code{TRUE}) or the default grid f
 \item{use_t_adjust}{A logical. Should we adjust the variance estimates so that the p-values
 from the z-statistics match the corresponding p-values from the original
 t-statistics (\code{TRUE}) or not (\code{FALSE})?}
+
+\item{detailed_output}{A logical. Should we return a lot of output (\code{TRUE}) or the standard
+output (\code{FALSE}). Most users should only need this set to (\code{FALSE}).}
 }
 \value{
 A list with some or all of the following elements.
@@ -179,6 +182,7 @@ A list with some or all of the following elements.
       \item{qvalue}{The q-values, a measure of significance.}
       \item{PosteriorMean}{The posterior means of the effects.}
       \item{PosteriorSD}{The posterior standard deviations of the effects.}
+      \item{extra}{If \code{detailed_output = TRUE}, this list is returned with some extra output. Mostly used for debugging.}
     }
 }
 \description{

@@ -44,7 +44,7 @@
 #'
 #'
 bfa_gd_gibbs <- function(Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress) {
-    .Call('vicar_bfa_gd_gibbs', PACKAGE = 'vicar', Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress)
+    .Call('_vicar_bfa_gd_gibbs', PACKAGE = 'vicar', Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress)
 }
 
 #' Fast Gibbs sampler for Bayesian factor analysis.
@@ -87,6 +87,6 @@ bfa_gd_gibbs <- function(Linit, Finit, xi_init, phi_init, zeta_init, theta_init,
 #'
 #'
 bfa_gs_linked_gibbs <- function(Linit, Finit, xi_init, phi_init, zeta_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, beta_0, eta_0, tau_0, display_progress) {
-    .Call('vicar_bfa_gs_linked_gibbs', PACKAGE = 'vicar', Linit, Finit, xi_init, phi_init, zeta_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, beta_0, eta_0, tau_0, display_progress)
+    .Call('_vicar_bfa_gs_linked_gibbs', PACKAGE = 'vicar', Linit, Finit, xi_init, phi_init, zeta_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, beta_0, eta_0, tau_0, display_progress)
 }
 
