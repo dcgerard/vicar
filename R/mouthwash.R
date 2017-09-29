@@ -475,7 +475,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 
     if (detailed_output) {
       val$extra                  <- list()
-      val$extra$az               <- az
+      val$extra$az               <- alpha_tilde_star %*% val$z2
       val$extra$alpha_tilde      <- alpha_tilde
       val$extra$alpha_tilde_star <- alpha_tilde_star
       val$extra$rotate_out       <- rotate_out
