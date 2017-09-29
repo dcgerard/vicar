@@ -81,6 +81,21 @@ Or, using BibTex:
 }
 ```
 
+If you use either MOUTHWASH or BACKWASH, please cite:
+
+> Gerard, D., & Stephens, M. 2017. *Empirical Bayes Shrinkage and False Discovery Rate Estimation, Allowing For Unwanted Variation*. arXiv preprint arXiv:1709.10066 [https://arxiv.org/abs/1709.10066](https://arxiv.org/abs/1709.10066).
+
+Or, using BibTex:
+``` tex
+@article{gerard2017empirical,
+  title={Empirical {B}ayes Shrinkage and False Discovery Rate Estimation, Allowing For Unwanted Variation},
+  author={Gerard, David and Stephens, Matthew},
+  journal={arXiv preprint arXiv:1709.10066},
+  url={https://arxiv.org/abs/1709.10066},
+  year={2017}
+}
+```
+
 Otherwise, please cite this package as:
 
 > Gerard, David. 2016. *vicar: Various Ideas for Confounder Adjustment in Regression*. [https://github.com/dcgerard/vicar](https://github.com/dcgerard/vicar).
