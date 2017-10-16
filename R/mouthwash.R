@@ -286,6 +286,10 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                limmashrink = limmashrink, fa_func = fa_func,
                                fa_args = fa_args, do_factor = TRUE)
 
+    if (rotate_out$k == 0) {
+      stop("k estimated to be 0. You might not need mouthwash")
+    }
+
 
     ## Deal with degrees of freedom -----------------------------------------------------
     if (likelihood == "normal") {

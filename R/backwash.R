@@ -211,6 +211,10 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     S_diag      <- c(rotate_out$sig_diag / c(rotate_out$R22 ^ 2))
     betahat_ols <- matrix(rotate_out$betahat_ols, ncol = 1)
 
+    if (rotate_out$k == 0) {
+      stop("k estimated to be 0. You might not need backwash.")
+    }
+
     ## Exchangeable versions of the models ---------------------------------------------
     if (sprop > 0) {
       sgamma           <- S_diag ^ (-1 * sprop / 2)
