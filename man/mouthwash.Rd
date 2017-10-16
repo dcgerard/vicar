@@ -21,7 +21,7 @@ where each column has its own variance. In a gene expression
 study, the rows are the individuals and the columns are the
 genes.}
 
-\item{X}{A matrix of numerics. The covariates of interest.}
+\item{X}{A matrix of numerics. The observed covariates.}
 
 \item{k}{A non-negative integer.The number of unobserved
 confounders. If not specified and the R package sva is

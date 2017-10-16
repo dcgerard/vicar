@@ -54,6 +54,7 @@
 #'     covariate in X whose coefficients you are interested in.
 #'     The rest are considered nuisance parameters and are regressed
 #'     out by OLS.
+#' @param X A matrix of numerics. The observed covariates.
 #'
 #' @return \code{backwash} returns a list with some or all of the
 #'     following elements:

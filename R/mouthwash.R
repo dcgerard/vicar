@@ -108,6 +108,8 @@
 #'     covariate in X whose coefficients you are interested in.
 #'     The rest are considered nuisance parameters and are regressed
 #'     out by OLS.
+#' @param X A matrix of numerics. The observed covariates.
+#'
 #' @return A list with some or all of the following elements.
 #'
 #'     \code{fitted_g}: The estimated unimodal prior. It is of class
