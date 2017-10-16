@@ -189,6 +189,9 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(sprop >= 0)
     assertthat::assert_that(var_inflate_pen >= 0)
 
+    if (length(cov_of_interest) > 1) {
+      stop("We do not currently support more than one covariate of interest.")
+    }
     if (scale_var & sprop == 1 & var_inflate_pen == 0) {
       stop("sprop cannot be 1 when scale_var is TRUE and var_inflate_pen = 0.")
     }

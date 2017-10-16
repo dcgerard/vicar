@@ -241,7 +241,6 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(is.matrix(X))
     assertthat::are_equal(nrow(Y), nrow(X))
     assertthat::assert_that(is.numeric(cov_of_interest))
-    assertthat::are_equal(length(cov_of_interest), 1)
     assertthat::assert_that(is.logical(include_intercept))
     assertthat::assert_that(is.logical(limmashrink))
     assertthat::assert_that(is.function(fa_func))
@@ -253,6 +252,9 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     check_same <- apply(Y, 2, stats::sd) > 0
     if (!all(check_same)) {
       stop(paste0("Columns [", paste(which(!check_same, arr.ind = TRUE), collapse = ", "), "] of Y have sample SD of 0. This is prohibited."))
+    }
+    if (length(cov_of_interest) > 1) {
+      stop("We do not currently support more than one covariate of interest.")
     }
 
 
