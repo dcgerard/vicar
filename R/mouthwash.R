@@ -104,7 +104,10 @@
 #'     t-statistics (\code{TRUE}) or not (\code{FALSE})?
 #' @param detailed_output A logical. Should we return a lot of output (\code{TRUE}) or the standard
 #'     output (\code{FALSE}). Most users should only need this set to (\code{FALSE}).
-#'
+#' @param cov_of_interest A positive integer. The column number of the
+#'     covariate in X whose coefficients you are interested in.
+#'     The rest are considered nuisance parameters and are regressed
+#'     out by OLS.
 #' @return A list with some or all of the following elements.
 #'
 #'     \code{fitted_g}: The estimated unimodal prior. It is of class

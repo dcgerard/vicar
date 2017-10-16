@@ -50,6 +50,10 @@
 #'
 #' @inheritParams vruv4
 #' @inheritParams mouthwash
+#' @param cov_of_interest A positive integer. The column number of the
+#'     covariate in X whose coefficients you are interested in.
+#'     The rest are considered nuisance parameters and are regressed
+#'     out by OLS.
 #'
 #' @return \code{backwash} returns a list with some or all of the
 #'     following elements:

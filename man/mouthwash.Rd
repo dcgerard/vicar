@@ -29,10 +29,10 @@ installed, then this function will estimate the number of
 hidden confounders using the methods of Buja and Eyuboglu
 (1992).}
 
-\item{cov_of_interest}{A vector of positive integers. The column
-numbers of the covariates in X whose coefficients you are
-interested in. The rest are considered nuisance parameters and
-are regressed out by OLS.}
+\item{cov_of_interest}{A positive integer. The column number of the
+covariate in X whose coefficients you are interested in.
+The rest are considered nuisance parameters and are regressed
+out by OLS.}
 
 \item{include_intercept}{A logical. If \code{TRUE}, then it will
 check \code{X} to see if it has an intercept term. If not, then
