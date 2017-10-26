@@ -129,4 +129,4 @@ Stephens, Matthew. 2016. “False Discovery Rates: A New Deal.” *Biostatistics
 
 Wang, Jingshu, and Qingyuan Zhao. 2015. *cate: High Dimensional Factor Analysis and Confounder Adjusted Testing and Estimation*. <https://CRAN.R-project.org/package=cate>.
 
-Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B Owen. 2015. “Confounder Adjustment in Multiple Hypothesis Testing.” *ArXiv Preprint ArXiv:1508.04178*. <https://arxiv.org/abs/1508.04178>.
+Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B Owen. 2015. “Confounder Adjustment in Multiple Hypothesis Testing.” *arXiv Preprint arXiv:1508.04178*. <https://arxiv.org/abs/1508.04178>.

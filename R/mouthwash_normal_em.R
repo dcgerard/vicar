@@ -54,7 +54,7 @@ normal_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, 
                              lambda_seq, var_inflate_pen = 0) {
     ## Make sure input is correct ------------------------------------------------------
     M <- length(tau2_seq)
-    zero_spot <- which(abs(tau2_seq) < 10 ^ -14)
+    zero_spot <- which(abs(tau2_seq) < 10 ^ -12)
     assertthat::are_equal(length(zero_spot), 1)
     assertthat::are_equal(length(lambda_seq), M)
     assertthat::are_equal(length(pi_vals), M)
@@ -66,7 +66,7 @@ normal_mix_llike <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, 
     assertthat::are_equal(length(S_diag), nrow(alpha_tilde))
 
     ## make sure hard boundary is observed -----------------------------------------
-    if (any(pi_vals < -10 ^ -14) | xi < 10 ^ -14) {
+    if (any(pi_vals < -10 ^ -12) | xi < 10 ^ -12) {
       return(-Inf)
     }
 
@@ -151,7 +151,7 @@ normal_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, ta
     ## Make sure input is correct ------------------------------------------------------
     M <- length(tau2_seq)
     p <- length(betahat_ols)
-    zero_spot <- which(abs(tau2_seq) < 10 ^ -14)
+    zero_spot <- which(abs(tau2_seq) < 10 ^ -8)
     assertthat::are_equal(length(zero_spot), 1)
     assertthat::are_equal(length(lambda_seq), M)
     assertthat::are_equal(length(pi_vals), M)
@@ -175,13 +175,13 @@ normal_mix_fix <- function(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, ta
 
     lqvals_lesspi <- ldmix - denom
     qvals <- sweep(exp(lqvals_lesspi), MARGIN = 2, STATS = pi_vals, FUN = `*`)
-    assertthat::assert_that(all(abs(rowSums(qvals) - 1) < 10 ^ -14))
+    assertthat::assert_that(all(abs(rowSums(qvals) - 1) < 10 ^ -8))
 
     ## dtemp <- stats::dnorm(x = mix_obs, mean = mix_mean, sd = sqrt(mix_var)) %*% diag(pi_vals)
     ## assertthat::are_equal(dtemp / rowSums(dtemp), qvals)
 
     pi_new <- (colSums(qvals) + lambda_seq - 1) / (p - M + sum(lambda_seq))
-    assertthat::assert_that(abs(sum(pi_new) - 1) < 10 ^ -14)
+    assertthat::assert_that(abs(sum(pi_new) - 1) < 10 ^ -8)
     assertthat::assert_that(all(pi_new > -10 ^ -8))
 
     if (any(pi_new < 0)) {
