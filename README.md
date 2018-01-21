@@ -82,7 +82,7 @@ Or, using BibTex:
     title = {{vicar}: Various Ideas for Confounder Adjustment in Regression},
     author = {David Gerard},
     year = {2016},
-    note = {R package version 0.1.6},
+    note = {R package version 0.1-7},
     url = {https://github.com/dcgerard/vicar},
 }
 ```
