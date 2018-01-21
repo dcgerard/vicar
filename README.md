@@ -90,12 +90,13 @@ Or, using BibTex:
 Installation
 ------------
 
-To install, first install `sva` and `limma` from bioconductor in R:
+To install, first install `sva`, `limma` and `cate` from bioconductor
+in R:
 
 ``` r
 ## try http:// if https:// URLs are not supported
 source("https://bioconductor.org/biocLite.R")
-biocLite(c("limma", "sva"))
+biocLite(c("limma", "sva", "date"))
 ```
 
 Then run in R:
