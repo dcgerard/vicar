@@ -104,6 +104,8 @@
 #'     t-statistics (\code{TRUE}) or not (\code{FALSE})?
 #' @param detailed_output A logical. Should we return a lot of output (\code{TRUE}) or the standard
 #'     output (\code{FALSE}). Most users should only need this set to (\code{FALSE}).
+#' @param verbose If \code{verbose = TRUE}, print progress of the algorithm
+#'   to the console.
 #' @param cov_of_interest A positive integer. The column number of the
 #'     covariate in X whose coefficients you are interested in.
 #'     The rest are considered nuisance parameters and are regressed
@@ -238,8 +240,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       num_sub = min(1000, ncol(Y)),
                       same_grid = FALSE,
                       use_t_adjust = FALSE,
-                      detailed_output = FALSE) {
-
+                      detailed_output = FALSE,
+                      verbose = TRUE) {
 
     ## Make sure input is correct --------------------------------------------------------
     assertthat::assert_that(is.matrix(Y))

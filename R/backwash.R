@@ -178,7 +178,8 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                      pi_init_type = c("zero_conc", "uniform", "random"),
                      grid_seq = NULL, lambda_seq = NULL,
                      lambda0 = 10, scale_var = TRUE,
-                     sprop = 0, var_inflate_pen = 0) {
+                     sprop = 0, var_inflate_pen = 0,
+                     verbose = TRUE) {
 
     ## Check input -----------------------------------------------------------
     assertthat::assert_that(is.matrix(Y))
