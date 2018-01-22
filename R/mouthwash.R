@@ -243,7 +243,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       detailed_output = FALSE,
                       verbose = TRUE) {
 
-    ## Make sure input is correct --------------------------------------------------------
+    ## Make sure input is correct -------------------------------------------
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(X))
     assertthat::are_equal(nrow(Y), nrow(X))
@@ -263,7 +263,6 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     if (length(cov_of_interest) > 1) {
       stop("We do not currently support more than one covariate of interest.")
     }
-
 
     likelihood   <- match.arg(likelihood)
     mixing_dist  <- match.arg(mixing_dist)
@@ -286,19 +285,26 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     }
 
 
-    ## Rotate ---------------------------------------------------------------------------
-    rotate_out <- rotate_model(Y = Y, X = X, k = k,
-                               cov_of_interest = cov_of_interest,
-                               include_intercept = include_intercept,
-                               limmashrink = limmashrink, fa_func = fa_func,
-                               fa_args = fa_args, do_factor = TRUE)
-
+    ## Rotate -------------------------------------------------------------
+    if (verbose)
+      cat("Computing independent basis using QR decomposition.\n")
+    timing <- system.time(
+      rotate_out <- rotate_model(Y = Y, X = X, k = k,
+                                 cov_of_interest = cov_of_interest,
+                                 include_intercept = include_intercept,
+                                 limmashrink = limmashrink, fa_func = fa_func,
+                                 fa_args = fa_args, do_factor = TRUE))
+    if (verbose)
+      cat("Computation took",timing["elapsed"],"seconds.\n")
     if (rotate_out$k == 0) {
       stop("k estimated to be 0. You might not need mouthwash")
     }
 
 
-    ## Deal with degrees of freedom -----------------------------------------------------
+    ## Deal with degrees of freedom -----------------------------------------
+    if (verbose)
+        cat("Running additional preprocessing steps.\n")
+    timing <- system.time({
     if (likelihood == "normal") {
         if (!is.null(degrees_freedom)) {
             message("likelihood = \"normal\" but degrees_freedom not NULL. Setting degrees_freedom to Inf")
@@ -317,20 +323,22 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
     assertthat::assert_that(length(degrees_freedom) == 1 | length(degrees_freedom) == ncol(Y))
     assertthat::assert_that(all(degrees_freedom > 0))
 
-    ## rescale alpha and sig_diag by R22 to get data for second step ------------------
+    ## rescale alpha and sig_diag by R22 to get data for second step --------
     alpha_tilde <- rotate_out$alpha / c(rotate_out$R22)
     S_diag      <- c(rotate_out$sig_diag / c(rotate_out$R22 ^ 2))
     betahat_ols <- matrix(rotate_out$betahat_ols, ncol = 1)
 
-    ## use adjust_by_t to use normal --------------------------------------------------
+    ## use adjust_by_t to use normal ----------------------------------------
     if (use_t_adjust) {
       S_diag <- adjust_by_t(betahat = betahat_ols, sebetahat = sqrt(S_diag),
                             df = degrees_freedom) ^ 2
       likelihood <- "normal" ## should switch from t to normal likelihood
-      degrees_freedom <- Inf ## because dealt with degrees_freedom earlier, so need to do it here after changing the likelihood.
+      degrees_freedom <- Inf ## because dealt with degrees_freedom
+                             ## earlier, so need to do it here after
+                             ## changing the likelihood.
     }
 
-    ## Exchangeable versions of the models ---------------------------------------------
+    ## Exchangeable versions of the models ----------------------------------
     if (sprop > 0) {
         sgamma           <- S_diag ^ (-1 * sprop / 2)
         alpha_tilde_star <- alpha_tilde * sgamma
@@ -342,7 +350,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
         S_diag_star      <- S_diag
     }
 
-    ## Set grid and penalties ---------------------------------------------------------
+    ## Set grid and penalties ----------------------------------------------
     if (!is.null(lambda_seq) & is.null(grid_seq)) {
         stop("lambda_seq specified but grid_seq is NULL")
     }
@@ -390,79 +398,100 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
             lambda_seq <- rep(1, M)
             lambda_seq[zero_spot] <- lambda0
         }
-    }
+    }})
+    if (verbose)
+      cat("Computation took",timing["elapsed"],"seconds.\n")
 
-    ## Run MOUTHWASH -------------------------------------------------------------
+    ## Run MOUTHWASH --------------------------------------------------------
     if (!subsample) {
-      val <- mouthwash_second_step(betahat_ols = betahat_ols_star,
-                                   S_diag = S_diag_star,
-                                   alpha_tilde = alpha_tilde_star,
-                                   tau2_seq = tau2_seq, a_seq = a_seq,
-                                   b_seq = b_seq,
-                                   degrees_freedom = degrees_freedom,
-                                   lambda_seq = lambda_seq,
-                                   mixing_dist = mixing_dist,
-                                   likelihood = likelihood,
-                                   pi_init_type = pi_init_type,
-                                   scale_var = scale_var,
-                                   plot_update = plot_update,
-                                   sprop = sprop,
-                                   var_inflate_pen = var_inflate_pen)
+    if (verbose)
+      cat("Running second step of mouthwash.\n")
+      timing <- system.time(
+        val <- mouthwash_second_step(betahat_ols = betahat_ols_star,
+                                     S_diag = S_diag_star,
+                                     alpha_tilde = alpha_tilde_star,
+                                     tau2_seq = tau2_seq, a_seq = a_seq,
+                                     b_seq = b_seq,
+                                     degrees_freedom = degrees_freedom,
+                                     lambda_seq = lambda_seq,
+                                     mixing_dist = mixing_dist,
+                                     likelihood = likelihood,
+                                     pi_init_type = pi_init_type,
+                                     scale_var = scale_var,
+                                     plot_update = plot_update,
+                                     sprop = sprop,
+                                     var_inflate_pen = var_inflate_pen,
+                                     verbose = verbose))
+      if (verbose)
+        cat("Computation took",timing["elapsed"],"seconds.\n")
     } else {
-      col_keep <- sort(sample(x = 1:ncol(Y), size = num_sub))
-      betahat_ols_star <- betahat_ols_star[col_keep]
-      S_diag_star <- S_diag_star[col_keep]
-      alpha_tilde_star <- alpha_tilde_star[col_keep, , drop = FALSE]
+      cat("Running second step of mouthwash.\n")
+      timing <- system.time({
+        col_keep <- sort(sample(x = 1:ncol(Y), size = num_sub))
+        betahat_ols_star <- betahat_ols_star[col_keep]
+        S_diag_star <- S_diag_star[col_keep]
+        alpha_tilde_star <- alpha_tilde_star[col_keep, , drop = FALSE]
 
-      val2 <- mouthwash_second_step(betahat_ols = betahat_ols_star,
-                                   S_diag = S_diag_star,
-                                   alpha_tilde = alpha_tilde_star,
-                                   tau2_seq = tau2_seq, a_seq = a_seq,
-                                   b_seq = b_seq,
-                                   degrees_freedom = degrees_freedom,
-                                   lambda_seq = lambda_seq,
-                                   mixing_dist = mixing_dist,
-                                   likelihood = likelihood,
-                                   pi_init_type = pi_init_type,
-                                   scale_var = scale_var,
-                                   plot_update = plot_update,
-                                   sprop = sprop,
-                                   var_inflate_pen = var_inflate_pen)
+        val2 <- mouthwash_second_step(betahat_ols = betahat_ols_star,
+                                      S_diag = S_diag_star,
+                                      alpha_tilde = alpha_tilde_star,
+                                      tau2_seq = tau2_seq, a_seq = a_seq,
+                                      b_seq = b_seq,
+                                      degrees_freedom = degrees_freedom,
+                                      lambda_seq = lambda_seq,
+                                      mixing_dist = mixing_dist,
+                                      likelihood = likelihood,
+                                      pi_init_type = pi_init_type,
+                                      scale_var = scale_var,
+                                      plot_update = plot_update,
+                                      sprop = sprop,
+                                      var_inflate_pen = var_inflate_pen,
+                                      verbose = verbose)
+      })
+      if (verbose) {
+        cat("Computation took",timing["elapsed"],"seconds.\n")
+        cat("Running adaptive shrinkage method.\n")
+    }
+      timing <- system.time({
+          az <- alpha_tilde %*% val2$z2
 
-      az <- alpha_tilde %*% val2$z2
+          mixcompdist <- mixing_dist
+          if (mixcompdist == "uniform") {
+              mixcompdist <- "halfuniform"
+          } else if (mixcompdist == "sym_uniform") {
+              mixcompdist <- "uniform"
+          }
 
-      mixcompdist <- mixing_dist
-      if (mixcompdist == "uniform") {
-        mixcompdist <- "halfuniform"
-      } else if (mixcompdist == "sym_uniform") {
-        mixcompdist <- "uniform"
-      }
+          ashr_df <- degrees_freedom
+          if (likelihood == "normal") {
+              ashr_df <- NULL
+          }
 
-      ashr_df <- degrees_freedom
-      if (likelihood == "normal") {
-        ashr_df <- NULL
-      }
-
-      if (same_grid) {
-        ash_g <- val2$fitted_g
-      } else {
-        ash_g <- NULL
-      }
-
-      val <- ashr::ash.workhorse(betahat = c(betahat_ols - az),
-                                 sebetahat = c(sqrt(val2$xi * S_diag)),
-                                 df = ashr_df,
-                                 prior = "nullbiased",
-                                 nullweight = lambda_seq[zero_spot],
-                                 mixcompdist = mixcompdist,
-                                 g = ash_g,
-                                 alpha = sprop)
-      val$pi0 <- val2$pi0
-      val$xi  <- val2$xi
-      val$z2  <- val2$z2
+          if (same_grid) {
+              ash_g <- val2$fitted_g
+          } else {
+              ash_g <- NULL
+          }
+          val <- ashr::ash.workhorse(betahat = c(betahat_ols - az),
+                                     sebetahat = c(sqrt(val2$xi * S_diag)),
+                                     df = ashr_df,
+                                     prior = "nullbiased",
+                                     nullweight = lambda_seq[zero_spot],
+                                     mixcompdist = mixcompdist,
+                                     g = ash_g,
+                                     alpha = sprop)
+          val$pi0 <- val2$pi0
+          val$xi  <- val2$xi
+          val$z2  <- val2$z2
+      })
+      if (verbose)
+        cat("Computation took",timing["elapsed"],"seconds.\n")
     }
 
-    ## Estimate rest of the hidden confounders -----------------------------------
+    ## Estimate rest of the hidden confounders ------------------------------
+    if (verbose)
+      cat("Estimating additional hidden confounders.\n")
+    timing <- system.time({
     Y1  <- rotate_out$Y1
     Z2 <- val$z2
     Z3 <- rotate_out$Z3
@@ -494,7 +523,9 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
       val$extra$rotate_out       <- rotate_out
     } else {
       val$z2 <- NULL
-    }
+    }})
+    if (verbose)
+      cat("Computation took",timing["elapsed"],"seconds.\n")
 
     return(val)
 }
@@ -525,24 +556,24 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 #'     or equal to 1. These are the tuning parameters for the mixing
 #'     proportions.
 #'
-#'
 #' @author David Gerard
 #'
 #' @export
 #'
-mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
-                                  lambda_seq, tau2_seq = NULL,
-                                  a_seq = NULL, b_seq = NULL,
-                                  mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform"),
-                                  likelihood = c("normal", "t"),
-                                  pi_init_type = c("zero_conc", "uniform", "random"),
-                                  scale_var = TRUE,
-                                  degrees_freedom = NULL,
-                                  plot_update = FALSE,
-                                  sprop = 0, var_inflate_pen = 0) {
+mouthwash_second_step <-
+  function(betahat_ols, S_diag, alpha_tilde,
+           lambda_seq, tau2_seq = NULL,
+           a_seq = NULL, b_seq = NULL,
+           mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform"),
+           likelihood = c("normal", "t"),
+           pi_init_type = c("zero_conc", "uniform", "random"),
+           scale_var = TRUE,
+           degrees_freedom = NULL,
+           plot_update = FALSE,
+           sprop = 0, var_inflate_pen = 0,
+           verbose = TRUE) {
 
-
-    ## Make sure input is correct -------------------------------------------------
+    ## Make sure input is correct ------------------------------------------
     mixing_dist  <- match.arg(mixing_dist)
     likelihood   <- match.arg(likelihood)
     pi_init_type <- match.arg(pi_init_type)
@@ -620,18 +651,15 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
         z2_final <- opt_out$z2
         xi_final <- opt_out$xi
     }
-
-
-
-
-    ## make mix object  --------------------------------------------------------------
+    
+    ## make mix object  ----------------------------------------------------
     if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
         ghat <- ashr::unimix(pi = pi_vals, a = a_seq, b = b_seq)
     } else if (mixing_dist == "normal") {
         ghat <- ashr::normalmix(pi = pi_vals, mean = rep(0, M), sd = sqrt(tau2_seq))
     }
 
-    ## For ashr compatibility -------------------------------------------------------
+    ## For ashr compatibility -----------------------------------------------
     mixcompdist <- mixing_dist
     if (mixcompdist == "uniform") {
         mixcompdist <- "halfuniform"
@@ -644,8 +672,7 @@ mouthwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
         ashr_df <- NULL
     }
 
-
-    ## deal with non-zero sprop before returning ash output -------------------------
+    ## deal with non-zero sprop before returning ash output -----------------
     ## Recall that betahat_ols, alpha_tilde_ols, and S_diag are
     ## actually modified based on sprop before being sent to
     ## mouthwash_second_step. The following udoes this modification
