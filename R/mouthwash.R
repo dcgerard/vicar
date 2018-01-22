@@ -242,7 +242,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       use_t_adjust = FALSE,
                       detailed_output = FALSE,
                       verbose = TRUE) {
-
+    
     ## Make sure input is correct -------------------------------------------
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(X))
@@ -284,10 +284,14 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
       message("This will take awhile. To speed things up, try setting `subsample = TRUE`")
     }
 
-
+    if (verbose)
+      cat(sprintf(paste("Running mouthwash on %d x %d matrix X and",
+                        "%d x %d matrix Y.\n"),
+                  nrow(X),ncol(X),nrow(Y),ncol(Y)))
+    
     ## Rotate -------------------------------------------------------------
     if (verbose)
-      cat("Computing independent basis using QR decomposition.\n")
+      cat(" - Computing independent basis using QR decomposition.\n")
     timing <- system.time(
       rotate_out <- rotate_model(Y = Y, X = X, k = k,
                                  cov_of_interest = cov_of_interest,
@@ -295,15 +299,14 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                  limmashrink = limmashrink, fa_func = fa_func,
                                  fa_args = fa_args, do_factor = TRUE))
     if (verbose)
-      cat("Computation took",timing["elapsed"],"seconds.\n")
+      cat(" - Computation took",timing["elapsed"],"seconds.\n")
     if (rotate_out$k == 0) {
       stop("k estimated to be 0. You might not need mouthwash")
     }
 
-
     ## Deal with degrees of freedom -----------------------------------------
     if (verbose)
-        cat("Running additional preprocessing steps.\n")
+        cat(" - Running additional preprocessing steps.\n")
     timing <- system.time({
     if (likelihood == "normal") {
         if (!is.null(degrees_freedom)) {
@@ -400,12 +403,12 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
         }
     }})
     if (verbose)
-      cat("Computation took",timing["elapsed"],"seconds.\n")
+      cat(" - Computation took",timing["elapsed"],"seconds.\n")
 
     ## Run MOUTHWASH --------------------------------------------------------
     if (!subsample) {
     if (verbose)
-      cat("Running second step of mouthwash.\n")
+      cat(" - Running second step of mouthwash:\n")
       timing <- system.time(
         val <- mouthwash_second_step(betahat_ols = betahat_ols_star,
                                      S_diag = S_diag_star,
@@ -423,9 +426,9 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                      var_inflate_pen = var_inflate_pen,
                                      verbose = verbose))
       if (verbose)
-        cat("Computation took",timing["elapsed"],"seconds.\n")
+        cat(" - Computation took",timing["elapsed"],"seconds.\n")
     } else {
-      cat("Running second step of mouthwash.\n")
+      cat("Running second step of mouthwash:\n")
       timing <- system.time({
         col_keep <- sort(sample(x = 1:ncol(Y), size = num_sub))
         betahat_ols_star <- betahat_ols_star[col_keep]
@@ -448,10 +451,11 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                       var_inflate_pen = var_inflate_pen,
                                       verbose = verbose)
       })
-      if (verbose) {
-        cat("Computation took",timing["elapsed"],"seconds.\n")
-        cat("Running adaptive shrinkage method.\n")
-    }
+      if (verbose)
+        cat(" - Computation took",timing["elapsed"],"seconds.\n")
+      }
+      if (verbose)
+        cat(" - Running adaptive shrinkage method.\n")
       timing <- system.time({
           az <- alpha_tilde %*% val2$z2
 
@@ -485,12 +489,12 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
           val$z2  <- val2$z2
       })
       if (verbose)
-        cat("Computation took",timing["elapsed"],"seconds.\n")
+        cat(" - Computation took",timing["elapsed"],"seconds.\n")
     }
 
     ## Estimate rest of the hidden confounders ------------------------------
     if (verbose)
-      cat("Estimating additional hidden confounders.\n")
+      cat(" - Estimating additional hidden confounders.\n")
     timing <- system.time({
     Y1  <- rotate_out$Y1
     Z2 <- val$z2
@@ -525,7 +529,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
       val$z2 <- NULL
     }})
     if (verbose)
-      cat("Computation took",timing["elapsed"],"seconds.\n")
+      cat(" - Computation took",timing["elapsed"],"seconds.\n")
 
     return(val)
 }
@@ -618,7 +622,7 @@ mouthwash_second_step <-
 
     ## initialize parameters and run EM ------------------------------------
     if (verbose)
-      cat("Estimating model parmaeters using EM.\n")
+      cat("    + Estimating model parameters using EM.\n")
     timing <- system.time({
     z2_init <- matrix(stats::rnorm(k), ncol = 1)
     pi_init <- initialize_mixing_prop(pi_init_type = pi_init_type, zero_spot = zero_spot, M = M)
@@ -647,11 +651,11 @@ mouthwash_second_step <-
         xi_final <- opt_out$xi
     }})
     if (verbose)
-      cat("Computation took",timing["elapsed"],"seconds.\n")
+      cat("    + Computation took",timing["elapsed"],"seconds.\n")
     
     ## make mix object  ----------------------------------------------------
     if (verbose)
-        cat("Generating adaptive shrinkage (ash) output.\n")
+        cat("    + Generating adaptive shrinkage (ash) output.\n")
     timing <- system.time({
     if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
         ghat <- ashr::unimix(pi = pi_vals, a = a_seq, b = b_seq)
@@ -706,8 +710,7 @@ mouthwash_second_step <-
     val <- c(val, list(xi = xi_final))
     })
     if (verbose)
-      cat("Computation took",timing["elapsed"],"seconds.\n")
-    
+      cat("    + Computation took",timing["elapsed"],"seconds.\n")
     return(val)
 }
 
