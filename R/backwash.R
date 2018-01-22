@@ -335,7 +335,8 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                  tau2_seq, lambda_seq,
                                  pi_init_type = c("zero_conc", "uniform", "random"),
                                  scale_var = TRUE, sprop = 0,
-                                 var_inflate_pen = 0) {
+                                 var_inflate_pen = 0,
+                                 verbose = TRUE) {
 
     ## Check input -----------------------------------------------------------
     assertthat::assert_that(is.numeric(betahat_ols))
@@ -352,13 +353,12 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     nfac <- ncol(alpha_tilde)
 
     ## Initialize parameters ------------------------------------------------
+    if (verbose)
+      cat("    + Initializing parameters for EM algorithm.\n")
+    timing <- system.time({
     eigen_alpha <- eigen(crossprod(alpha_tilde, alpha_tilde), symmetric = TRUE)
     a2_half_inv <- eigen_alpha$vectors %*% diag(1 / sqrt(eigen_alpha$values), nrow = length(eigen_alpha$values)) %*% t(eigen_alpha$vectors)
     Amat <- alpha_tilde %*% a2_half_inv
-
-    ## m1 <- Amat %*% t(Amat)
-    ## m2 <- alpha_tilde %*% solve(t(alpha_tilde) %*% alpha_tilde) %*% t(alpha_tilde)
-    ## all(abs(m1 - m2) < 10 ^ -14)
 
     M <- length(tau2_seq)
     zero_spot <- which(abs(tau2_seq) < 10 ^ -14)
@@ -375,8 +375,14 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
 
     xi  <- 1
     phi <- 1
+    })
+    if (verbose)
+      cat("    + Computation took",timing["elapsed"],"seconds.\n")
 
     ## One round of updates to finish initializing before sending it to SQUAREM
+    if (verbose)
+      cat("    + Running one round of parameter updates.\n")
+    timing <- system.time({
     qbout <- back_update_qbeta(betahat_ols = betahat_ols, S_diag = S_diag, Amat = Amat, pivec = pivec,
                                tau2_seq = tau2_seq, muv = muv, xi = xi, phi = phi)
     mubeta <- qbout$mubeta
@@ -403,17 +409,27 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     }
 
     par_vec <- c(pivec, mubeta_matrix, sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, xi)
+    })
+    if (verbose)
+      cat("    + Computation took",timing["elapsed"],"seconds.\n")
 
-    sqout <- SQUAREM::squarem(par = par_vec, fixptfn = back_fix, objfn = back_obj,
-                              betahat_ols = betahat_ols,
-                              S_diag = S_diag, Amat = Amat, tau2_seq = tau2_seq,
-                              lambda_seq = lambda_seq,
-                              scale_var = scale_var,
-                              control = list(tol = 10 ^ -4),
-                              var_inflate_pen = var_inflate_pen)
-
-    ## Get returned parameters -----------------------------------------------------------
-
+    if (verbose)
+      cat("    + Estimating model parameters using EM.\n")
+    timing <- system.time(
+      sqout <- SQUAREM::squarem(par = par_vec, fixptfn = back_fix,
+                                objfn = back_obj, betahat_ols = betahat_ols,
+                                S_diag = S_diag, Amat = Amat,
+                                tau2_seq = tau2_seq, lambda_seq = lambda_seq,
+                                scale_var = scale_var,
+                                control = list(tol = 10 ^ -4),
+                                var_inflate_pen = var_inflate_pen))
+    if (verbose)
+      cat("    + Computation took",timing["elapsed"],"seconds.\n")
+                          
+    ## Get returned parameters ----------------------------------------------
+    if (verbose)
+      cat("    + Generating posterior statistics.\n")
+    timing <- system.time({
     pivec           <- sqout$par[1:M] ## M vector
     mubeta_matrix   <- matrix(sqout$par[(M + 1):(M + p * M)], nrow = p) ## p by M matrix
     sig2beta_matrix <- matrix(sqout$par[(M + p * M + 1): (M + 2 * p * M)], nrow = p) ## another p by M matrix
@@ -424,7 +440,7 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     xi              <- sqout$par[length(sqout$par)]
     mubeta          <- rowSums(mubeta_matrix * gamma_mat)
 
-    ## Posterior Summaries ---------------------------------------------------------------
+    ## Posterior Summaries --------------------------------------------------
     PosteriorMean <- mubeta
     lfdr          <- gamma_mat[, zero_spot]
     pi0           <- pivec[zero_spot]
@@ -436,9 +452,10 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     lfsr          <- pmin(PositiveProb, NegativeProb) + lfdr
     svalue        <- ashr::qval.from.lfdr(lfsr)
 
-    ## modify posterior based on sprop ---------------------------------------------------
-    ## Recall that betahat_ols, S_diag, and alpha_tilde were modified prior to being sent to
-    ## backwash second step. We need to adjust some (but not all) posterior summaries.
+    ## modify posterior based on sprop -------------------------------------
+    ## Recall that betahat_ols, S_diag, and alpha_tilde were modified
+    ## prior to being sent to backwash second step. We need to adjust
+    ## some (but not all) posterior summaries.
     if (sprop > 0) {
       sgamma        <- S_diag ^ (sprop / (2 * (1 - sprop)))
       S_diag        <- S_diag ^ (1 / (1 - sprop))
@@ -446,8 +463,6 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
       PosteriorSD   <- PosteriorSD * sgamma
       betahat_ols   <- betahat_ols * sgamma
     }
-
-
 
     result <- data.frame(betahat = betahat_ols,
                          sebetahat = S_diag,
@@ -473,10 +488,12 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     return_list$fitted_g$means       <- mubeta_matrix
     return_list$fitted_g$variances   <- sig2beta_matrix
     return_list$fitted_g$proportions <- gamma_mat
-
+    })
+    if (verbose)
+      cat("    + Computation took",timing["elapsed"],"seconds.\n")
+      
     return(return_list)
 }
-
 
 #' Fixed point iteration for BACKWASH.
 #'
