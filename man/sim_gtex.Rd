@@ -15,13 +15,10 @@
 \source{
 If you want the real GTEx data, go to \url{http://www.gtexportal.org/home/}.
 }
-\usage{
-sim_gtex
-}
 \description{
 This is a simulated dataset that shares characteristics with the GTEx data.
 }
 \author{
 David Gerard
 }
-\keyword{datasets}
+\keyword{data}

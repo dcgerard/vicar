@@ -4,7 +4,7 @@
 \alias{plot.backwash}
 \title{Plotting method for \code{\link{backwash}}.}
 \usage{
-\method{plot}{backwash}(x, ...)
+plot.backwash(x, ...)
 }
 \arguments{
 \item{x}{An object of class \code{backwash}, returned from \code{\link{backwash}}.}
