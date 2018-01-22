@@ -426,7 +426,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                      var_inflate_pen = var_inflate_pen,
                                      verbose = verbose))
       if (verbose)
-        cat(" - Computation took",timing["elapsed"],"seconds.\n")
+        cat(" - Second step took",timing["elapsed"],"seconds.\n")
     } else {
       cat("Running second step of mouthwash:\n")
       timing <- system.time({
@@ -452,7 +452,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                                       verbose = verbose)
       })
       if (verbose)
-        cat(" - Computation took",timing["elapsed"],"seconds.\n")
+        cat(" - Second step took",timing["elapsed"],"seconds.\n")
       if (verbose)
         cat(" - Running adaptive shrinkage method.\n")
       timing <- system.time({
