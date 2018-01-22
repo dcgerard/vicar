@@ -616,10 +616,12 @@ mouthwash_second_step <-
         stop("if sprop is 1 and scale_var = TRUE, then var_inflate_pen should be > 0")
     }
 
-    ## initialize parameters and run EM --------------------------------------------
+    ## initialize parameters and run EM ------------------------------------
+    if (verbose)
+      cat("Estimating model parmaeters using EM.\n")
+    timing <- system.time({
     z2_init <- matrix(stats::rnorm(k), ncol = 1)
     pi_init <- initialize_mixing_prop(pi_init_type = pi_init_type, zero_spot = zero_spot, M = M)
-
 
     if (likelihood == "normal" & mixing_dist == "normal") {
         pizxi_init <- c(pi_init, z2_init, 1)
@@ -633,13 +635,6 @@ mouthwash_second_step <-
         z2_final <- sqout$par[(M + 1):(M + k)]
         xi_final <- sqout$par[M + k + 1]
     } else if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
-        ## sqout <- SQUAREM::squarem(par = pizxi_init, fixptfn = uniform_mix_fix_wrapper,
-        ##                           objfn = uniform_mix_llike_wrapper, betahat_ols = betahat_ols,
-        ##                           S_diag = S_diag, alpha_tilde = alpha_tilde, a_seq = a_seq,
-        ##                           b_seq = b_seq, lambda_seq = lambda_seq,
-        ##                           degrees_freedom = degrees_freedom, scale_var = scale_var,
-        ##                           control = list(tol = 10 ^ -4))
-
         opt_out <- mouthwash_coordinate(pi_init = pi_init, z_init = z2_init, xi_init = 1,
                                         betahat_ols = betahat_ols, S_diag = S_diag,
                                         alpha_tilde = alpha_tilde, a_seq = a_seq,
@@ -650,9 +645,14 @@ mouthwash_second_step <-
         pi_vals  <- opt_out$pi_vals
         z2_final <- opt_out$z2
         xi_final <- opt_out$xi
-    }
+    }})
+    if (verbose)
+      cat("Computation took",timing["elapsed"],"seconds.\n")
     
     ## make mix object  ----------------------------------------------------
+    if (verbose)
+        cat("Generating adaptive shrinkage (ash) output.\n")
+    timing <- system.time({
     if (mixing_dist == "uniform" | mixing_dist == "+uniform" | mixing_dist == "sym_uniform") {
         ghat <- ashr::unimix(pi = pi_vals, a = a_seq, b = b_seq)
     } else if (mixing_dist == "normal") {
@@ -691,7 +691,7 @@ mouthwash_second_step <-
 
     az <- alpha_tilde_real %*% z2_final
 
-    ## Call ashr for summaries ------------------------------------------------------
+    ## Call ashr for summaries ---------------------------------------------
     val <- ashr::ash.workhorse(betahat = c(betahat_ols_real - az),
                                sebetahat = c(sqrt(xi_final * S_diag_real)),
                                df = ashr_df,
@@ -704,7 +704,10 @@ mouthwash_second_step <-
     val <- c(val, list(pi0 = pi_vals[zero_spot]))
     val <- c(val, list(z2 = z2_final))
     val <- c(val, list(xi = xi_final))
-
+    })
+    if (verbose)
+      cat("Computation took",timing["elapsed"],"seconds.\n")
+    
     return(val)
 }
 
