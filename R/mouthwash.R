@@ -407,8 +407,8 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 
     ## Run MOUTHWASH --------------------------------------------------------
     if (!subsample) {
-    if (verbose)
-      cat(" - Running second step of mouthwash:\n")
+      if (verbose)
+        cat(" - Running second step of mouthwash:\n")
       timing <- system.time(
         val <- mouthwash_second_step(betahat_ols = betahat_ols_star,
                                      S_diag = S_diag_star,
