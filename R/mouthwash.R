@@ -453,7 +453,6 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
       })
       if (verbose)
         cat(" - Computation took",timing["elapsed"],"seconds.\n")
-      }
       if (verbose)
         cat(" - Running adaptive shrinkage method.\n")
       timing <- system.time({
@@ -490,7 +489,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
       })
       if (verbose)
         cat(" - Computation took",timing["elapsed"],"seconds.\n")
-    }
+   }
 
     ## Estimate rest of the hidden confounders ------------------------------
     if (verbose)
