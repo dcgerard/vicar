@@ -821,6 +821,3 @@ adjust_by_t <- function(betahat, sebetahat, df) {
 
   return(snew)
 }
-
-
-
