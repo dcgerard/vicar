@@ -1,7 +1,8 @@
 Package: vicar
 Type: Package
 Title: Various Ideas for Confounder Adjustment in Regression
-Version: 0.1-8
+Version: 0.1-9
+Date: 2018-01-27
 Authors@R: c(person("David","Gerard",role=c("aut","cre"),
                     email="dcgerard@uchicago.edu"),
              person("Peter","Carbonetto",role="aut"))
@@ -15,7 +16,7 @@ Description: Implements many methods for accounting for unobserved confounding
              procedures to use as long as only one covariate is of interest.
 URL: https://github.com/dcgerard/vicar
 BugReports: http://github.com/dcgerard/vicar/issues
-License: GPL-3
+License: GPL (>= 3)
 LazyData: TRUE
 RoxygenNote: 6.0.1
 LinkingTo: Rcpp,
