@@ -9,7 +9,7 @@ mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, lambda_seq,
   "uniform", "+uniform", "sym_uniform"), likelihood = c("normal", "t"),
   pi_init_type = c("zero_conc", "uniform", "random"), scale_var = TRUE,
   degrees_freedom = NULL, plot_update = FALSE, sprop = 0,
-  var_inflate_pen = 0)
+  var_inflate_pen = 0, verbose = TRUE)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The OLS estimates of the
@@ -70,6 +70,9 @@ identifiability reasons it must be the case that
 \item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
 Defaults to 0, but should be something non-zero when \code{alpha = 1}
 and \code{scale_var = TRUE}.}
+
+\item{verbose}{If \code{verbose = TRUE}, print progress of the algorithm
+to the console.}
 }
 \description{
 The second step of MOUTHWASH.

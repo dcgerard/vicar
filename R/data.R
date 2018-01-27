@@ -2,7 +2,9 @@
 #' A simulated RNA-seq dataset.
 #'
 #' This is a simulated dataset that shares characteristics with the GTEx data.
-#'
+#' 
+#' @docType data
+#' @name sim_gtex
 #' @format A list with the following elements
 #' \describe{
 #'     \item{Y}{A matrix of gene expression levels whose rows index the samples and whose columns index the genes.}
@@ -12,7 +14,7 @@
 #'     \item{which_null}{A logical vector where a \code{TRUE} indicates the location of a null gene.}
 #' }
 #' @source If you want the real GTEx data, go to \url{http://www.gtexportal.org/home/}.
-#'
+#' @keywords data
 #' @author David Gerard
 #'
-"sim_gtex"
+NULL

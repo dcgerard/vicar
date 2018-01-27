@@ -4,7 +4,7 @@
 \alias{plot.ruvb}
 \title{Plotting method for \code{ruvb}.}
 \usage{
-\method{plot}{ruvb}(x, ...)
+plot.ruvb(x, ...)
 }
 \arguments{
 \item{x}{The output of \code{\link{ruvb}}, of class \code{ruvb}.}
