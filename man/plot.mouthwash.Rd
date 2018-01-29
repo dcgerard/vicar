@@ -4,7 +4,7 @@
 \alias{plot.mouthwash}
 \title{Plotting method for \code{moutwash}.}
 \usage{
-plot.mouthwash(x, ...)
+\method{plot}{mouthwash}(x, ...)
 }
 \arguments{
 \item{x}{The output of \code{\link{mouthwash}}, of class \code{mouthwash}.}
