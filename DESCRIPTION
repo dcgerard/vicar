@@ -35,7 +35,6 @@ Imports: ruv,
     coda,
     bfa,
     Rcpp,
-    RcppArmadillo,
     RcppProgress,
     ashr
 Suggests: testthat,
