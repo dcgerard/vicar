@@ -1,5 +1,3 @@
-
-
 #' PCA when first \code{vr} rows have a variance multiplicatively
 #' different from the rest of the rows.
 #'

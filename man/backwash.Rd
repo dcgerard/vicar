@@ -10,7 +10,7 @@ backwash(Y, X, k = NULL, cov_of_interest = ncol(X),
   fa_args = list(), lambda_type = c("zero_conc", "uniform"),
   pi_init_type = c("zero_conc", "uniform", "random"), grid_seq = NULL,
   lambda_seq = NULL, lambda0 = 10, scale_var = TRUE, sprop = 0,
-  var_inflate_pen = 0)
+  var_inflate_pen = 0, verbose = TRUE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -95,6 +95,9 @@ identifiability reasons it must be the case that
 \item{var_inflate_pen}{The penalty to apply on the variance inflation parameter.
 Defaults to 0, but should be something non-zero when \code{alpha = 1}
 and \code{scale_var = TRUE}.}
+
+\item{verbose}{If \code{verbose = TRUE}, print progress of the algorithm
+to the console.}
 }
 \value{
 \code{backwash} returns a list with some or all of the
