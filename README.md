@@ -3,7 +3,7 @@
 Various Ideas for Confounder Adjustment in Regression
 =====================================================
 
-[![Windows Build](https://ci.appveyor.com/api/projects/status/github/dcgerard/vicar?branch=master&svg=true)](https://ci.appveyor.com/project/dcgerard/vicar) [![Linux Build](https://travis-ci.org/dcgerard/vicar.svg?branch=master)](https://travis-ci.org/dcgerard/vicar) [![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) <!-- [![Coverage](https://img.shields.io/codecov/c/github/dcgerard/vicar/master.svg)](https://codecov.io/github/dcgerard/vicar?branch=master) -->
+[![Windows Build](https://ci.appveyor.com/api/projects/status/github/dcgerard/vicar?branch=master&svg=true)](https://ci.appveyor.com/project/dcgerard/vicar) [![Linux Build](https://travis-ci.org/dcgerard/vicar.svg?branch=master)](https://travis-ci.org/dcgerard/vicar) [![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master) [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) <!-- [![Coverage](http://img.shields.io/codecov/c/github/dcgerard/vicar/master.svg)](http://codecov.io/github/dcgerard/vicar?branch=master) -->
 
 Description
 -----------
@@ -82,7 +82,7 @@ Or, using BibTex:
     title = {{vicar}: Various Ideas for Confounder Adjustment in Regression},
     author = {David Gerard},
     year = {2016},
-    note = {R package version 0.1-8},
+    note = {R package version 0.1-7},
     url = {https://github.com/dcgerard/vicar},
 }
 ```
@@ -90,11 +90,9 @@ Or, using BibTex:
 Installation
 ------------
 
-To install, first install `sva` and `limma` from Bioconductor
-in R:
+To install, first install `sva` and `limma` from Bioconductor in R:
 
-```R
-
+``` r
 ## try http:// if https:// URLs are not supported
 source("https://bioconductor.org/biocLite.R")
 biocLite(c("limma", "sva"))
@@ -102,16 +100,18 @@ biocLite(c("limma", "sva"))
 
 Also install the cate R package:
 
-```R
+``` r
 install.packages("cate")
 ```
 
 Then run in R:
 
 ``` r
-install.packages("devtools")
+# install.packages("devtools")
 devtools::install_github("dcgerard/vicar")
 ```
+
+A note about matrix computations in vicar: Some of the methods in the vicar package such as mouthwash and backwash rely heavily on matrix-vector operations. The speed of these operations can have a big impact on vicar's performance, especially in large-scale data sets. If you are applying vicar to large data sets, I recommend that you set up R with optimized BLAS (optionally, LAPACK) libraries, especially if you have a multicore computer (most modern laptops and desktops are multicore). See [here](https://csgillespie.github.io/efficientR/set-up.html#blas-and-alternative-r-interpreters) and [here](https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Linear-algebra) for advice and technical details on this. For example, in [our experiments on a high-performance compute cluster](https://github.com/pcarbo/mouthwash_sims/blob/master/mouthwash.sbatch) we set up R with multithreaded OpenBLAS.
 
 Vignettes
 ---------
@@ -119,7 +119,7 @@ Vignettes
 I've provided three vignettes to help you get started with vicar. By default, the vignettes are not built when you use `install_github`. To build the vignettes during installation, run
 
 ``` r
-install.packages("devtools")
+# install.packages("devtools")
 devtools::install_github("dcgerard/vicar", build_vignettes = TRUE)
 ```
 
