@@ -123,7 +123,7 @@ second part.</p>
   <span class='kw'>grid_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda0</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>scale_var</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>plot_update</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>sprop</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>var_inflate_pen</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>subsample</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>num_sub</span> <span class='kw'>=</span> <span class='fu'>min</span>(<span class='fl'>1000</span>, <span class='fu'>ncol</span>(<span class='no'>Y</span>)), <span class='kw'>same_grid</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-  <span class='kw'>use_t_adjust</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</pre>
+  <span class='kw'>use_t_adjust</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>detailed_output</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -137,7 +137,7 @@ genes.</p></td>
     </tr>
     <tr>
       <th>X</th>
-      <td><p>A matrix of numerics. The covariates of interest.</p></td>
+      <td><p>A matrix of numerics. The observed covariates.</p></td>
     </tr>
     <tr>
       <th>k</th>
@@ -149,10 +149,10 @@ hidden confounders using the methods of Buja and Eyuboglu
     </tr>
     <tr>
       <th>cov_of_interest</th>
-      <td><p>A vector of positive integers. The column
-numbers of the covariates in X whose coefficients you are
-interested in. The rest are considered nuisance parameters and
-are regressed out by OLS.</p></td>
+      <td><p>A positive integer. The column number of the
+covariate in X whose coefficients you are interested in.
+The rest are considered nuisance parameters and are regressed
+out by OLS.</p></td>
     </tr>
     <tr>
       <th>include_intercept</th>
@@ -293,13 +293,23 @@ estimated prior.</p></td>
       <th>same_grid</th>
       <td><p>A logical. If <code>subsample = FALSE</code>, should we use the same grid as
 when we estimated the unobserved confounders (<code>TRUE</code>) or the default grid from
-<code><a href='http://www.rdocumentation.org/packages/ashr/topics/ash.workhorse'>ash.workhorse</a></code> (<code>FALSE</code>)?</p></td>
+<code><a href='http://www.rdocumentation.org/packages/ashr/topics/ash'>ash.workhorse</a></code> (<code>FALSE</code>)?</p></td>
     </tr>
     <tr>
       <th>use_t_adjust</th>
       <td><p>A logical. Should we adjust the variance estimates so that the p-values
 from the z-statistics match the corresponding p-values from the original
 t-statistics (<code>TRUE</code>) or not (<code>FALSE</code>)?</p></td>
+    </tr>
+    <tr>
+      <th>detailed_output</th>
+      <td><p>A logical. Should we return a lot of output (<code>TRUE</code>) or the standard
+output (<code>FALSE</code>). Most users should only need this set to (<code>FALSE</code>).</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>If <code>verbose = TRUE</code>, print progress of the algorithm
+to the console.</p></td>
     </tr>
     </table>
     
@@ -332,6 +342,7 @@ t-statistics (<code>TRUE</code>) or not (<code>FALSE</code>)?</p></td>
 <li><p>qvalueThe q-values, a measure of significance.</p></li>
 <li><p>PosteriorMeanThe posterior means of the effects.</p></li>
 <li><p>PosteriorSDThe posterior standard deviations of the effects.</p></li>
+<li><p>extraIf <code>detailed_output = TRUE</code>, this list is returned with some extra output. Mostly used for debugging.</p></li>
 </ul>
 
     
@@ -398,8 +409,19 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
 
 <span class='co'>## Fit MOUTHWASH ----------------------------------------------------------</span>
 <span class='no'>mout</span> <span class='kw'>&lt;-</span> <span class='fu'>mouthwash</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>k</span>, <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>,
-                  <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)
-<span class='no'>mout</span>$<span class='no'>pi0</span> <span class='co'>## mouthwash estimate</span></div><div class='output co'>#&gt; [1] 0.5934</div><div class='input'><span class='fu'>mean</span>(<span class='no'>is_null</span>) <span class='co'>## truth</span></div><div class='output co'>#&gt; [1] 0.5644</div><div class='input'>
+                  <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>)</div><div class='output co'>#&gt; Running mouthwash on 13 x 3 matrix X and 13 x 101 matrix Y.
+#&gt;  - Computing independent basis using QR decomposition.
+#&gt;  - Computation took 0.003 seconds.
+#&gt;  - Running additional preprocessing steps.
+#&gt;  - Computation took 0 seconds.
+#&gt;  - Running second step of mouthwash:
+#&gt;     + Estimating model parameters using EM.
+#&gt;     + Computation took 0.923 seconds.
+#&gt;     + Generating adaptive shrinkage (ash) output.
+#&gt;     + Computation took 0.01 seconds.
+#&gt;  - Second step took 1.326 seconds.
+#&gt;  - Estimating additional hidden confounders.
+#&gt;  - Computation took 0 seconds.</div><div class='input'><span class='no'>mout</span>$<span class='no'>pi0</span> <span class='co'>## mouthwash estimate</span></div><div class='output co'>#&gt; [1] 0.5934</div><div class='input'><span class='fu'>mean</span>(<span class='no'>is_null</span>) <span class='co'>## truth</span></div><div class='output co'>#&gt; [1] 0.5644</div><div class='input'>
 <span class='co'>## plot ordering</span>
 <span class='no'>order_lfdr</span> <span class='kw'>&lt;-</span> <span class='fu'>order</span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>)
 <span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>[<span class='no'>order_lfdr</span>], <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span>[<span class='no'>order_lfdr</span>] + <span class='fl'>3</span>,
@@ -409,10 +431,10 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
 <span class='no'>lmout</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>limma</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/limma/topics/lmFit'>lmFit</a></span>(<span class='fu'>t</span>(<span class='no'>Y</span>), <span class='no'>X</span>)
 <span class='no'>betahat_ols</span> <span class='kw'>&lt;-</span> <span class='no'>lmout</span>$<span class='no'>coefficients</span>[, <span class='fl'>2</span>]
 <span class='no'>sebetahat_ols</span> <span class='kw'>&lt;-</span> <span class='no'>lmout</span>$<span class='no'>stdev.unscaled</span>[, <span class='fl'>2</span>] * <span class='no'>lmout</span>$<span class='no'>sigma</span>
-<span class='no'>aout</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>ashr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/ashr/topics/ash.workhorse'>ash.workhorse</a></span>(<span class='kw'>betahat</span> <span class='kw'>=</span> <span class='no'>betahat_ols</span>, <span class='kw'>sebetahat</span> <span class='kw'>=</span> <span class='no'>sebetahat_ols</span>,
+<span class='no'>aout</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>ashr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/ashr/topics/ash'>ash.workhorse</a></span>(<span class='kw'>betahat</span> <span class='kw'>=</span> <span class='no'>betahat_ols</span>, <span class='kw'>sebetahat</span> <span class='kw'>=</span> <span class='no'>sebetahat_ols</span>,
                             <span class='kw'>optmethod</span> <span class='kw'>=</span> <span class='st'>"mixEM"</span>)
-<span class='kw pkg'>ashr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/ashr/topics/get_lfsr'>get_pi0</a></span>(<span class='no'>aout</span>) <span class='co'>## ash estimate</span></div><div class='output co'>#&gt; [1] 0.6902</div><div class='input'><span class='fu'>mean</span>(<span class='no'>is_null</span>) <span class='co'>## truth</span></div><div class='output co'>#&gt; [1] 0.5644</div><div class='input'>
-<span class='no'>ash_lfdr</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>ashr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/ashr/topics/get_lfsr'>get_lfdr</a></span>(<span class='no'>aout</span>)
+<span class='kw pkg'>ashr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/ashr/topics/get_lfdr'>get_pi0</a></span>(<span class='no'>aout</span>) <span class='co'>## ash estimate</span></div><div class='output co'>#&gt; [1] 0.6902</div><div class='input'><span class='fu'>mean</span>(<span class='no'>is_null</span>) <span class='co'>## truth</span></div><div class='output co'>#&gt; [1] 0.5644</div><div class='input'>
+<span class='no'>ash_lfdr</span> <span class='kw'>&lt;-</span> <span class='kw pkg'>ashr</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/ashr/topics/get_lfdr'>get_lfdr</a></span>(<span class='no'>aout</span>)
 <span class='no'>aorder_lfdr</span> <span class='kw'>&lt;-</span> <span class='fu'>order</span>(<span class='no'>ash_lfdr</span>)
 <span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>ash_lfdr</span>[<span class='no'>aorder_lfdr</span>], <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span>[<span class='no'>aorder_lfdr</span>] + <span class='fl'>3</span>,
                <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"lfdr"</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/graphics/topics/legend'>legend</a></span>(<span class='st'>"topleft"</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>3</span>, <span class='fl'>4</span>), <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"non-null"</span>, <span class='st'>"null"</span>),
@@ -451,7 +473,7 @@ David Gerard
 
       <footer>
       <div class="copyright">
-  <p>Developed by David Gerard.</p>
+  <p>Developed by David Gerard, Peter Carbonetto.</p>
 </div>
 
 <div class="pkgdown">

@@ -129,6 +129,18 @@
   url={https://arxiv.org/abs/1705.08393},
   year={2017}
 }</code></pre></div>
+<p>If you use either MOUTHWASH or BACKWASH, please cite:</p>
+<blockquote>
+<p>Gerard, D., &amp; Stephens, M. 2017. <em>Empirical Bayes Shrinkage and False Discovery Rate Estimation, Allowing For Unwanted Variation</em>. arXiv preprint arXiv:1709.10066 <a href="https://arxiv.org/abs/1709.10066" class="uri">https://arxiv.org/abs/1709.10066</a>.</p>
+</blockquote>
+<p>Or, using BibTex:</p>
+<div class="sourceCode"><pre class="sourceCode tex"><code class="sourceCode latex">@article{gerard2017empirical,
+  title={Empirical {B}ayes Shrinkage and False Discovery Rate Estimation, Allowing For Unwanted Variation},
+  author={Gerard, David and Stephens, Matthew},
+  journal={arXiv preprint arXiv:1709.10066},
+  url={https://arxiv.org/abs/1709.10066},
+  year={2017}
+}</code></pre></div>
 <p>Otherwise, please cite this package as:</p>
 <blockquote>
 <p>Gerard, David. 2016. <em>vicar: Various Ideas for Confounder Adjustment in Regression</em>. <a href="https://github.com/dcgerard/vicar" class="uri">https://github.com/dcgerard/vicar</a>.</p>
@@ -138,27 +150,34 @@
     title = {{vicar}: Various Ideas for Confounder Adjustment in Regression},
     author = {David Gerard},
     year = {2016},
-    note = {R package version 0.1.6},
+    note = {R package version 0.1-9},
     url = {https://github.com/dcgerard/vicar},
 }</code></pre></div>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>To install, run in R:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">"devtools"</span>)
-devtools::<span class="kw">install_github</span>(<span class="st">"dcgerard/vicar"</span>)</code></pre></div>
+<p>To install, first install <code>sva</code> and <code>limma</code> from Bioconductor in R:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">## try http:// if https:// URLs are not supported
+<span class="kw">source</span>(<span class="st">"https://bioconductor.org/biocLite.R"</span>)
+<span class="kw">biocLite</span>(<span class="kw">c</span>(<span class="st">"limma"</span>, <span class="st">"sva"</span>))</code></pre></div>
+<p>Also install the cate R package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">"cate"</span>)</code></pre></div>
+<p>Then run in R:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages("devtools")</span>
+devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"dcgerard/vicar"</span>)</code></pre></div>
+<p>A note about matrix computations in vicar: Some of the methods in the vicar package such as mouthwash and backwash rely heavily on matrix-vector operations. The speed of these operations can have a big impact on vicar’s performance, especially in large-scale data sets. If you are applying vicar to large data sets, I recommend that you set up R with optimized BLAS (optionally, LAPACK) libraries, especially if you have a multicore computer (most modern laptops and desktops are multicore). See <a href="https://csgillespie.github.io/efficientR/set-up.html#blas-and-alternative-r-interpreters">here</a> and <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Linear-algebra">here</a> for advice and technical details on this. For example, in <a href="https://github.com/pcarbo/mouthwash_sims/blob/master/mouthwash.sbatch">our experiments on a high-performance compute cluster</a> we set up R with multithreaded OpenBLAS.</p>
 </div>
 <div id="vignettes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#vignettes" class="anchor"></a>Vignettes</h2>
 <p>I’ve provided three vignettes to help you get started with vicar. By default, the vignettes are not built when you use <code>install_github</code>. To build the vignettes during installation, run</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">install.packages</span>(<span class="st">"devtools"</span>)
-devtools::<span class="kw">install_github</span>(<span class="st">"dcgerard/vicar"</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># install.packages("devtools")</span>
+devtools<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/devtools/topics/install_github">install_github</a></span>(<span class="st">"dcgerard/vicar"</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</code></pre></div>
 <p>Note that this will result in a somewhat slower install. The first vignette, <em>sample_analysis</em>, gives a sample analysis using vicar to account for hidden confounding. The second vignette, <em>customFA</em>, gives a few instructions on how to incorporate user-defined factor analyses with the confounder adjustment procedures implemented in vicar. The third vignette, <em>custom_prior</em>, gives instructions and examples on incorporating a user-specified prior into <code>ruvb</code>. To see these vignettes after install, run</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">utils::<span class="kw">vignette</span>(<span class="st">"sample_analysis"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)
-utils::<span class="kw">vignette</span>(<span class="st">"customFA"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)
-utils::<span class="kw">vignette</span>(<span class="st">"custom_prior"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">utils<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/utils/topics/vignette">vignette</a></span>(<span class="st">"sample_analysis"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)
+utils<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/utils/topics/vignette">vignette</a></span>(<span class="st">"customFA"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)
+utils<span class="op">::</span><span class="kw"><a href="http://www.rdocumentation.org/packages/utils/topics/vignette">vignette</a></span>(<span class="st">"custom_prior"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</code></pre></div>
 </div>
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
@@ -178,16 +197,18 @@ utils::<span class="kw">vignette</span>(<span class="st">"custom_prior"</span>, 
 </li>
 </ul>
 <h2>License</h2>
-<p><a href="https://www.r-project.org/Licenses/GPL-3">GPL-3</a></p>
+<p>GPL (&gt;= 3)</p>
 <h2>Developers</h2>
 <ul class="list-unstyled">
 <li>David Gerard <br><small class="roles"> Author, maintainer </small> </li>
+<li>Peter Carbonetto <br><small class="roles"> Author </small> </li>
 </ul>
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://ci.appveyor.com/project/dcgerard/vicar"><img src="https://ci.appveyor.com/api/projects/status/github/dcgerard/vicar?branch=master&amp;svg=true" alt="Windows Build"></a></li>
 <li><a href="https://travis-ci.org/dcgerard/vicar"><img src="https://travis-ci.org/dcgerard/vicar.svg?branch=master" alt="Linux Build"></a></li>
 <li><a href="https://coveralls.io/github/dcgerard/vicar?branch=master"><img src="https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master" alt="Coverage Status"></a></li>
+<li><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License: GPL v3"></a></li>
 </ul>
 </div>
 
@@ -195,7 +216,7 @@ utils::<span class="kw">vignette</span>(<span class="st">"custom_prior"</span>, 
 
 
       <footer><div class="copyright">
-  <p>Developed by David Gerard.</p>
+  <p>Developed by David Gerard, Peter Carbonetto.</p>
 </div>
 
 <div class="pkgdown">

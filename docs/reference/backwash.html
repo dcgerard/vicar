@@ -119,7 +119,7 @@ on the confounders. We fit the model by variational approximations.</p>
   <span class='kw'>fa_args</span> <span class='kw'>=</span> <span class='fu'>list</span>(), <span class='kw'>lambda_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>),
   <span class='kw'>pi_init_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>, <span class='st'>"random"</span>), <span class='kw'>grid_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda0</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>scale_var</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>sprop</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>var_inflate_pen</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
+  <span class='kw'>var_inflate_pen</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -133,7 +133,7 @@ genes.</p></td>
     </tr>
     <tr>
       <th>X</th>
-      <td><p>A matrix of numerics. The covariates of interest.</p></td>
+      <td><p>A matrix of numerics. The observed covariates.</p></td>
     </tr>
     <tr>
       <th>k</th>
@@ -145,10 +145,10 @@ hidden confounders using the methods of Buja and Eyuboglu
     </tr>
     <tr>
       <th>cov_of_interest</th>
-      <td><p>A vector of positive integers. The column
-numbers of the covariates in X whose coefficients you are
-interested in. The rest are considered nuisance parameters and
-are regressed out by OLS.</p></td>
+      <td><p>A positive integer. The column number of the
+covariate in X whose coefficients you are interested in.
+The rest are considered nuisance parameters and are regressed
+out by OLS.</p></td>
     </tr>
     <tr>
       <th>include_intercept</th>
@@ -238,6 +238,11 @@ identifiability reasons it must be the case that
       <td><p>The penalty to apply on the variance inflation parameter.
 Defaults to 0, but should be something non-zero when <code>alpha = 1</code>
 and <code>scale_var = TRUE</code>.</p></td>
+    </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>If <code>verbose = TRUE</code>, print progress of the algorithm
+to the console.</p></td>
     </tr>
     </table>
     
@@ -346,12 +351,37 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
 
 <span class='co'>## Fit BACKWASH -----------------------------------------------------------</span>
 <span class='no'>bout</span> <span class='kw'>&lt;-</span> <span class='fu'>backwash</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>k</span>, <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-                 <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-<span class='no'>bout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5963</div><div class='input'><span class='fu'>mean</span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5644</div><div class='input'>
+                 <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;  - Computing independent basis using QR decomposition.
+#&gt;  - Computation took 0.004 seconds.
+#&gt;  - Running additional preprocessing steps.
+#&gt;  - Computation took 0.001 seconds.
+#&gt;  - Running second step of backwash:
+#&gt;     + Initializing parameters for EM algorithm.
+#&gt;     + Computation took 0.476 seconds.
+#&gt;     + Running one round of parameter updates.
+#&gt;     + Computation took 0.003 seconds.
+#&gt;     + Estimating model parameters using EM.
+#&gt;     + Computation took 1.017 seconds.
+#&gt;     + Generating posterior statistics.
+#&gt;     + Computation took 0.002 seconds.
+#&gt;  - Second step took 2.354 seconds.
+#&gt;  - Generating final backwash outputs.
+#&gt;  - Computation took 0.001 seconds.</div><div class='input'><span class='no'>bout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5963</div><div class='input'><span class='fu'>mean</span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5644</div><div class='input'>
 <span class='co'>## Fit MOUTHWASH ----------------------------------------------------------</span>
 <span class='no'>mout</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mouthwash.html'>mouthwash</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>k</span>, <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-                  <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>)
-<span class='no'>mout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5934</div><div class='input'><span class='fu'>mean</span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5644</div><div class='input'>
+                  <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; Running mouthwash on 13 x 3 matrix X and 13 x 101 matrix Y.
+#&gt;  - Computing independent basis using QR decomposition.
+#&gt;  - Computation took 0.002 seconds.
+#&gt;  - Running additional preprocessing steps.
+#&gt;  - Computation took 0 seconds.
+#&gt;  - Running second step of mouthwash:
+#&gt;     + Estimating model parameters using EM.
+#&gt;     + Computation took 0.813 seconds.
+#&gt;     + Generating adaptive shrinkage (ash) output.
+#&gt;     + Computation took 0.016 seconds.
+#&gt;  - Second step took 1.207 seconds.
+#&gt;  - Estimating additional hidden confounders.
+#&gt;  - Computation took 0 seconds.</div><div class='input'><span class='no'>mout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5934</div><div class='input'><span class='fu'>mean</span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5644</div><div class='input'>
 <span class='co'>## Very Similar LFDR's ----------------------------------------------------</span>
 <span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>, <span class='no'>bout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span> + <span class='fl'>3</span>,
                <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"MOUTHWASH"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"BACKWASH"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"LFDR's"</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/graphics/topics/abline'>abline</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='http://www.rdocumentation.org/packages/graphics/topics/legend'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"Null"</span>, <span class='st'>"Non-null"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
@@ -400,7 +430,7 @@ David Gerard
 
       <footer>
       <div class="copyright">
-  <p>Developed by David Gerard.</p>
+  <p>Developed by David Gerard, Peter Carbonetto.</p>
 </div>
 
 <div class="pkgdown">

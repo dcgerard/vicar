@@ -113,7 +113,7 @@
   <span class='st'>"uniform"</span>, <span class='st'>"+uniform"</span>, <span class='st'>"sym_uniform"</span>), <span class='kw'>likelihood</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"normal"</span>, <span class='st'>"t"</span>),
   <span class='kw'>pi_init_type</span> <span class='kw'>=</span> <span class='fu'>c</span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>, <span class='st'>"random"</span>), <span class='kw'>scale_var</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>,
   <span class='kw'>degrees_freedom</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>plot_update</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>, <span class='kw'>sprop</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>var_inflate_pen</span> <span class='kw'>=</span> <span class='fl'>0</span>)</pre>
+  <span class='kw'>var_inflate_pen</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
     
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a> Arguments</h2>
     <table class="ref-arguments">
@@ -207,6 +207,11 @@ identifiability reasons it must be the case that
 Defaults to 0, but should be something non-zero when <code>alpha = 1</code>
 and <code>scale_var = TRUE</code>.</p></td>
     </tr>
+    <tr>
+      <th>verbose</th>
+      <td><p>If <code>verbose = TRUE</code>, print progress of the algorithm
+to the console.</p></td>
+    </tr>
     </table>
     
 
@@ -226,7 +231,7 @@ David Gerard
 
       <footer>
       <div class="copyright">
-  <p>Developed by David Gerard.</p>
+  <p>Developed by David Gerard, Peter Carbonetto.</p>
 </div>
 
 <div class="pkgdown">
