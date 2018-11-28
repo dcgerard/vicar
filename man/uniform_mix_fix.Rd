@@ -4,8 +4,8 @@
 \alias{uniform_mix_fix}
 \title{Fixed point iteration when using t errors and a mixture of uniforms prior.}
 \usage{
-uniform_mix_fix(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq, b_seq,
-  lambda_seq, degrees_freedom, scale_var = TRUE)
+uniform_mix_fix(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq,
+  b_seq, lambda_seq, degrees_freedom, scale_var = TRUE)
 }
 \arguments{
 \item{pi_vals}{A vector of non-negative numerics that sums to

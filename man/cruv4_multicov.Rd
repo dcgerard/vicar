@@ -4,8 +4,8 @@
 \alias{cruv4_multicov}
 \title{RUV4's second step.}
 \usage{
-cruv4_multicov(Y2, alpha, sig_diag, ctl, R22, degrees_freedom, gls = TRUE,
-  likelihood = "t")
+cruv4_multicov(Y2, alpha, sig_diag, ctl, R22, degrees_freedom,
+  gls = TRUE, likelihood = "t")
 }
 \arguments{
 \item{Y2}{A matrix of numerics with p rows and q columns, where q

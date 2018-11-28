@@ -4,9 +4,10 @@
 \alias{bfa_gd_gibbs}
 \title{Fast Gibbs sampler for Bayesian factor analysis.}
 \usage{
-bfa_gd_gibbs(Linit, Finit, xi_init, phi_init, zeta_init, theta_init, kappa_init,
-  Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, delta_0,
-  lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors, display_progress)
+bfa_gd_gibbs(Linit, Finit, xi_init, phi_init, zeta_init, theta_init,
+  kappa_init, Y22init, Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0,
+  delta_0, lambda_0, nu_0, beta_0, eta_0, tau_0, hetero_factors,
+  display_progress)
 }
 \arguments{
 \item{Linit}{A numeric matrix. The initial values of the loadings.}

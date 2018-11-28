@@ -6,9 +6,10 @@
 inflation parameter, then run ASH.}
 \usage{
 ash_ruv4(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
-  likelihood = c("t", "normal"), ash_args = list(), limmashrink = TRUE,
-  degrees_freedom = NULL, include_intercept = TRUE, gls = TRUE,
-  fa_func = pca_naive, fa_args = list(), scale_var = TRUE)
+  likelihood = c("t", "normal"), ash_args = list(),
+  limmashrink = TRUE, degrees_freedom = NULL,
+  include_intercept = TRUE, gls = TRUE, fa_func = pca_naive,
+  fa_args = list(), scale_var = TRUE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables

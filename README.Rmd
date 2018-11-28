@@ -17,7 +17,7 @@ knitr::opts_chunk$set(
 [![Windows Build](https://ci.appveyor.com/api/projects/status/github/dcgerard/vicar?branch=master&svg=true)](https://ci.appveyor.com/project/dcgerard/vicar)
 [![Linux Build](https://travis-ci.org/dcgerard/vicar.svg?branch=master)](https://travis-ci.org/dcgerard/vicar)
 [![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master)
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
+<!-- [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) -->
 <!-- [![Coverage](http://img.shields.io/codecov/c/github/dcgerard/vicar/master.svg)](http://codecov.io/github/dcgerard/vicar?branch=master) -->
 
 
@@ -84,16 +84,21 @@ Or, using BibTex:
 
 If you use either MOUTHWASH or BACKWASH, please cite:
 
-> Gerard, D., & Stephens, M. 2017. *Empirical Bayes Shrinkage and False Discovery Rate Estimation, Allowing For Unwanted Variation*. arXiv preprint arXiv:1709.10066 [https://arxiv.org/abs/1709.10066](https://arxiv.org/abs/1709.10066).
+> Gerard, D., & Stephens, M. 2018. *Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation*, Biostatistics, , kxy029, https://doi.org/10.1093/biostatistics/kxy029
 
 Or, using BibTex:
 ``` tex
-@article{gerard2017empirical,
-  title={Empirical {B}ayes Shrinkage and False Discovery Rate Estimation, Allowing For Unwanted Variation},
-  author={Gerard, David and Stephens, Matthew},
-  journal={arXiv preprint arXiv:1709.10066},
-  url={https://arxiv.org/abs/1709.10066},
-  year={2017}
+@article{gerard2018empirical,
+  author = {Gerard, David and Stephens, Matthew},
+  title = {Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted   variation},
+  journal = {Biostatistics},
+  volume = {},
+  number = {},
+  pages = {kxy029},
+  year = {2018},
+  doi = {10.1093/biostatistics/kxy029},
+  URL = {http://dx.doi.org/10.1093/biostatistics/kxy029},
+  doi = {10.1093/biostatistics/kxy029}
 }
 ```
 
@@ -118,15 +123,8 @@ To install, first install `sva` and `limma` from Bioconductor
 in R:
 
 ```{r, eval = FALSE}
-## try http:// if https:// URLs are not supported
-source("https://bioconductor.org/biocLite.R")
-biocLite(c("limma", "sva"))
-```
-
-Also install the cate R package:
-
-```{r, eval = FALSE}
-install.packages("cate")
+install.packages("BiocManager")
+BiocManager::install(c("limma", "sva"))
 ```
 
 Then run in R:
@@ -134,6 +132,12 @@ Then run in R:
 ```{r, eval = FALSE}
 # install.packages("devtools")
 devtools::install_github("dcgerard/vicar")
+```
+
+If you want some of the tools in `vicar` to be exacty equivalent to those in `ruv`, you'll need to install an older version of `ruv` (`ruv` was updated and now the those equivalencies are not *exactly* the same)
+
+```{r}
+devtools::install_version("ruv", version = "0.9.6", repos = "http://cran.us.r-project.org")
 ```
 
 A note about matrix computations in vicar: Some of the methods in the vicar package such as mouthwash and backwash rely heavily on matrix-vector operations. The speed of these operations can have a big impact on vicar's performance, especially in large-scale data sets. If you are applying vicar to large data sets, I recommend that you set up R with optimized BLAS (optionally, LAPACK) libraries, especially if you have a multicore computer (most modern laptops and desktops are multicore). See [here](https://csgillespie.github.io/efficientR/set-up.html#blas-and-alternative-r-interpreters) and [here](https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Linear-algebra) for advice and technical details on this. For example, in [our experiments on a high-performance compute cluster](https://github.com/pcarbo/mouthwash_sims/blob/master/mouthwash.sbatch) we set up R with multithreaded OpenBLAS.

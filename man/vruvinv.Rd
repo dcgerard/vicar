@@ -4,9 +4,9 @@
 \alias{vruvinv}
 \title{Variance inflated RUV-inverse.}
 \usage{
-vruvinv(Y, X, ctl, cov_of_interest = ncol(X), likelihood = c("t", "normal"),
-  include_intercept = TRUE, fa_func = pca_naive, fa_args = list(),
-  adjust_bias = FALSE)
+vruvinv(Y, X, ctl, cov_of_interest = ncol(X), likelihood = c("t",
+  "normal"), include_intercept = TRUE, fa_func = pca_naive,
+  fa_args = list(), adjust_bias = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables

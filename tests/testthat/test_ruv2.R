@@ -39,13 +39,15 @@ test_that("vruv2 works", {
                  vout$mult_mat)
 
     if (requireNamespace("ruv", quietly = TRUE)) {
+      if (packageVersion("ruv") == "0.9.6") {
         ruv2out <- ruv::RUV2(Y = Y, X = X[, cov_of_interest, drop = FALSE],
                              Z = X[, -cov_of_interest, drop = FALSE],
                              ctl = ctl, k = num_sv)
         expect_equal(ruv2out$betahat, vout$betahat_ols)
         expect_equal(ruv2out$sigma2, vout$sigma2_unadjusted)
         expect_equal(1, length(unique(round(c(ruv2out$alpha[, !ctl]) /
-                                            c(vout$alpha[, !ctl]), digits = 3))))
+                                              c(vout$alpha[, !ctl]), digits = 3))))
+      }
     }
 }
 )

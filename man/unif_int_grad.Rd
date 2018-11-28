@@ -4,8 +4,8 @@
 \alias{unif_int_grad}
 \title{Gradient wrt z2 of intermediate function in EM.}
 \usage{
-unif_int_grad(z2, xi, betahat_ols, alpha_tilde, S_diag, a_seq, b_seq, qvals,
-  degrees_freedom)
+unif_int_grad(z2, xi, betahat_ols, alpha_tilde, S_diag, a_seq, b_seq,
+  qvals, degrees_freedom)
 }
 \arguments{
 \item{z2}{A vector of numerics. The current values of the

@@ -4,8 +4,8 @@
 \alias{normal_mix_llike_wrapper}
 \title{Wrapper for \code{\link{normal_mix_llike}} so that I can use it in SQUAREM.}
 \usage{
-normal_mix_llike_wrapper(pizxi_vec, betahat_ols, S_diag, alpha_tilde, tau2_seq,
-  lambda_seq, scale_var = TRUE, var_inflate_pen = 0)
+normal_mix_llike_wrapper(pizxi_vec, betahat_ols, S_diag, alpha_tilde,
+  tau2_seq, lambda_seq, scale_var = TRUE, var_inflate_pen = 0)
 }
 \arguments{
 \item{pizxi_vec}{A vector whose first M elements are pi_vals, next

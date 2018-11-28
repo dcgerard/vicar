@@ -1,0 +1,8 @@
+pandoc: 1.19.2.1
+pkgdown: 1.2.0
+pkgdown_sha: ~
+articles:
+  customFA: customFA.html
+  custom_prior: custom_prior.html
+  sample_analysis: sample_analysis.html
+

@@ -4,8 +4,8 @@
 \alias{initialize_mixing_prop}
 \title{Function for initializing mixing proportions.}
 \usage{
-initialize_mixing_prop(pi_init_type = c("zero_conc", "uniform", "random"),
-  zero_spot, M)
+initialize_mixing_prop(pi_init_type = c("zero_conc", "uniform",
+  "random"), zero_spot, M)
 }
 \arguments{
 \item{pi_init_type}{How should we initialize the mixing

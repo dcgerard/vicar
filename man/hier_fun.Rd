@@ -4,7 +4,8 @@
 \alias{hier_fun}
 \title{Hierarchical prior density function as described in Gerard and Stephens (2016)}
 \usage{
-hier_fun(beta_mat, shape_param = 1, rate_param = 1, return_log = TRUE)
+hier_fun(beta_mat, shape_param = 1, rate_param = 1,
+  return_log = TRUE)
 }
 \arguments{
 \item{beta_mat}{A matrix. The rows are the coefficients of the

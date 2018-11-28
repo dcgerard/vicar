@@ -4,9 +4,9 @@
 \alias{bfl}
 \title{Simple Bayesian low rank matrix decomposition.}
 \usage{
-bfl(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4), keep = 20,
-  print_update = TRUE, plot_update = FALSE, rho_0 = 0.1, alpha_0 = 0.1,
-  beta_0 = 1, eta_0 = 0.1, tau_0 = 1)
+bfl(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4),
+  keep = 20, print_update = TRUE, plot_update = FALSE, rho_0 = 0.1,
+  alpha_0 = 0.1, beta_0 = 1, eta_0 = 0.1, tau_0 = 1)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}

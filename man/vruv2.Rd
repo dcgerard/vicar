@@ -4,11 +4,11 @@
 \alias{vruv2}
 \title{Calibrated RUV2.}
 \usage{
-vruv2(Y, X, ctl, k = NULL, cov_of_interest = ncol(X), likelihood = c("t",
-  "normal"), limmashrink = TRUE, degrees_freedom = NULL,
-  include_intercept = TRUE, gls = TRUE, fa_func = pca_2step,
-  fa_args = list(), use_factor = FALSE, force_check = TRUE,
-  fa_limmashrink = TRUE)
+vruv2(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
+  likelihood = c("t", "normal"), limmashrink = TRUE,
+  degrees_freedom = NULL, include_intercept = TRUE, gls = TRUE,
+  fa_func = pca_2step, fa_args = list(), use_factor = FALSE,
+  force_check = TRUE, fa_limmashrink = TRUE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables

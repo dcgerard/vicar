@@ -4,8 +4,8 @@
 \alias{bsvd}
 \title{Gibbs sampler for Bayesian SVD.}
 \usage{
-bsvd(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4), keep = 20,
-  print_update = TRUE, plot_update = FALSE)
+bsvd(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4),
+  keep = 20, print_update = TRUE, plot_update = FALSE)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}

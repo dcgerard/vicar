@@ -5,10 +5,10 @@
 \title{Calibrated RUV4 where the control genes are used to estimate hidden
 confounders and a variance inflation parameter.}
 \usage{
-vruv4(Y, X, ctl, k = NULL, cov_of_interest = ncol(X), likelihood = c("t",
-  "normal"), limmashrink = TRUE, degrees_freedom = NULL,
-  include_intercept = TRUE, gls = TRUE, fa_func = pca_naive,
-  fa_args = list(), adjust_bias = FALSE)
+vruv4(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
+  likelihood = c("t", "normal"), limmashrink = TRUE,
+  degrees_freedom = NULL, include_intercept = TRUE, gls = TRUE,
+  fa_func = pca_naive, fa_args = list(), adjust_bias = FALSE)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
