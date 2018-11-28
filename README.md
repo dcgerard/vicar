@@ -64,7 +64,7 @@ Or, using BibTex:
 ``` tex
 @article{gerard2018empirical,
   author = {Gerard, David and Stephens, Matthew},
-  title = {Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted   variation},
+  title = {Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted variation},
   journal = {Biostatistics},
   volume = {},
   number = {},
@@ -72,7 +72,6 @@ Or, using BibTex:
   year = {2018},
   doi = {10.1093/biostatistics/kxy029},
   URL = {http://dx.doi.org/10.1093/biostatistics/kxy029},
-  doi = {10.1093/biostatistics/kxy029}
 }
 ```
 
@@ -113,9 +112,6 @@ If you want some of the tools in `vicar` to be exacty equivalent to those in `ru
 
 ``` r
 devtools::install_version("ruv", version = "0.9.6", repos = "http://cran.us.r-project.org")
-#> Downloading package from url: http://cran.us.r-project.org/src/contrib/Archive/ruv/ruv_0.9.6.tar.gz
-#> Installing package into '/home/david/R/x86_64-pc-linux-gnu-library/3.5'
-#> (as 'lib' is unspecified)
 ```
 
 A note about matrix computations in vicar: Some of the methods in the vicar package such as mouthwash and backwash rely heavily on matrix-vector operations. The speed of these operations can have a big impact on vicar's performance, especially in large-scale data sets. If you are applying vicar to large data sets, I recommend that you set up R with optimized BLAS (optionally, LAPACK) libraries, especially if you have a multicore computer (most modern laptops and desktops are multicore). See [here](https://csgillespie.github.io/efficientR/set-up.html#blas-and-alternative-r-interpreters) and [here](https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Linear-algebra) for advice and technical details on this. For example, in [our experiments on a high-performance compute cluster](https://github.com/pcarbo/mouthwash_sims/blob/master/mouthwash.sbatch) we set up R with multithreaded OpenBLAS.

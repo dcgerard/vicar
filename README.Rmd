@@ -90,7 +90,7 @@ Or, using BibTex:
 ``` tex
 @article{gerard2018empirical,
   author = {Gerard, David and Stephens, Matthew},
-  title = {Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted   variation},
+  title = {Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted variation},
   journal = {Biostatistics},
   volume = {},
   number = {},
@@ -98,7 +98,6 @@ Or, using BibTex:
   year = {2018},
   doi = {10.1093/biostatistics/kxy029},
   URL = {http://dx.doi.org/10.1093/biostatistics/kxy029},
-  doi = {10.1093/biostatistics/kxy029}
 }
 ```
 
@@ -136,7 +135,7 @@ devtools::install_github("dcgerard/vicar")
 
 If you want some of the tools in `vicar` to be exacty equivalent to those in `ruv`, you'll need to install an older version of `ruv` (`ruv` was updated and now the those equivalencies are not *exactly* the same)
 
-```{r}
+```{r, eval=FALSE}
 devtools::install_version("ruv", version = "0.9.6", repos = "http://cran.us.r-project.org")
 ```
 
