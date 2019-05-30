@@ -23,6 +23,7 @@ RoxygenNote: 6.1.1
 LinkingTo: Rcpp,
     RcppArmadillo,
     RcppProgress
+Remotes: stephens999/ashr
 Depends:
     R (>= 2.10)
 Imports: ruv,
