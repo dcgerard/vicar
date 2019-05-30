@@ -105,12 +105,12 @@ caw <- function(Y, X, k = NULL,
     } else if (weight_init == "limma") {
         if (weight_func_input == "summary1") {
             lmout <- limma::lmFit(object = t(Y), design = X)
-            ebout <- limma::ebayes(lmout)
+            ebout <- limma::eBayes(lmout)
             weight_args$pvalues <- ebout$p.value[, cov_of_interest, drop = TRUE]
             w_init <- do.call(weight_func, args = weight_args)
         } else if (weight_func_input == "summary2") {
             lmout <- limma::lmFit(object = t(Y), design = X)
-            ebout <- limma::ebayes(lmout)
+            ebout <- limma::eBayes(lmout)
             weight_args_temp <- weight_args
             weight_args_temp$sebetahat <-
                 sqrt(lmout$cov.coefficients[cov_of_interest, cov_of_interest,
@@ -120,7 +120,7 @@ caw <- function(Y, X, k = NULL,
             w_init <- do.call(what = weight_func, args = weight_args_temp)
         } else if (weight_func_input == "summary3") {
             lmout <- limma::lmFit(object = t(Y), design = X)
-            ebout <- limma::ebayes(lmout)
+            ebout <- limma::eBayes(lmout)
             weight_args$cov_array <- outer(lmout$cov.coefficients[cov_of_interest,
                                                                   cov_of_interest, drop = FALSE],
                                            ebout$s2.post)
@@ -358,7 +358,7 @@ ash_arrays <- function(betamat, cov_array, dfvec) {
 
 ash_full <- function(Y, X, cov_of_interest = ncol(X)) {
     lmout <- limma::lmFit(object = t(Y), design = X)
-    ebout <- limma::ebayes(lmout)
+    ebout <- limma::eBayes(lmout)
     sebetahat <- lmout$cov.coefficients[cov_of_interest, cov_of_interest,
                                         drop = TRUE] * ebout$s2.post
     betahat <- lmout$coefficients[, cov_of_interest, drop = TRUE]

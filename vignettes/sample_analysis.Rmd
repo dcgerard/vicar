@@ -97,7 +97,7 @@ leapp_leapp <- leapp::leapp(data = t(Y), pred.prim = X[, 2, drop = FALSE],
 sva_sva     <- sva::sva(dat = t(Y), mod = X, mod0 = X[, -2, drop = FALSE], n.sv = num_sv)
 X.sva <- cbind(X, sva_sva$sv)
 lmout <- limma::lmFit(object = t(Y), design = X.sva)
-eout  <- limma::ebayes(lmout)
+eout  <- limma::eBayes(lmout)
 svaout           <- list()
 svaout$betahat   <- lmout$coefficients[, 2]
 svaout$sebetahat <- lmout$stdev.unscaled[, 2] * sqrt(eout$s2.post)

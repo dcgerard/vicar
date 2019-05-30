@@ -107,20 +107,25 @@
 <h1 class="hasAnchor">
 <a href="#data" class="anchor"></a>Data</h1>
 <p>We will use the simulated RNA-seq dataset described in the vignette <em>sample_analysis</em>. To read a description about these data, run the following in R:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">utils<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/vignette">vignette</a></span>(<span class="st">"sample_analysis"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">utils<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/vignette">vignette</a></span>(<span class="st">"sample_analysis"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</a></code></pre></div>
 <p>We’ll first load in these data:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(vicar)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">2512</span>)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(sim_gtex)
-Y &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>Y
-X &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>X
-ctl &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>ctl
-which_null &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>which_null
-beta &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>beta</code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(vicar)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a></code></pre></div>
+<pre><code>## Registered S3 methods overwritten by 'ggplot2':
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">2512</span>)</a>
+<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(sim_gtex)</a>
+<a class="sourceLine" id="cb4-3" data-line-number="3">Y &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>Y</a>
+<a class="sourceLine" id="cb4-4" data-line-number="4">X &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>X</a>
+<a class="sourceLine" id="cb4-5" data-line-number="5">ctl &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>ctl</a>
+<a class="sourceLine" id="cb4-6" data-line-number="6">which_null &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>which_null</a>
+<a class="sourceLine" id="cb4-7" data-line-number="7">beta &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>beta</a></code></pre></div>
 <p>As in <em>sample_analysis</em>, we’ll estimate the number of hidden confounders using the <code>num.sv</code> function from the sva R package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">num_sv &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/num.sv">num.sv</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">method =</span> <span class="st">"be"</span>)
-num_sv</code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">num_sv &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/num.sv">num.sv</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">method =</span> <span class="st">"be"</span>)</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">num_sv</a></code></pre></div>
 <pre><code>## [1] 3</code></pre>
 </div>
 <div id="specifying-a-prior" class="section level1">
@@ -138,22 +143,22 @@ num_sv</code></pre></div>
 <h1 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h1>
 <p>Suppose we had slightly stronger prior information that the signals are all relatively weak, so we’ll put a <span class="math inline">\(N(0, 5)\)</span> prior on the effects. For numerical stability, we’ll return the log-density.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">strong_prior &lt;-<span class="st"> </span><span class="cf">function</span>(beta_mat, sd_prior) {
-  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(beta_mat, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> sd_prior, <span class="dt">log =</span> <span class="ot">TRUE</span>))
-}</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">strong_prior &lt;-<span class="st"> </span><span class="cf">function</span>(beta_mat, sd_prior) {</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(beta_mat, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> sd_prior, <span class="dt">log =</span> <span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">}</a></code></pre></div>
 <p>Since <code>sd_prior</code> is an argument we need to specify, we’ll use the <code>prior_args</code> parameter to set <code>sd_prior = 5</code>. Now let us run <code>ruvb</code>. Note that you should run the MCMC for many more iterations than what I’m doing here.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ruvbout &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,
-                <span class="dt">prior_fun =</span> strong_prior, <span class="dt">prior_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">sd_prior =</span> <span class="dv">5</span>),
-                <span class="dt">return_log =</span> <span class="ot">TRUE</span>,
-                <span class="dt">fa_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">1</span>))</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">ruvbout &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">                <span class="dt">prior_fun =</span> strong_prior, <span class="dt">prior_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">sd_prior =</span> <span class="dv">5</span>),</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">                <span class="dt">return_log =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">                <span class="dt">fa_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">1</span>))</a></code></pre></div>
 <p>We’ll compare the results against just using the default uniform prior:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ruvbout_unif &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,
-                     <span class="dt">fa_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">1</span>))</code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">ruvbout_unif &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb9-2" data-line-number="2">                     <span class="dt">fa_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">1</span>))</a></code></pre></div>
 <p>They give about the same AUC’s.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">aucnorm &lt;-<span class="st"> </span>pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvbout<span class="op">$</span>lfsr2))<span class="op">$</span>auc
-aucunif &lt;-<span class="st"> </span>pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvbout_unif<span class="op">$</span>lfsr2))<span class="op">$</span>auc
-aucdat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">Prior =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Normal"</span>, <span class="st">"Uniform"</span>), <span class="dt">AUC =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(aucnorm, aucunif))
-knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">x =</span> aucdat)</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">aucnorm &lt;-<span class="st"> </span>pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvbout<span class="op">$</span>lfsr2))<span class="op">$</span>auc</a>
+<a class="sourceLine" id="cb10-2" data-line-number="2">aucunif &lt;-<span class="st"> </span>pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvbout_unif<span class="op">$</span>lfsr2))<span class="op">$</span>auc</a>
+<a class="sourceLine" id="cb10-3" data-line-number="3">aucdat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">Prior =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Normal"</span>, <span class="st">"Uniform"</span>), <span class="dt">AUC =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(aucnorm, aucunif))</a>
+<a class="sourceLine" id="cb10-4" data-line-number="4">knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">x =</span> aucdat)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Prior</th>
@@ -162,11 +167,11 @@ knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentat
 <tbody>
 <tr class="odd">
 <td align="left">Normal</td>
-<td align="right">0.8699663</td>
+<td align="right">0.8790000</td>
 </tr>
 <tr class="even">
 <td align="left">Uniform</td>
-<td align="right">0.8498315</td>
+<td align="right">0.8788539</td>
 </tr>
 </tbody>
 </table>
@@ -194,7 +199,7 @@ knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentat
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
       </footer>
 </div>

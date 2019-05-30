@@ -122,9 +122,14 @@ Y = X\beta + Z\alpha + E,
 <code>which_null</code> A logical vector indicating the location of null genes.</li>
 </ul>
 <p>I’ve added signal to the <code>Y</code> matrix, the amount of which is encoded in the vector <code>beta</code>. We can read in these data using the <code>data</code> function.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(vicar)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr)</code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(vicar)</a>
+<a class="sourceLine" id="cb1-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a></code></pre></div>
+<pre><code>## Registered S3 methods overwritten by 'ggplot2':
+##   method         from 
+##   [.quosures     rlang
+##   c.quosures     rlang
+##   print.quosures rlang</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(dplyr)</a></code></pre></div>
 <pre><code>## 
 ## Attaching package: 'dplyr'</code></pre>
 <pre><code>## The following objects are masked from 'package:stats':
@@ -133,145 +138,140 @@ Y = X\beta + Z\alpha + E,
 <pre><code>## The following objects are masked from 'package:base':
 ## 
 ##     intersect, setdiff, setequal, union</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(sim_gtex)
-Y &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>Y
-X &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>X
-ctl &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>ctl
-which_null &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>which_null
-beta &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>beta</code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(sim_gtex)</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">Y &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>Y</a>
+<a class="sourceLine" id="cb7-3" data-line-number="3">X &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>X</a>
+<a class="sourceLine" id="cb7-4" data-line-number="4">ctl &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>ctl</a>
+<a class="sourceLine" id="cb7-5" data-line-number="5">which_null &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>which_null</a>
+<a class="sourceLine" id="cb7-6" data-line-number="6">beta &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>beta</a></code></pre></div>
 <p>These data contain 20 samples and 1000 genes. The proportion of genes in these data that are null is 0.9. However, we only allow 10 of these genes to be known as negative controls.</p>
 <p>Before we proceed with the analysis, we note that all confounder adjustment methods we explore require an estimate of the number of hidden confounders. We can use the <code>num.sv</code> function in the sva package, or the <code>est.confounder.num</code> function in the cate package to obtain this estimate. They each say that there are about 3 or 4 hidden confounders.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">num_sv     &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/num.sv">num.sv</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">method =</span> <span class="st">"be"</span>)
-num_sv_l   &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/num.sv">num.sv</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">method =</span> <span class="st">"leek"</span>)
-num_sv_bcv &lt;-<span class="st"> </span>cate<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/cate/topics/est.confounder.num">est.confounder.num</a></span>(<span class="op">~</span><span class="st"> </span>Intercept <span class="op">+</span><span class="st"> </span>Treatment, <span class="dt">X.data =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(X), <span class="dt">Y =</span> Y,
-                                       <span class="dt">method =</span> <span class="st">"bcv"</span>, <span class="dt">bcv.plot =</span> <span class="ot">FALSE</span>, <span class="dt">nRepeat =</span> <span class="dv">50</span>)<span class="op">$</span>r
-num_sv</code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">num_sv     &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/num.sv">num.sv</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">method =</span> <span class="st">"be"</span>)</a>
+<a class="sourceLine" id="cb8-2" data-line-number="2">num_sv_l   &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/num.sv">num.sv</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">method =</span> <span class="st">"leek"</span>)</a>
+<a class="sourceLine" id="cb8-3" data-line-number="3">num_sv_bcv &lt;-<span class="st"> </span>cate<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/cate/topics/est.confounder.num">est.confounder.num</a></span>(<span class="op">~</span><span class="st"> </span>Intercept <span class="op">+</span><span class="st"> </span>Treatment, <span class="dt">X.data =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/as.data.frame">as.data.frame</a></span>(X), <span class="dt">Y =</span> Y,</a>
+<a class="sourceLine" id="cb8-4" data-line-number="4">                                       <span class="dt">method =</span> <span class="st">"bcv"</span>, <span class="dt">bcv.plot =</span> <span class="ot">FALSE</span>, <span class="dt">nRepeat =</span> <span class="dv">50</span>)<span class="op">$</span>r</a>
+<a class="sourceLine" id="cb8-5" data-line-number="5">num_sv</a></code></pre></div>
 <pre><code>## [1] 3</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">num_sv_l</code></pre></div>
-<pre><code>## [1] 5</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">num_sv_bcv</code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">num_sv_l</a></code></pre></div>
 <pre><code>## [1] 3</code></pre>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" data-line-number="1">num_sv_bcv</a></code></pre></div>
+<pre><code>## [1] 4</code></pre>
 <p>For this vignette, we’ll use the output from <code>num.sv</code>, which indicates that there are 3 hidden confounders.</p>
 </div>
 <div id="analysis-with-controls" class="section level1">
 <h1 class="hasAnchor">
 <a href="#analysis-with-controls" class="anchor"></a>Analysis With Controls</h1>
 <p>When there are control genes, there are many options to analyze your data. vicar, cate, and ruv all have their different versions of RUV4. We’ll just look at the default settings for each.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ruv4_vicar &lt;-<span class="st"> </span>vicar<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/vicar/topics/vruv4">vruv4</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">k =</span> num_sv, <span class="dt">ctl =</span> ctl, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>)
-ruv4_cate  &lt;-<span class="st"> </span>cate<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/cate/topics/cate">cate.fit</a></span>(<span class="dt">X.primary =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">X.nuis =</span> X[, <span class="op">-</span><span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>],
-                             <span class="dt">Y =</span> Y, <span class="dt">r =</span> num_sv, <span class="dt">adj.method =</span> <span class="st">"nc"</span>, <span class="dt">nc =</span> ctl)
-ruv4_ruv   &lt;-<span class="st"> </span>ruv<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ruv/topics/RUV4">RUV4</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv,
-                        <span class="dt">Z =</span> X[, <span class="op">-</span><span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>])</code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" data-line-number="1">ruv4_vicar &lt;-<span class="st"> </span>vicar<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/vicar/topics/vruv4">vruv4</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">k =</span> num_sv, <span class="dt">ctl =</span> ctl, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb14-2" data-line-number="2">ruv4_cate  &lt;-<span class="st"> </span>cate<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/cate/topics/cate">cate.fit</a></span>(<span class="dt">X.primary =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">X.nuis =</span> X[, <span class="dv">-2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>],</a>
+<a class="sourceLine" id="cb14-3" data-line-number="3">                             <span class="dt">Y =</span> Y, <span class="dt">r =</span> num_sv, <span class="dt">adj.method =</span> <span class="st">"nc"</span>, <span class="dt">nc =</span> ctl)</a>
+<a class="sourceLine" id="cb14-4" data-line-number="4">ruv4_ruv   &lt;-<span class="st"> </span>ruv<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ruv/topics/RUV4">RUV4</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv,</a>
+<a class="sourceLine" id="cb14-5" data-line-number="5">                        <span class="dt">Z =</span> X[, <span class="dv">-2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>])</a></code></pre></div>
 <p>The ruv package also implements the RUV2 method.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ruv2_ruv &lt;-<span class="st"> </span>ruv<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ruv/topics/RUV2">RUV2</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv,
-                      <span class="dt">Z =</span> X[, <span class="op">-</span><span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>])</code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" data-line-number="1">ruv2_ruv &lt;-<span class="st"> </span>ruv<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ruv/topics/RUV2">RUV2</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv,</a>
+<a class="sourceLine" id="cb15-2" data-line-number="2">                      <span class="dt">Z =</span> X[, <span class="dv">-2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>])</a></code></pre></div>
 <p>A method that is both a version of RUV2 and a version of RUV4 is implemented in the vicar function <code>ruv3</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ruv3_vicar &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruv3.html">ruv3</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">k =</span> num_sv, <span class="dt">ctl =</span> ctl, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>)</code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb16-1" data-line-number="1">ruv3_vicar &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruv3.html">ruv3</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">k =</span> num_sv, <span class="dt">ctl =</span> ctl, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>)</a></code></pre></div>
 <p>Finally, a Bayesian version of RUV is implemented in the vicar function <code>ruvb</code>. I run the Gibbs sampler for much fewer iterations than what you should do in practice.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">ruvb_vicar &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,
-                   <span class="dt">fa_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">5</span>))</code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" data-line-number="1">ruvb_vicar &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb17-2" data-line-number="2">                   <span class="dt">fa_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">5</span>))</a></code></pre></div>
 </div>
 <div id="analysis-without-controls" class="section level1">
 <h1 class="hasAnchor">
 <a href="#analysis-without-controls" class="anchor"></a>Analysis Without Controls</h1>
 <p>When control genes are not present, there are still plenty of options. Two implementations in vicar are <code>mouthwash</code> and <code>backwash</code>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">mout &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mouthwash.html">mouthwash</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>, <span class="dt">include_intercept =</span> <span class="ot">FALSE</span>)</code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" data-line-number="1">mout &lt;-<span class="st"> </span><span class="kw"><a href="../reference/mouthwash.html">mouthwash</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>, <span class="dt">include_intercept =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <pre><code>## Running mouthwash on 20 x 2 matrix X and 20 x 1000 matrix Y.
 ##  - Computing independent basis using QR decomposition.
-##  - Computation took 0.009 seconds.
+##  - Computation took 0.01 seconds.
 ##  - Running additional preprocessing steps.
-##  - Computation took 0.001 seconds.
+##  - Computation took 0 seconds.
 ##  - Running second step of mouthwash:
 ##     + Estimating model parameters using EM.
-##     + Computation took 5.491 seconds.
-##     + Generating adaptive shrinkage (ash) output.</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre><code>##     + Computation took 0.166 seconds.
-##  - Second step took 6.085 seconds.
+##     + Computation took 4.147 seconds.
+##     + Generating adaptive shrinkage (ash) output.
+##     + Computation took 0.128 seconds.
+##  - Second step took 4.805 seconds.
 ##  - Estimating additional hidden confounders.
-##  - Computation took 0.012 seconds.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">bout &lt;-<span class="st"> </span><span class="kw"><a href="../reference/backwash.html">backwash</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>, <span class="dt">include_intercept =</span> <span class="ot">FALSE</span>)</code></pre></div>
+##  - Computation took 0.014 seconds.</code></pre>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" data-line-number="1">bout &lt;-<span class="st"> </span><span class="kw"><a href="../reference/backwash.html">backwash</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>, <span class="dt">include_intercept =</span> <span class="ot">FALSE</span>)</a></code></pre></div>
 <pre><code>##  - Computing independent basis using QR decomposition.
-##  - Computation took 0.008 seconds.
+##  - Computation took 0.01 seconds.
 ##  - Running additional preprocessing steps.
 ##  - Computation took 0.001 seconds.
 ##  - Running second step of backwash:
-##     + Initializing parameters for EM algorithm.</code></pre>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<pre><code>##     + Computation took 0.406 seconds.
+##     + Initializing parameters for EM algorithm.
+##     + Computation took 1.696 seconds.
 ##     + Running one round of parameter updates.
-##     + Computation took 0.029 seconds.
+##     + Computation took 0.023 seconds.
 ##     + Estimating model parameters using EM.
-##     + Computation took 18.584 seconds.
+##     + Computation took 11.956 seconds.
 ##     + Generating posterior statistics.
-##     + Computation took 0.006 seconds.
-##  - Second step took 19.928 seconds.
+##     + Computation took 0.003 seconds.
+##  - Second step took 14.811 seconds.
 ##  - Generating final backwash outputs.
-##  - Computation took 0.019 seconds.</code></pre>
+##  - Computation took 0.014 seconds.</code></pre>
 <p>In terms of other packages, you can use the <code>sva</code> function in the sva package, the <code>cate</code> function in the cate package, or the <code>leapp</code> function in the leapp package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">cate_cate   &lt;-<span class="st"> </span>cate<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/cate/topics/cate">cate.fit</a></span>(<span class="dt">X.primary =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">X.nuis =</span> X[, <span class="op">-</span><span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>],
-                              <span class="dt">Y =</span> Y, <span class="dt">r =</span> num_sv, <span class="dt">adj.method =</span> <span class="st">"rr"</span>)
-leapp_leapp &lt;-<span class="st"> </span>leapp<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/leapp/topics/leapp">leapp</a></span>(<span class="dt">data =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">pred.prim =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], 
-                            <span class="dt">pred.covar =</span> X[, <span class="op">-</span><span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">num.fac =</span> num_sv)
-
-## Recommended pipeline for SVA
-sva_sva     &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/sva">sva</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">mod0 =</span> X[, <span class="op">-</span><span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">n.sv =</span> num_sv)</code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb22-1" data-line-number="1">cate_cate   &lt;-<span class="st"> </span>cate<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/cate/topics/cate">cate.fit</a></span>(<span class="dt">X.primary =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">X.nuis =</span> X[, <span class="dv">-2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>],</a>
+<a class="sourceLine" id="cb22-2" data-line-number="2">                              <span class="dt">Y =</span> Y, <span class="dt">r =</span> num_sv, <span class="dt">adj.method =</span> <span class="st">"rr"</span>)</a>
+<a class="sourceLine" id="cb22-3" data-line-number="3">leapp_leapp &lt;-<span class="st"> </span>leapp<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/leapp/topics/leapp">leapp</a></span>(<span class="dt">data =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">pred.prim =</span> X[, <span class="dv">2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], </a>
+<a class="sourceLine" id="cb22-4" data-line-number="4">                            <span class="dt">pred.covar =</span> X[, <span class="dv">-2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">num.fac =</span> num_sv)</a>
+<a class="sourceLine" id="cb22-5" data-line-number="5"></a>
+<a class="sourceLine" id="cb22-6" data-line-number="6"><span class="co">## Recommended pipeline for SVA</span></a>
+<a class="sourceLine" id="cb22-7" data-line-number="7">sva_sva     &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/sva">sva</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">mod0 =</span> X[, <span class="dv">-2</span>, <span class="dt">drop =</span> <span class="ot">FALSE</span>], <span class="dt">n.sv =</span> num_sv)</a></code></pre></div>
 <pre><code>## Number of significant surrogate variables is:  3 
 ## Iteration (out of 5 ):1  2  3  4  5</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">X.sva &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">cbind</a></span>(X, sva_sva<span class="op">$</span>sv)
-lmout &lt;-<span class="st"> </span>limma<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/limma/topics/lmFit">lmFit</a></span>(<span class="dt">object =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">design =</span> X.sva)
-eout  &lt;-<span class="st"> </span>limma<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/limma/topics/ebayes-deprecated">ebayes</a></span>(lmout)</code></pre></div>
-<pre><code>## Warning: 'limma::ebayes' is deprecated.
-## Use 'eBayes' instead.
-## See help("Deprecated")</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">svaout           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-svaout<span class="op">$</span>betahat   &lt;-<span class="st"> </span>lmout<span class="op">$</span>coefficients[, <span class="dv">2</span>]
-svaout<span class="op">$</span>sebetahat &lt;-<span class="st"> </span>lmout<span class="op">$</span>stdev.unscaled[, <span class="dv">2</span>] <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(eout<span class="op">$</span>s2.post)
-svaout<span class="op">$</span>pvalues   &lt;-<span class="st"> </span>eout<span class="op">$</span>p.value[, <span class="dv">2</span>]
-## Sanity check
-## plot(lmout$coefficients[,2] / (lmout$stdev.unscaled[, 2] * sqrt(eout$s2.post)), eout$t[,2])</code></pre></div>
+<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb24-1" data-line-number="1">X.sva &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/cbind">cbind</a></span>(X, sva_sva<span class="op">$</span>sv)</a>
+<a class="sourceLine" id="cb24-2" data-line-number="2">lmout &lt;-<span class="st"> </span>limma<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/limma/topics/lmFit">lmFit</a></span>(<span class="dt">object =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">design =</span> X.sva)</a>
+<a class="sourceLine" id="cb24-3" data-line-number="3">eout  &lt;-<span class="st"> </span>limma<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/limma/topics/ebayes">eBayes</a></span>(lmout)</a>
+<a class="sourceLine" id="cb24-4" data-line-number="4">svaout           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb24-5" data-line-number="5">svaout<span class="op">$</span>betahat   &lt;-<span class="st"> </span>lmout<span class="op">$</span>coefficients[, <span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb24-6" data-line-number="6">svaout<span class="op">$</span>sebetahat &lt;-<span class="st"> </span>lmout<span class="op">$</span>stdev.unscaled[, <span class="dv">2</span>] <span class="op">*</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(eout<span class="op">$</span>s2.post)</a>
+<a class="sourceLine" id="cb24-7" data-line-number="7">svaout<span class="op">$</span>pvalues   &lt;-<span class="st"> </span>eout<span class="op">$</span>p.value[, <span class="dv">2</span>]</a>
+<a class="sourceLine" id="cb24-8" data-line-number="8"><span class="co">## Sanity check</span></a>
+<a class="sourceLine" id="cb24-9" data-line-number="9"><span class="co">## plot(lmout$coefficients[,2] / (lmout$stdev.unscaled[, 2] * sqrt(eout$s2.post)), eout$t[,2])</span></a></code></pre></div>
 </div>
 <div id="compare-methods" class="section level1">
 <h1 class="hasAnchor">
 <a href="#compare-methods" class="anchor"></a>Compare methods</h1>
 <p>We’ll compare how all of the methods performed on these data using the <code>pROC</code> package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">roc_out &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(mout<span class="op">$</span>result<span class="op">$</span>lfdr)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(bout<span class="op">$</span>result<span class="op">$</span>lfdr)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(cate_cate<span class="op">$</span>beta.p.value)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(svaout<span class="op">$</span>pvalues)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(leapp_leapp<span class="op">$</span>p)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv2_ruv<span class="op">$</span>p)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv3_vicar<span class="op">$</span>pvalues_unadjusted)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_vicar<span class="op">$</span>pvalues)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_cate<span class="op">$</span>beta.p.value)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_ruv<span class="op">$</span>p)),
-  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvb_vicar<span class="op">$</span>lfsr2)))
-name_vec &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"MOUTHWASH"</span>, <span class="st">"BACKWASH"</span>, <span class="st">"CATErr"</span>, <span class="st">"SVA"</span>, <span class="st">"LEAPP"</span>, <span class="st">"RUV2"</span>, <span class="st">"RUV3"</span>, <span class="st">"RUV4v"</span>, <span class="st">"RUV4c"</span>, <span class="st">"RUV4r"</span>, <span class="st">"RUVb"</span>)
-<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(roc_out) &lt;-<span class="st"> </span>name_vec
-
-sout &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(roc_out, <span class="cf">function</span>(x) { <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">TPR =</span> x<span class="op">$</span>sensitivities, <span class="dt">FPR =</span> <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>x<span class="op">$</span>specificities)})
-<span class="cf">for</span> (index <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(sout)) {
-  sout[[index]]<span class="op">$</span>Method &lt;-<span class="st"> </span>name_vec[index]
-}
-longdat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/do.call">do.call</a></span>(rbind, sout)</code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" data-line-number="1">roc_out &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(</a>
+<a class="sourceLine" id="cb25-2" data-line-number="2">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(mout<span class="op">$</span>result<span class="op">$</span>lfdr)),</a>
+<a class="sourceLine" id="cb25-3" data-line-number="3">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(bout<span class="op">$</span>result<span class="op">$</span>lfdr)),</a>
+<a class="sourceLine" id="cb25-4" data-line-number="4">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(cate_cate<span class="op">$</span>beta.p.value)),</a>
+<a class="sourceLine" id="cb25-5" data-line-number="5">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(svaout<span class="op">$</span>pvalues)),</a>
+<a class="sourceLine" id="cb25-6" data-line-number="6">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(leapp_leapp<span class="op">$</span>p)),</a>
+<a class="sourceLine" id="cb25-7" data-line-number="7">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv2_ruv<span class="op">$</span>p)),</a>
+<a class="sourceLine" id="cb25-8" data-line-number="8">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv3_vicar<span class="op">$</span>pvalues_unadjusted)),</a>
+<a class="sourceLine" id="cb25-9" data-line-number="9">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_vicar<span class="op">$</span>pvalues)),</a>
+<a class="sourceLine" id="cb25-10" data-line-number="10">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_cate<span class="op">$</span>beta.p.value)),</a>
+<a class="sourceLine" id="cb25-11" data-line-number="11">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_ruv<span class="op">$</span>p)),</a>
+<a class="sourceLine" id="cb25-12" data-line-number="12">  pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvb_vicar<span class="op">$</span>lfsr2)))</a>
+<a class="sourceLine" id="cb25-13" data-line-number="13">name_vec &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"MOUTHWASH"</span>, <span class="st">"BACKWASH"</span>, <span class="st">"CATErr"</span>, <span class="st">"SVA"</span>, <span class="st">"LEAPP"</span>, <span class="st">"RUV2"</span>, <span class="st">"RUV3"</span>, <span class="st">"RUV4v"</span>, <span class="st">"RUV4c"</span>, <span class="st">"RUV4r"</span>, <span class="st">"RUVb"</span>)</a>
+<a class="sourceLine" id="cb25-14" data-line-number="14"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/names">names</a></span>(roc_out) &lt;-<span class="st"> </span>name_vec</a>
+<a class="sourceLine" id="cb25-15" data-line-number="15"></a>
+<a class="sourceLine" id="cb25-16" data-line-number="16">sout &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(roc_out, <span class="cf">function</span>(x) { <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">TPR =</span> x<span class="op">$</span>sensitivities, <span class="dt">FPR =</span> <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>x<span class="op">$</span>specificities)})</a>
+<a class="sourceLine" id="cb25-17" data-line-number="17"><span class="cf">for</span> (index <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/length">length</a></span>(sout)) {</a>
+<a class="sourceLine" id="cb25-18" data-line-number="18">  sout[[index]]<span class="op">$</span>Method &lt;-<span class="st"> </span>name_vec[index]</a>
+<a class="sourceLine" id="cb25-19" data-line-number="19">}</a>
+<a class="sourceLine" id="cb25-20" data-line-number="20">longdat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/do.call">do.call</a></span>(rbind, sout)</a></code></pre></div>
 <p>We’ll first look at the ROC Curves for the methods that use control genes.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">shortdat &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(longdat, Method <span class="op">==</span><span class="st"> "RUV2"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "RUV3"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "RUV4v"</span> <span class="op">|</span>
-<span class="st">                            </span>Method <span class="op">==</span><span class="st"> "RUV4c"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "RUV4r"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "RUVb"</span>)
-<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="dt">data =</span> shortdat, <span class="dt">mapping =</span> <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> FPR, <span class="dt">y =</span> TPR, <span class="dt">col =</span> Method)) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_path</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"ROC Curves"</span>)</code></pre></div>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb26-1" data-line-number="1">shortdat &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(longdat, Method <span class="op">==</span><span class="st"> "RUV2"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "RUV3"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "RUV4v"</span> <span class="op">|</span></a>
+<a class="sourceLine" id="cb26-2" data-line-number="2"><span class="st">                            </span>Method <span class="op">==</span><span class="st"> "RUV4c"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "RUV4r"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "RUVb"</span>)</a>
+<a class="sourceLine" id="cb26-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="dt">data =</span> shortdat, <span class="dt">mapping =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> FPR, <span class="dt">y =</span> TPR, <span class="dt">col =</span> Method)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb26-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_path</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/labs">ggtitle</a></span>(<span class="st">"ROC Curves"</span>)</a></code></pre></div>
 <p><img src="sample_analysis_files/figure-html/unnamed-chunk-10-1.png" width="672"></p>
 <p>Eyeballing it, it seems that RUV3 and RUV2 perform the best here, though not with regards to the most significant genes. The <code>ruv</code> version of RUV4 appears to do much worse.</p>
 <p>Now we’ll look at the ROC curves of methods that do not use control genes.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">shortdat &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"><a href="http://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(longdat, Method <span class="op">==</span><span class="st"> "MOUTHWASH"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "BACKWASH"</span> <span class="op">|</span>
-<span class="st">                            </span>Method <span class="op">==</span><span class="st"> "CATErr"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "SVA"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "LEAPP"</span>)
-<span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span>(<span class="dt">data =</span> shortdat, <span class="dt">mapping =</span> <span class="kw"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span>(<span class="dt">x =</span> FPR, <span class="dt">y =</span> TPR, <span class="dt">col =</span> Method)) <span class="op">+</span>
-<span class="st">  </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/geom_path.html">geom_path</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://ggplot2.tidyverse.org/reference/labs.html">ggtitle</a></span>(<span class="st">"ROC Curves"</span>)</code></pre></div>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" data-line-number="1">shortdat &lt;-<span class="st"> </span>dplyr<span class="op">::</span><span class="kw"><a href="https://dplyr.tidyverse.org/reference/filter.html">filter</a></span>(longdat, Method <span class="op">==</span><span class="st"> "MOUTHWASH"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "BACKWASH"</span> <span class="op">|</span></a>
+<a class="sourceLine" id="cb27-2" data-line-number="2"><span class="st">                            </span>Method <span class="op">==</span><span class="st"> "CATErr"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "SVA"</span> <span class="op">|</span><span class="st"> </span>Method <span class="op">==</span><span class="st"> "LEAPP"</span>)</a>
+<a class="sourceLine" id="cb27-3" data-line-number="3"><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggplot">ggplot</a></span>(<span class="dt">data =</span> shortdat, <span class="dt">mapping =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/aes">aes</a></span>(<span class="dt">x =</span> FPR, <span class="dt">y =</span> TPR, <span class="dt">col =</span> Method)) <span class="op">+</span></a>
+<a class="sourceLine" id="cb27-4" data-line-number="4"><span class="st">  </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/geom_path">geom_path</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/ggtheme">theme_bw</a></span>() <span class="op">+</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/ggplot2/topics/labs">ggtitle</a></span>(<span class="st">"ROC Curves"</span>)</a></code></pre></div>
 <p><img src="sample_analysis_files/figure-html/unnamed-chunk-11-1.png" width="672"></p>
 <p>Eyeballing it, it seems that MOUTHWASH and BACKWASH do the best over the largest length of the curve. Note that the BACKWASH curve is nearly completely covered by the MOUTHWASH curve.</p>
 <p>We can calculate the areas under the curve (AUC) for each method</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">auc_vec &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">sapply</a></span>(roc_out, <span class="dt">FUN =</span> <span class="cf">function</span>(x) { x<span class="op">$</span>auc })
-knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sort">sort</a></span>(auc_vec, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>), <span class="dt">col.names =</span> <span class="st">"AUC"</span>, <span class="dt">digits =</span> <span class="dv">3</span>)</code></pre></div>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb28-1" data-line-number="1">auc_vec &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">sapply</a></span>(roc_out, <span class="dt">FUN =</span> <span class="cf">function</span>(x) { x<span class="op">$</span>auc })</a>
+<a class="sourceLine" id="cb28-2" data-line-number="2">knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sort">sort</a></span>(auc_vec, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>), <span class="dt">col.names =</span> <span class="st">"AUC"</span>, <span class="dt">digits =</span> <span class="dv">3</span>)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th></th>
@@ -299,12 +299,12 @@ knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentat
 <td align="right">0.884</td>
 </tr>
 <tr class="even">
-<td>LEAPP</td>
-<td align="right">0.879</td>
+<td>RUVb</td>
+<td align="right">0.880</td>
 </tr>
 <tr class="odd">
-<td>RUVb</td>
-<td align="right">0.875</td>
+<td>LEAPP</td>
+<td align="right">0.879</td>
 </tr>
 <tr class="even">
 <td>SVA</td>
@@ -329,57 +329,49 @@ knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentat
 <h1 class="hasAnchor">
 <a href="#estimating-the-proportion-of-genes-that-are-null-" class="anchor"></a>Estimating the proportion of genes that are NULL.</h1>
 <p>It is sometimes of interest to estimate the number of genes that show a signal. <code>mouthwash</code> and <code>backwash</code> already return these estimates. For other methods, we can use a summary statistic method (SSM) to get estimates of the proportion of genes that are null. Two useful SSM’s are implemented in the ashr and qvalue R packages. We’ll look at using the ashr package.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">method_list &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>CATErr           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>CATErr<span class="op">$</span>betahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(cate_cate<span class="op">$</span>beta)
-method_list<span class="op">$</span>CATErr<span class="op">$</span>sebetahat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(cate_cate<span class="op">$</span>beta.cov.row <span class="op">*</span><span class="st"> </span>cate_cate<span class="op">$</span>beta.cov.col) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(X)))</code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb29-1" data-line-number="1">method_list &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb29-2" data-line-number="2">method_list<span class="op">$</span>CATErr           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb29-3" data-line-number="3">method_list<span class="op">$</span>CATErr<span class="op">$</span>betahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(cate_cate<span class="op">$</span>beta)</a>
+<a class="sourceLine" id="cb29-4" data-line-number="4">method_list<span class="op">$</span>CATErr<span class="op">$</span>sebetahat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(cate_cate<span class="op">$</span>beta.cov.row <span class="op">*</span><span class="st"> </span>cate_cate<span class="op">$</span>beta.cov.col) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(X)))</a></code></pre></div>
 <pre><code>## Warning in cate_cate$beta.cov.row * cate_cate$beta.cov.col: Recycling array of length 1 in vector-array arithmetic is deprecated.
 ##   Use c() or as.vector() instead.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">method_list<span class="op">$</span>RUV2            &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>RUV2<span class="op">$</span>betahat    &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv2_ruv<span class="op">$</span>betahat)
-method_list<span class="op">$</span>RUV2<span class="op">$</span>sebetahat  &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(ruv2_ruv<span class="op">$</span>multiplier <span class="op">*</span><span class="st"> </span>ruv2_ruv<span class="op">$</span>sigma2))</code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb31-1" data-line-number="1">method_list<span class="op">$</span>RUV2            &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb31-2" data-line-number="2">method_list<span class="op">$</span>RUV2<span class="op">$</span>betahat    &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv2_ruv<span class="op">$</span>betahat)</a>
+<a class="sourceLine" id="cb31-3" data-line-number="3">method_list<span class="op">$</span>RUV2<span class="op">$</span>sebetahat  &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(ruv2_ruv<span class="op">$</span>multiplier <span class="op">*</span><span class="st"> </span>ruv2_ruv<span class="op">$</span>sigma2))</a></code></pre></div>
 <pre><code>## Warning in ruv2_ruv$multiplier * ruv2_ruv$sigma2: Recycling array of length 1 in array-vector arithmetic is deprecated.
 ##   Use c() or as.vector() instead.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">method_list<span class="op">$</span>RUV3            &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>RUV3<span class="op">$</span>betahat    &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv3_vicar<span class="op">$</span>betahat)
-method_list<span class="op">$</span>RUV3<span class="op">$</span>sebetahat  &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv3_vicar<span class="op">$</span>sebetahat_unadjusted)
-
-method_list<span class="op">$</span>RUV4r           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>RUV4r<span class="op">$</span>betahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_ruv<span class="op">$</span>betahat)
-method_list<span class="op">$</span>RUV4r<span class="op">$</span>sebetahat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(ruv4_ruv<span class="op">$</span>multiplier <span class="op">*</span><span class="st"> </span>ruv4_ruv<span class="op">$</span>sigma2))</code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb33-1" data-line-number="1">method_list<span class="op">$</span>RUV3            &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb33-2" data-line-number="2">method_list<span class="op">$</span>RUV3<span class="op">$</span>betahat    &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv3_vicar<span class="op">$</span>betahat)</a>
+<a class="sourceLine" id="cb33-3" data-line-number="3">method_list<span class="op">$</span>RUV3<span class="op">$</span>sebetahat  &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv3_vicar<span class="op">$</span>sebetahat_unadjusted)</a>
+<a class="sourceLine" id="cb33-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb33-5" data-line-number="5">method_list<span class="op">$</span>RUV4r           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb33-6" data-line-number="6">method_list<span class="op">$</span>RUV4r<span class="op">$</span>betahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_ruv<span class="op">$</span>betahat)</a>
+<a class="sourceLine" id="cb33-7" data-line-number="7">method_list<span class="op">$</span>RUV4r<span class="op">$</span>sebetahat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(ruv4_ruv<span class="op">$</span>multiplier <span class="op">*</span><span class="st"> </span>ruv4_ruv<span class="op">$</span>sigma2))</a></code></pre></div>
 <pre><code>## Warning in ruv4_ruv$multiplier * ruv4_ruv$sigma2: Recycling array of length 1 in array-vector arithmetic is deprecated.
 ##   Use c() or as.vector() instead.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">method_list<span class="op">$</span>RUV4v           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>RUV4v<span class="op">$</span>betahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_vicar<span class="op">$</span>betahat)
-method_list<span class="op">$</span>RUV4v<span class="op">$</span>sebetahat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_vicar<span class="op">$</span>sebetahat_ols)
-
-method_list<span class="op">$</span>RUV4c           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>RUV4c<span class="op">$</span>betahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_cate<span class="op">$</span>beta)
-method_list<span class="op">$</span>RUV4c<span class="op">$</span>sebetahat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(ruv4_cate<span class="op">$</span>beta.cov.row <span class="op">*</span><span class="st"> </span>ruv4_cate<span class="op">$</span>beta.cov.col) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(X)))</code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb35-1" data-line-number="1">method_list<span class="op">$</span>RUV4v           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb35-2" data-line-number="2">method_list<span class="op">$</span>RUV4v<span class="op">$</span>betahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_vicar<span class="op">$</span>betahat)</a>
+<a class="sourceLine" id="cb35-3" data-line-number="3">method_list<span class="op">$</span>RUV4v<span class="op">$</span>sebetahat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_vicar<span class="op">$</span>sebetahat_ols)</a>
+<a class="sourceLine" id="cb35-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb35-5" data-line-number="5">method_list<span class="op">$</span>RUV4c           &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb35-6" data-line-number="6">method_list<span class="op">$</span>RUV4c<span class="op">$</span>betahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruv4_cate<span class="op">$</span>beta)</a>
+<a class="sourceLine" id="cb35-7" data-line-number="7">method_list<span class="op">$</span>RUV4c<span class="op">$</span>sebetahat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(ruv4_cate<span class="op">$</span>beta.cov.row <span class="op">*</span><span class="st"> </span>ruv4_cate<span class="op">$</span>beta.cov.col) <span class="op">/</span><span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/MathFun">sqrt</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/nrow">nrow</a></span>(X)))</a></code></pre></div>
 <pre><code>## Warning in ruv4_cate$beta.cov.row * ruv4_cate$beta.cov.col: Recycling array of length 1 in vector-array arithmetic is deprecated.
 ##   Use c() or as.vector() instead.</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">method_list<span class="op">$</span>RUVb            &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>RUVb<span class="op">$</span>betahat    &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvb_vicar<span class="op">$</span>means)
-method_list<span class="op">$</span>RUVb<span class="op">$</span>sebetahat  &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvb_vicar<span class="op">$</span>sd)
-
-method_list<span class="op">$</span>SVA             &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()
-method_list<span class="op">$</span>SVA<span class="op">$</span>betahat     &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(svaout<span class="op">$</span>betahat)
-method_list<span class="op">$</span>SVA<span class="op">$</span>sebetahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(svaout<span class="op">$</span>sebetahat)
-
-ashfit &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(method_list, <span class="dt">FUN =</span> <span class="cf">function</span>(x) { ashr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ashr/topics/ash">ash</a></span>(x<span class="op">$</span>betahat, x<span class="op">$</span>sebetahat)})</code></pre></div>
-<pre><code>## Due to absence of package REBayes, switching to EM algorithm
-## Due to absence of package REBayes, switching to EM algorithm
-## Due to absence of package REBayes, switching to EM algorithm
-## Due to absence of package REBayes, switching to EM algorithm
-## Due to absence of package REBayes, switching to EM algorithm
-## Due to absence of package REBayes, switching to EM algorithm
-## Due to absence of package REBayes, switching to EM algorithm
-## Due to absence of package REBayes, switching to EM algorithm</code></pre>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">sapply</a></span>(ashfit, <span class="dt">FUN =</span> ashr<span class="op">::</span>get_pi0)
-api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(api0, <span class="dt">MOUTHWASH =</span> mout<span class="op">$</span>pi0)
-api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(api0, <span class="dt">BACKWASH =</span> bout<span class="op">$</span>pi0)</code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb37-1" data-line-number="1">method_list<span class="op">$</span>RUVb            &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb37-2" data-line-number="2">method_list<span class="op">$</span>RUVb<span class="op">$</span>betahat    &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvb_vicar<span class="op">$</span>means)</a>
+<a class="sourceLine" id="cb37-3" data-line-number="3">method_list<span class="op">$</span>RUVb<span class="op">$</span>sebetahat  &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvb_vicar<span class="op">$</span>sd)</a>
+<a class="sourceLine" id="cb37-4" data-line-number="4"></a>
+<a class="sourceLine" id="cb37-5" data-line-number="5">method_list<span class="op">$</span>SVA             &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>()</a>
+<a class="sourceLine" id="cb37-6" data-line-number="6">method_list<span class="op">$</span>SVA<span class="op">$</span>betahat     &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(svaout<span class="op">$</span>betahat)</a>
+<a class="sourceLine" id="cb37-7" data-line-number="7">method_list<span class="op">$</span>SVA<span class="op">$</span>sebetahat   &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(svaout<span class="op">$</span>sebetahat)</a>
+<a class="sourceLine" id="cb37-8" data-line-number="8"></a>
+<a class="sourceLine" id="cb37-9" data-line-number="9">ashfit &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">lapply</a></span>(method_list, <span class="dt">FUN =</span> <span class="cf">function</span>(x) { ashr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/ashr/topics/ash">ash</a></span>(x<span class="op">$</span>betahat, x<span class="op">$</span>sebetahat)})</a>
+<a class="sourceLine" id="cb37-10" data-line-number="10">api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/lapply">sapply</a></span>(ashfit, <span class="dt">FUN =</span> ashr<span class="op">::</span>get_pi0)</a>
+<a class="sourceLine" id="cb37-11" data-line-number="11">api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(api0, <span class="dt">MOUTHWASH =</span> mout<span class="op">$</span>pi0)</a>
+<a class="sourceLine" id="cb37-12" data-line-number="12">api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(api0, <span class="dt">BACKWASH =</span> bout<span class="op">$</span>pi0)</a></code></pre></div>
 <p>In these data, at least, MOUTHWASH, BACKWASH, and SVA have by far the most accurate estimates of the proportion of genes that are null (<span class="math inline">\(\pi_0\)</span>), which, recall, is 0.9.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sort">sort</a></span>(api0, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>), <span class="dt">col.names =</span> <span class="st">"Estimate of Pi0"</span>)</code></pre></div>
+<div class="sourceCode" id="cb38"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb38-1" data-line-number="1">knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sort">sort</a></span>(api0, <span class="dt">decreasing =</span> <span class="ot">TRUE</span>), <span class="dt">col.names =</span> <span class="st">"Estimate of Pi0"</span>)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th></th>
@@ -388,19 +380,19 @@ api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocume
 <tbody>
 <tr class="odd">
 <td>RUV2</td>
-<td align="right">0.9383859</td>
+<td align="right">0.9383978</td>
 </tr>
 <tr class="even">
 <td>RUV3</td>
-<td align="right">0.9351290</td>
+<td align="right">0.9351321</td>
 </tr>
 <tr class="odd">
 <td>RUVb</td>
-<td align="right">0.9215029</td>
+<td align="right">0.9170564</td>
 </tr>
 <tr class="even">
 <td>SVA</td>
-<td align="right">0.9072704</td>
+<td align="right">0.9072776</td>
 </tr>
 <tr class="odd">
 <td>BACKWASH</td>
@@ -408,23 +400,23 @@ api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocume
 </tr>
 <tr class="even">
 <td>MOUTHWASH</td>
-<td align="right">0.8943147</td>
+<td align="right">0.8946158</td>
 </tr>
 <tr class="odd">
 <td>RUV4v</td>
-<td align="right">0.7292451</td>
+<td align="right">0.7292477</td>
 </tr>
 <tr class="even">
 <td>CATErr</td>
-<td align="right">0.7013801</td>
+<td align="right">0.7013718</td>
 </tr>
 <tr class="odd">
 <td>RUV4c</td>
-<td align="right">0.6990074</td>
+<td align="right">0.6990096</td>
 </tr>
 <tr class="even">
 <td>RUV4r</td>
-<td align="right">0.3923457</td>
+<td align="right">0.3922508</td>
 </tr>
 </tbody>
 </table>
@@ -454,7 +446,7 @@ api0 &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocume
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
 </div>
       </footer>
 </div>
