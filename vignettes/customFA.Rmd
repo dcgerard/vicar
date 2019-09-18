@@ -7,9 +7,10 @@ vignette: >
   %\VignetteIndexEntry{Customizable Factor Analyses}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: "vicar.bib"
 ---
 
-This vignette describes how to build your own factor analysis functions for use in vicar's primary functions `vruv4`, `ruv3`, `mouthwash`, `backwash`, and `ruvb`.
+This vignette describes how to build your own factor analysis functions for use in vicar's primary functions `vruv4`, `ruv3`, `mouthwash`, `backwash`, and `ruvb`. These methods are described in detail in @gerard2018empirical and @gerard2019unifying.
 
 # `fa_func` in `vruv4`, `ruv3`, `mouthwash`, and `backwash`
 
@@ -165,3 +166,5 @@ We can use `fa_stupid_ruvb` on the data in the previous section. But because it 
 ruvbout <- ruvb(Y = Y, X = X, ctl = ctl, fa_func = fa_stupid_ruvb)
 graphics::plot(table(ruvbout$lfsr2), type = "h", ylab = "lfsr")
 ```
+
+# References

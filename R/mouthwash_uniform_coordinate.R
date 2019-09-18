@@ -10,7 +10,7 @@
 #' @param tol The tolerance for the stopping condition.
 #' @param maxit The maximum number of iterations to run in the
 #'     optimization scheme.
-#' @param pi_init The intial values of the mixing proportions. A
+#' @param pi_init The initial values of the mixing proportions. A
 #'     numeric vector of positive values that sum to one.
 #' @param z_init The initial values of z2. A numeric vector.
 #' @param xi_init The initial (or known) value of the variance
@@ -160,7 +160,7 @@ mouthwash_coordinate <- function(pi_init, z_init, xi_init, betahat_ols, S_diag,
 #' Gradient wrt z of \code{\link{uniform_mix_llike}}.
 #'
 #' @inheritParams uniform_mix_fix
-#' @param var_inflate_pen Not used here. Just here for compatability
+#' @param var_inflate_pen Not used here. Just here for compatibility
 #'     with \code{\link[stats]{optim}} in \code{\link{mouthwash_coordinate}}.
 #'
 #' @author David Gerard

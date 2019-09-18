@@ -10,21 +10,25 @@
 is appropriate for use in <code><a href='vruv4.html'>vruv4</a></code>, <code><a href='ruv3.html'>ruv3</a></code>,
 <code><a href='mouthwash.html'>mouthwash</a></code>, or <code><a href='backwash.html'>backwash</a></code>. — fa_tester • vicar</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -32,16 +36,17 @@ is appropriate for use in <code><a href='vruv4.html'>vruv4</a></code>, <code><a 
 
 
 
+
 <meta property="og:title" content="Tests whether a user-specified factor analysis function
 is appropriate for use in <code><a href='vruv4.html'>vruv4</a></code>, <code><a href='ruv3.html'>ruv3</a></code>,
 <code><a href='mouthwash.html'>mouthwash</a></code>, or <code><a href='backwash.html'>backwash</a></code>. — fa_tester" />
-
 <meta property="og:description" content="This function tests that the output of fa_func is compatible with the
 confounder adjustment methods in this package. In general, fa_func needs to take as input
 at least a matrix Y, which is dimensions n by p, and the rank of the factor analysis r.
 fa_func needs to return three elements, a matrix alpha that is p by r, a matrix Z that
 is n by r, and a numeric vector sig_diag that is of length p." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -53,6 +58,7 @@ is n by r, and a numeric vector sig_diag that is of length p." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -71,7 +77,7 @@ is n by r, and a numeric vector sig_diag that is of length p." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vicar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.10</span>
       </span>
     </div>
 
@@ -79,7 +85,7 @@ is n by r, and a numeric vector sig_diag that is of length p." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -108,11 +114,10 @@ is n by r, and a numeric vector sig_diag that is of length p." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dcgerard/vicar">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -123,6 +128,7 @@ is n by r, and a numeric vector sig_diag that is of length p." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -136,17 +142,15 @@ is appropriate for use in <code><a href='vruv4.html'>vruv4</a></code>, <code><a 
     </div>
 
     <div class="ref-description">
-    
     <p>This function tests that the output of <code>fa_func</code> is compatible with the
 confounder adjustment methods in this package. In general, <code>fa_func</code> needs to take as input
 at least a matrix <code>Y</code>, which is dimensions n by p, and the rank of the factor analysis <code>r</code>.
 <code>fa_func</code> needs to return three elements, a matrix <code>alpha</code> that is p by r, a matrix <code>Z</code> that
 is n by r, and a numeric vector <code>sig_diag</code> that is of length <code>p</code>.</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>fa_tester</span>(<span class='no'>fa_func</span>, <span class='kw'>fa_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>test_ortho</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
-    
+    <pre class="usage"><span class='fu'>fa_tester</span>(<span class='no'>fa_func</span>, <span class='kw'>fa_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(), <span class='kw'>test_ortho</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -164,7 +168,7 @@ is n by r, and a numeric vector <code>sig_diag</code> that is of length <code>p<
 or not (<code>FALSE</code>)?</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p>A list with some or all of the following elements:</p>
@@ -172,7 +176,6 @@ or not (<code>FALSE</code>)?</p></td>
     <code>FALSE</code> means the function is not OK.</p>
 <p><code>why</code> A string vector giving the reason(s) why the function is not OK if <code>ok = FALSE</code>.</p>
 <p><code>input</code> A list of input values to help you debug.</p>
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>This function also tests for orthogonal equivariance. See Gerard and Stephens (2016) for a definition
@@ -180,23 +183,21 @@ of left orthogonal equivariance.
 You can turn off this test with <code>test_ortho = FALSE</code>, but any factor analysis that is not
 left orthogonally equivariant would be dubious as the rotation onto the null space is completely
 arbitrary.</p>
-    
 
   </div>
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#details">Details</a></li>
-          </ul>
+    </ul>
 
     <h2>Author</h2>
     <p>David Gerard</p>
   </div>
 </div>
+
 
       <footer>
       <div class="copyright">
@@ -204,13 +205,16 @@ arbitrary.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

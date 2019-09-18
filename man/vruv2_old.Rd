@@ -90,15 +90,17 @@ use hierarchical shrinkage of the variances. That is, you must set
 \code{limmashrink = TRUE}.
 }
 \references{
-Gagnon-Bartsch, J., Laurent Jacob, and Terence
+\itemize{
+\item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
     data with negative controls."
     Berkeley: Department of Statistics. University of California
-    (2013).
-
-    Andreas Buja and Nermin
+    (2013).}
+\item{Andreas Buja and Nermin
     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
-    research, 27(4):509-540, 1992.
+    research, 27(4):509-540, 1992.}
+\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+}
 }
 \author{
 David Gerard

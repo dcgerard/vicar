@@ -9,7 +9,7 @@ backwash_second_step(betahat_ols, S_diag, alpha_tilde, tau2_seq,
   scale_var = TRUE, sprop = 0, var_inflate_pen = 0, verbose = TRUE)
 }
 \arguments{
-\item{betahat_ols}{A vector of numerics. The oridinary least
+\item{betahat_ols}{A vector of numerics. The ordinary least
 squares estimates of the regression coefficients.}
 
 \item{S_diag}{A vector of positive numerics. The standard errors of

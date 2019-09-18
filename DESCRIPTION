@@ -1,29 +1,31 @@
 Package: vicar
 Type: Package
 Title: Various Ideas for Confounder Adjustment in Regression
-Version: 0.1-9
-Date: 2018-01-27
+Version: 0.1-10
 Authors@R: c(person("David","Gerard",role=c("aut","cre"),
-                    email="dcgerard@uchicago.edu"),
+                    email="gerard.1787@gmail.com"),
              person("Peter","Carbonetto",role="aut"))
 Description: Implements many methods for accounting for unobserved confounding
              in linear regression. If control genes are available, then the
              following methods are implementable: a calibrated version of
-             CATE/RUV4 (vruv4), a Bayesian version of RUV (ruvb), a version of
-             RUV that unifies other versions of RUV (ruv3), and a generalized
-             version of RUV (ruvimpute). If control genes are not available,
-             then MOUTHWASH (mouthwash) and BACKWASH (backwash) are excellent
+             CATE/RUV4 vruv4(), a Bayesian version of RUV ruvb(), a version of
+             RUV that unifies other versions of RUV ruv3(), and a generalized
+             version of RUV ruvimpute(). If control genes are not available,
+             then MOUTHWASH mouthwash() and BACKWASH backwash() are excellent
              procedures to use as long as only one covariate is of interest.
+             The methods are described in detail in Gerard and 
+             Stephens (2018) <doi:10.1093/biostatistics/kxy029> and Gerard and 
+             Stephens (2019) <doi:10.5705/ss.202018.0345>.
 URL: https://github.com/dcgerard/vicar
 BugReports: http://github.com/dcgerard/vicar/issues
 License: GPL (>= 3)
 LazyData: TRUE
 Encoding: UTF-8
 RoxygenNote: 6.1.1
+Remotes: cran/bfa
 LinkingTo: Rcpp,
     RcppArmadillo,
     RcppProgress
-Remotes: stephens999/ashr
 Depends:
     R (>= 2.10)
 Imports: ruv,

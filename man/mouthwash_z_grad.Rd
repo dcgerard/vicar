@@ -22,7 +22,7 @@ coefficients.}
 
 \item{S_diag}{A vector of positive numerics. The standard errors.}
 
-\item{alpha_tilde}{A matrix of numerics. The estimats of the
+\item{alpha_tilde}{A matrix of numerics. The estimates of the
 coefficients of the confounders.}
 
 \item{a_seq}{A vector of numerics (usually non-positive). The lower
@@ -38,7 +38,7 @@ penalties on the mixing proportions.}
 scalars the length of \code{betahat_ols}. The degrees of
 freedom of the t-distribution.}
 
-\item{var_inflate_pen}{Not used here. Just here for compatability
+\item{var_inflate_pen}{Not used here. Just here for compatibility
 with \code{\link[stats]{optim}} in \code{\link{mouthwash_coordinate}}.}
 }
 \description{

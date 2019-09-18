@@ -7,7 +7,7 @@
 back_update_qbeta(betahat_ols, S_diag, Amat, pivec, tau2_seq, muv, xi, phi)
 }
 \arguments{
-\item{betahat_ols}{A vector of numerics. The oridinary least
+\item{betahat_ols}{A vector of numerics. The ordinary least
 squares estimates of the regression coefficients.}
 
 \item{S_diag}{A vector of positive numerics. The standard errors of

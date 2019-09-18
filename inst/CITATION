@@ -1,0 +1,31 @@
+c(bibentry(bibtype  = "Article",
+          title     = "Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted variation",
+          year      = "2018",
+          journal   = "Biostatistics",
+          volume    = "",
+          pages     = "kxy029",
+          doi       = "10.1093/biostatistics/kxy029",
+          author    = c(person(given  = "David",
+                               family = "Gerard",
+                               email  = "gerard.1787@gmail.com"),
+                        person(given  = "Matthew",
+                               family = "Stephens",
+                               email  = "mstephens@uchicago.edu")
+                       )
+),
+bibentry(bibtype    = "Article",
+         title      = "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls",
+          year      = "2019",
+          journal   = "Statistica Sinica",
+          volume    = "",
+          pages     = "in press",
+          doi       = "10.5705/ss.202018.0345",
+          author    = c(person(given  = "David",
+                               family = "Gerard",
+                               email  = "gerard.1787@gmail.com"),
+                        person(given  = "Matthew",
+                               family = "Stephens",
+                               email  = "mstephens@uchicago.edu")
+                       )
+)
+)

@@ -4,7 +4,7 @@
 
 #' Wrapper for \code{\link{normal_mix_llike}} so that I can use it in SQUAREM.
 #'
-#' This returns the negative log-liklihood for SQUAREM to use.
+#' This returns the negative log-likelihood for SQUAREM to use.
 #'
 #' @inheritParams normal_mix_llike
 #' @inheritParams mouthwash_second_step

@@ -7,9 +7,9 @@
 ptdiff_mat_log(X, Y, degrees_freedom)
 }
 \arguments{
-\item{X}{A matirx of quantiles of the t.}
+\item{X}{A matrix of quantiles of the t.}
 
-\item{Y}{Another matirx of quantiles of the t.}
+\item{Y}{Another matrix of quantiles of the t.}
 
 \item{degrees_freedom}{The degrees of freedom of the t.}
 }

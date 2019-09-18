@@ -254,7 +254,10 @@ graphics::legend("bottomright", legend = c("Null", "Non-null"), col = c(4, 3),
 
 }
 \references{
-Matthew Stephens. False discovery rates: a new deal. Biostatistics, 2016. doi: \href{http://dx.doi.org/10.1093/biostatistics/kxw041}{10.1093/biostatistics/kxw041}
+\itemize{
+  \item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. <\href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}>.}
+  \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+}
 }
 \seealso{
 \code{\link{mouthwash}} For a similar method that maximizes over the hidden confounders

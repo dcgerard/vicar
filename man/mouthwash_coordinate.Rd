@@ -10,7 +10,7 @@ mouthwash_coordinate(pi_init, z_init, xi_init, betahat_ols, S_diag,
   var_inflate_pen = 0)
 }
 \arguments{
-\item{pi_init}{The intial values of the mixing proportions. A
+\item{pi_init}{The initial values of the mixing proportions. A
 numeric vector of positive values that sum to one.}
 
 \item{z_init}{The initial values of z2. A numeric vector.}

@@ -7,7 +7,7 @@
 missforest_wrapper(Y)
 }
 \arguments{
-\item{Y}{A matirx with missing values.}
+\item{Y}{A matrix with missing values.}
 }
 \value{
 A matrix with the missing values imputed.

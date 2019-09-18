@@ -40,10 +40,12 @@ allows us to develop an EM algorithm. This is a very similar
 procedure to Lange et al (1989).
 }
 \references{
-Lange, Kenneth L., Roderick JA Little, and Jeremy MG
+\itemize{
+\item{Lange, Kenneth L., Roderick JA Little, and Jeremy MG
     Taylor. "Robust statistical modeling using the t distribution."
     Journal of the American Statistical Association 84.408 (1989):
-    881-896.
+    881-896.}
+}
 }
 \seealso{
 \code{\link{tregress_obj}} for the objective function that

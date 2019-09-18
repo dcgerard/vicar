@@ -31,7 +31,7 @@ hidden confounders using the methods of Buja and Eyuboglu
 
 \item{cov_of_interest}{A positive integer. The column number of the
 covariate in X whose coefficients you are interested in. The
-rest are considered nuiszance parameters and are regressed out
+rest are considered nuisance parameters and are regressed out
 by OLS. \code{ash_ruv2} only works with one covariate of
 interest right now.}
 
@@ -104,15 +104,17 @@ implementation, only the coefficients of one covariate can be
 estimated using ASH. The rest are regressed out using OLS.
 }
 \references{
-Gagnon-Bartsch, J., Laurent Jacob, and Terence
+\itemize{
+\item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
     data with negative controls."
     Berkeley: Department of Statistics. University of California
-    (2013).
-
-    Andreas Buja and Nermin
+    (2013).}
+\item{Andreas Buja and Nermin
     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
-    research, 27(4):509-540, 1992.
+    research, 27(4):509-540, 1992.}
+\item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. <\href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}>.}
+}
 }
 \seealso{
 \code{\link{vruv2}} for the variance inflation in RUV2 and

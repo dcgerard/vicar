@@ -444,7 +444,7 @@ em_miss_obj <- function(alpha_sigma, S, S2, ncovs, ncontrols, n, p, k) {
 }
 
 
-#' Very inneficient copy of rubin and thayer iteration mostly meant for debugging.
+#' Very inefficient copy of Rubin and Thayer iteration mostly meant for debugging.
 #'
 #' @author David Gerard
 #'

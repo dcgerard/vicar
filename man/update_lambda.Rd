@@ -21,7 +21,7 @@ update_lambda(alpha, sig_diag, lambda, Y1, Y2, maxit = 10)
 large since this is only an intermediate step.}
 }
 \description{
-Uses Brent's method to obtimize the variance inflation parameter
+Uses Brent's method to optimize the variance inflation parameter
 given sig_diag and alpha.
 }
 \author{

@@ -217,6 +217,11 @@ graphics::legend("bottomright", legend = c("RUVB", "RUV4"), col = c(3, 4),
 graphics::abline(0, 1, lty = 2)
 
 }
+\references{
+\itemize{
+\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+}
+}
 \seealso{
 \code{\link{bfa_gs}}, \code{\link{bfl}}, and
     \code{bfa_wrapper} for implemented Bayesian factor analyses.

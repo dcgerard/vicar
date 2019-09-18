@@ -7,11 +7,13 @@ vignette: >
   %\VignetteIndexEntry{Sample Analysis}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: "vicar.bib"
 ---
 
 # Abstract
 
-In this vignette, I take an example simulated RNA-seq dataset and analyze it using the functions in the vicar R package. I compare their performances against the methods available in other packages.
+In this vignette, I take an example simulated RNA-seq dataset and analyze it using the functions in the vicar R package. I compare their performances against the methods available in other packages. The methods in vicar
+are described in detail in @gerard2018empirical and @gerard2019unifying.
 
 # Data
 
@@ -30,6 +32,7 @@ where $Y$ contains the gene expression levels, $X$ contains the observed covaria
 
 I've added signal to the `Y` matrix, the amount of which is encoded in the vector `beta`. We can read in these data using the `data` function.
 ```{r, results='hide'}
+set.seed(1)
 library(vicar)
 library(ggplot2)
 library(dplyr)
@@ -42,17 +45,13 @@ beta <- sim_gtex$beta
 ```
 These data contain `r nrow(Y)` samples and `r ncol(Y)` genes. The proportion of genes in these data that are null is `r mean(which_null)`. However, we only allow `r sum(ctl)` of these genes to be known as negative controls.
 
-Before we proceed with the analysis, we note that all confounder adjustment methods we explore require an estimate of the number of hidden confounders. We can use the `num.sv` function in the sva package, or the `est.confounder.num` function in the cate package to obtain this estimate. They each say that there are about 3 or 4 hidden confounders.
+Before we proceed with the analysis, we note that all confounder adjustment methods we explore require an estimate of the number of hidden confounders. We can use the `num.sv` function in the sva package to obtain this estimate. It has different approaches to estimate the number of hidden factors, and each says that there are about 3 hidden factors.
 ```{r}
 num_sv     <- sva::num.sv(dat = t(Y), mod = X, method = "be")
 num_sv_l   <- sva::num.sv(dat = t(Y), mod = X, method = "leek")
-num_sv_bcv <- cate::est.confounder.num(~ Intercept + Treatment, X.data = as.data.frame(X), Y = Y,
-                                       method = "bcv", bcv.plot = FALSE, nRepeat = 50)$r
 num_sv
 num_sv_l
-num_sv_bcv
 ```
-For this vignette, we'll use the output from `num.sv`, which indicates that there are `r num_sv` hidden confounders. 
 
 # Analysis With Controls
 
@@ -110,7 +109,7 @@ svaout$pvalues   <- eout$p.value[, 2]
 
 We'll compare how all of the methods performed on these data using the `pROC` package.
 
-```{r}
+```{r, message = FALSE}
 roc_out <- list(
   pROC::roc(response = which_null, predictor = c(mout$result$lfdr)),
   pROC::roc(response = which_null, predictor = c(bout$result$lfdr)),
@@ -207,6 +206,6 @@ In these data, at least, MOUTHWASH, BACKWASH, and SVA have by far the most accur
 knitr::kable(sort(api0, decreasing = TRUE), col.names = "Estimate of Pi0")
 ```
 
-
+# References
 
 

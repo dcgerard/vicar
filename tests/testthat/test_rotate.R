@@ -195,14 +195,6 @@ test_that("Zhat is approximately correct", {
                               fa.method = "pc", nc = ctl, adj.method = "nc")
 
         expect_equal(c(cateout$Z), c(vout$Zhat))
-
-        vout <- vruv4(Y = Y, X = X, ctl = ctl, k = num_sv, include_intercept = TRUE,
-                      cov_of_interest = 1:ncol(X), likelihood = "normal", limmashrink = FALSE)
-
-        cateout <- cate::cate(~ X1 + X2 + X3 + X4 + X5, X.data = data.frame(X), Y = Y, r = num_sv,
-                              fa.method = "pc", nc = ctl, adj.method = "nc")
-
-        expect_equal(c(vout$Zhat), c(cateout$Z))
     }
 }
 )

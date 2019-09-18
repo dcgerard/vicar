@@ -34,7 +34,7 @@
 #'     \code{\link[ashr]{ash.workhorse}} for details.
 #' @param cov_of_interest A positive integer. The column number of the
 #'     covariate in X whose coefficients you are interested in. The
-#'     rest are considered nuiszance parameters and are regressed out
+#'     rest are considered nuisance parameters and are regressed out
 #'     by OLS. \code{ash_ruv4} only works with one covariate of
 #'     interest right now.
 #' @param scale_var A logical. Should we use the variance inflation
@@ -51,28 +51,24 @@
 #'     function for more details. Elements in the \code{ruv4} are the
 #'     exact same as returned in \code{\link{vruv4}}.
 #'
-#' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
+#' @references
+#' \itemize{
+#' \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
 #'     P. Speed. "Removing unwanted variation from high dimensional
 #'     data with negative controls."
 #'     Berkeley: Department of Statistics. University of California
-#'     (2013).
-#'
-#'     Andreas Buja and Nermin
+#'     (2013).}
+#' \item{Andreas Buja and Nermin
 #'     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
-#'     research, 27(4):509-540, 1992.
-#'
-#'     Bradley Efron
+#'     research, 27(4):509-540, 1992.}
+#' \item{Bradley Efron
 #'     "Large-Scale Simultaneous Hypothesis Testing: The Choice of a Null
 #'     Hypothesis",
-#'     Journal of the American Statistical Association, 99:465,
-#'     96-104, 2004.
-#'
-#'     Stephens, Matthew. "False Discovery Rates: A New Deal." bioRxiv
-#'     (2016): 038216.
-#'
-#'     Wang, J., Zhao, Q., Hastie, T., & Owen, A. B
-#'     "Confounder Adjustment in Multiple Hypotheses Testing."
-#'     arXiv preprint arXiv:1508.04178 (2015).
+#'     \emph{Journal of the American Statistical Association}, 99:465,
+#'     96-104, 2004.}
+#' \item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. <\href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}>.}
+#' \item{Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B. Owen. 2017. "Confounder adjustment in multiple hypothesis testing." \emph{The Annals of Statistics} 45, no. 5: 1863-1894.}
+#' }
 ash_ruv4 <- function(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
                      likelihood = c("t", "normal"), ash_args = list(),
                      limmashrink = TRUE, degrees_freedom = NULL,
@@ -137,7 +133,7 @@ ash_ruv4 <- function(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
 #'     \code{\link[ashr]{ash.workhorse}} for details.
 #' @param cov_of_interest A positive integer. The column number of the
 #'     covariate in X whose coefficients you are interested in. The
-#'     rest are considered nuiszance parameters and are regressed out
+#'     rest are considered nuisance parameters and are regressed out
 #'     by OLS. \code{ash_ruv2} only works with one covariate of
 #'     interest right now.
 #'
@@ -153,15 +149,18 @@ ash_ruv4 <- function(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
 #'     function for more details. Elements in the \code{ruv2} are the
 #'     exact same as returned in \code{\link{vruv2}}.
 #'
-#' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
+#' @references
+#' \itemize{
+#' \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
 #'     P. Speed. "Removing unwanted variation from high dimensional
 #'     data with negative controls."
 #'     Berkeley: Department of Statistics. University of California
-#'     (2013).
-#'
-#'     Andreas Buja and Nermin
+#'     (2013).}
+#' \item{Andreas Buja and Nermin
 #'     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
-#'     research, 27(4):509-540, 1992.
+#'     research, 27(4):509-540, 1992.}
+#' \item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. <\href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}>.}
+#' }
 ash_ruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
                      likelihood = c("t", "normal"), ash_args = list(),
                      limmashrink = TRUE, degrees_freedom = NULL,

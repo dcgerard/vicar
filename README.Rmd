@@ -1,6 +1,7 @@
 ---
+title: "Various Ideas for Confounder Adjustment in Regression"
 output: github_document
-bibliography: vicar.bib
+bibliography: "./vignettes/vicar.bib"
 ---
 
 <!-- README.md is generated from README.Rmd. Please edit that file -->
@@ -13,12 +14,10 @@ knitr::opts_chunk$set(
 )
 ```
 
-# Various Ideas for Confounder Adjustment in Regression
 [![Windows Build](https://ci.appveyor.com/api/projects/status/github/dcgerard/vicar?branch=master&svg=true)](https://ci.appveyor.com/project/dcgerard/vicar)
 [![Linux Build](https://travis-ci.org/dcgerard/vicar.svg?branch=master)](https://travis-ci.org/dcgerard/vicar)
 [![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master)
-<!-- [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0) -->
-<!-- [![Coverage](http://img.shields.io/codecov/c/github/dcgerard/vicar/master.svg)](http://codecov.io/github/dcgerard/vicar?branch=master) -->
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 
 
 ## Description
@@ -40,27 +39,30 @@ result in poor control of false discovery rate. This package provides
 a suite of functions to adjust for hidden confounders, both when one
 has and does not have access to control genes.
 
-The functions `mouthwash` and `backwash` can adjust for hidden confounding when one
+The functions `mouthwash()` and `backwash()` can adjust for hidden confounding when one
 does not have access to control genes. They do so via non-parametric
 empirical Bayes methods that use the powerful methodology of Adaptive
-SHrinkage [@stephens2016false] within the factor-augmented regression
-framework described in @wang2015confounder. `backwash` is a slightly more 
-Bayesian version of `mouthwash`.
+Shrinkage [@stephens2016false] within the factor-augmented regression
+framework described in @wang2017confounder. `backwash()` is a slightly more 
+Bayesian version of `mouthwash()`. These methods are described in
+@gerard2018empirical.
 
 When one has control genes, there are many approaches to take. Such
 methods include RUV2 [@gagnon2012using], RUV4 [@gagnon2013removing],
-and CATE [@wang2015confounder]. This package adds to the field of
+and CATE [@wang2017confounder]. This package adds to the field of
 confounder adjustment with control genes by
 
-1. Implementing a version of CATE that is calibrated using control genes similarly to the method in @gagnon2013removing. The function is called `vruv4`.
-2. Introduces RUV3, a version of RUV that can be considered both RUV2 and RUV4. The function is called `ruv3`.
-3. Introduces RUV-impute, a more general framework for accounting for hidden confounders in regression. The function is called `ruvimpute`
-4. Introduces RUV-Bayes, a Bayesian version of RUV. The function is called `ruvb`.
+1. Implementing a version of CATE that is calibrated using control genes similarly to the method in @gagnon2013removing. The function is called `vruv4()`.
+2. Introduces RUV3, a version of RUV that can be considered both RUV2 and RUV4. The function is called `ruv3()`.
+3. Introduces RUV-impute, a more general framework for accounting for hidden confounders in regression. The function is called `ruvimpute()`
+4. Introduces RUV-Bayes, a Bayesian version of RUV. The function is called `ruvb()`.
+
+These additions are described in detail in @gerard2019unifying.
 
 See also the related R packages
-[`cate`](https://cran.r-project.org/web/packages/cate/index.html)
+[`cate`](https://cran.r-project.org/package=cate)
 [@wang2015cate] and
-[`ruv`](https://cran.r-project.org/web/packages/ruv/index.html)
+[`ruv`](https://cran.r-project.org/package=ruv)
 [@bartsch2015ruv].
 
 Check out [NEWS.md](NEWS.md) to see what's new with each version.
@@ -69,22 +71,25 @@ Check out [NEWS.md](NEWS.md) to see what's new with each version.
 
 If you use any of the control-gene based methods, please cite:
 
-> Gerard, D., & Stephens, M. 2017. *Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls*. arXiv preprint 	arXiv:1705.08393 [https://arxiv.org/abs/1705.08393](https://arxiv.org/abs/1705.08393).
+> Gerard, D., & Stephens, M. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls". *Statistica Sinica*, in press <[doi:10.5705/ss.202018.0345](https://doi.org/10.5705/ss.202018.0345)>.
 
 Or, using BibTex:
 ``` tex
-@article{gerard2017unifying,
+@article{gerard2019unifying,
   title={Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls},
   author={Gerard, David and Stephens, Matthew},
-  journal={arXiv preprint arXiv:1705.08393},
-  url={https://arxiv.org/abs/1705.08393},
-  year={2017}
+  journal={Statistica Sinica},
+  doi={10.5705/ss.202018.0345},
+  volume={},
+  number={},
+  year={2019},
+  pages={in press}
 }
 ```
 
 If you use either MOUTHWASH or BACKWASH, please cite:
 
-> Gerard, D., & Stephens, M. 2018. *Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation*, Biostatistics, , kxy029, https://doi.org/10.1093/biostatistics/kxy029
+> Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", *Biostatistics*, , kxy029, <[doi:10.1093/biostatistics/kxy029](https://doi.org/10.1093/biostatistics/kxy029)>.
 
 Or, using BibTex:
 ``` tex
@@ -97,7 +102,6 @@ Or, using BibTex:
   pages = {kxy029},
   year = {2018},
   doi = {10.1093/biostatistics/kxy029},
-  URL = {http://dx.doi.org/10.1093/biostatistics/kxy029},
 }
 ```
 
@@ -129,11 +133,11 @@ BiocManager::install(c("limma", "sva"))
 Then run in R:
 
 ```{r, eval = FALSE}
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("dcgerard/vicar")
 ```
 
-If you want some of the tools in `vicar` to be exacty equivalent to those in `ruv`, you'll need to install an older version of `ruv` (`ruv` was updated and now the those equivalencies are not *exactly* the same)
+If you want some of the tools in `vicar` to be exactly equivalent to those in `ruv`, you'll need to install an older version of `ruv` (`ruv` was updated and now the those equivalencies are not *exactly* the same)
 
 ```{r, eval=FALSE}
 devtools::install_version("ruv", version = "0.9.6", repos = "http://cran.us.r-project.org")
@@ -145,7 +149,7 @@ A note about matrix computations in vicar: Some of the methods in the vicar pack
 ## Vignettes
 I've provided three vignettes to help you get started with vicar. By default, the vignettes are not built when you use `install_github`. To build the vignettes during installation, run
 ```{r, eval = FALSE}
-# install.packages("devtools")
+install.packages("devtools")
 devtools::install_github("dcgerard/vicar", build_vignettes = TRUE)
 ```
 Note that this will result in a somewhat slower install. The first vignette, _sample\_analysis_, gives a sample analysis using vicar to account for hidden confounding. The second vignette, _customFA_, gives a few instructions on how to incorporate user-defined factor analyses with the confounder adjustment procedures implemented in vicar. The third vignette, _custom\_prior_, gives instructions and examples on incorporating a user-specified prior into `ruvb`. To see these vignettes after install, run

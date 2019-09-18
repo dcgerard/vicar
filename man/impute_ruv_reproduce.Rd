@@ -20,9 +20,14 @@ impute_ruv_reproduce(Y21, Y31, Y32, k, impute_type = c("ruv2", "ruv3",
 \code{"ruv2"}, \code{"ruv3"}, or \code{"ruv4"}?}
 }
 \description{
-This is a proof of concept function to inegrate
+This is a proof of concept function to integrate
 \code{\link{ruvimpute}} with \code{\link[ruv]{RUV2}},
 \code{\link{ruv3}}, \code{\link[ruv]{RUV4}}.
+}
+\references{
+\itemize{
+\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+}
 }
 \author{
 David Gerard

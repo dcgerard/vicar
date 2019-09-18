@@ -158,25 +158,24 @@
 #'
 #' @author David Gerard
 #'
-#' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
+#' @references
+#' \itemize{
+#' \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
 #'     P. Speed. "Removing unwanted variation from high dimensional
 #'     data with negative controls."
 #'     Berkeley: Department of Statistics. University of California
-#'     (2013).
-#'
-#'     Andreas Buja and Nermin
+#'     (2013).}
+#' \item{Andreas Buja and Nermin
 #'     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
-#'     research, 27(4):509-540, 1992.
-#'
-#'     Bradley Efron
+#'     research, 27(4):509-540, 1992.}
+#' \item{Bradley Efron
 #'     "Large-Scale Simultaneous Hypothesis Testing: The Choice of a Null
 #'     Hypothesis",
 #'     Journal of the American Statistical Association, 99:465,
-#'     96-104, 2004.
-#'
-#'     Wang, J., Zhao, Q., Hastie, T., & Owen, A. B
-#'     "Confounder Adjustment in Multiple Hypotheses Testing."
-#'     arXiv preprint arXiv:1508.04178 (2015).
+#'     96-104, 2004.}
+#' \item{Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B. Owen. 2017. "Confounder adjustment in multiple hypothesis testing." \emph{The Annals of Statistics} 45, no. 5: 1863-1894.}
+#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#' }
 #'
 #' @examples
 #' library(vicar)
@@ -695,10 +694,13 @@ pca_naive <- function (Y, r) {
 #'
 #' @export
 #'
-#' @references Jingshu Wang and Qingyuan Zhao (2015). cate: High
+#' @references
+#' \itemize{
+#' \item{Jingshu Wang and Qingyuan Zhao (2015). cate: High
 #'     Dimensional Factor Analysis and Confounder Adjusted Testing and
 #'     Estimation. R package version
-#'     1.0.4. https://CRAN.R-project.org/package=cate
+#'     1.0.4. https://CRAN.R-project.org/package=cate}
+#' }
 fa_ml <- function(Y, r) {
     assertthat::assert_that(is.matrix(Y))
     assertthat::are_equal(length(r), 1)
@@ -748,10 +750,13 @@ fa_ml <- function(Y, r) {
 #'
 #' @export
 #'
-#' @references Lange, Kenneth L., Roderick JA Little, and Jeremy MG
+#' @references
+#' \itemize{
+#' \item{Lange, Kenneth L., Roderick JA Little, and Jeremy MG
 #'     Taylor. "Robust statistical modeling using the t distribution."
 #'     Journal of the American Statistical Association 84.408 (1989):
-#'     881-896.
+#'     881-896.}
+#' }
 #'
 #' @seealso \code{\link{tregress_obj}} for the objective function that
 #'     this function maximizes, \code{\link{tregress_fix}} for the
@@ -1046,11 +1051,14 @@ cruv4 <- function(betahat_ols, alpha_scaled, sig_diag_scaled, ctl, degrees_freed
 #'
 #' @export
 #'
-#' @references Gagnon-Bartsch, J., Laurent Jacob, and Terence
+#' @references
+#' \itemize{
+#' \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
 #'     P. Speed. "Removing unwanted variation from high dimensional
 #'     data with negative controls."
 #'     Berkeley: Department of Statistics. University of California
-#'     (2013).
+#'     (2013).}
+#' }
 vruvinv <- function(Y, X, ctl, cov_of_interest = ncol(X),
                     likelihood = c("t", "normal"),
                     include_intercept = TRUE, fa_func = pca_naive,

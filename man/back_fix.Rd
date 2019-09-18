@@ -12,7 +12,7 @@ back_fix(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq,
 the following order: pivec, mubeta_matrix, sig2beta_matrix,
 gamma_mat, muv, Sigma_v, phi, xi}
 
-\item{betahat_ols}{A vector of numerics. The oridinary least
+\item{betahat_ols}{A vector of numerics. The ordinary least
 squares estimates of the regression coefficients.}
 
 \item{S_diag}{A vector of positive numerics. The standard errors of

@@ -27,7 +27,7 @@ discard.}
 
 \item{display_progress}{A logical. Should we print a text progress
 bar to keep track of the Gibbs sampler (\code{TRUE}) or not
-(\code{FALSE})? Also, if \code{TRUE}, then you can interupt the
+(\code{FALSE})? Also, if \code{TRUE}, then you can interrupt the
 C++ code every 1\% of runtime.}
 
 \item{rho_0}{A scalar. The prior "sample size" for the precisions.}
@@ -58,9 +58,14 @@ The main difference between this version and others is that the
 factors are a prior assumed to have the same variances as the data
 observations. This might be distasteful to some.
 
-This also has parameter expansion impelemented and is written in
-compiled code. To see a slower version without paramaeter epansion,
+This also has parameter expansion implemented and is written in
+compiled code. To see a slower version without parameter expansion,
 go to \code{\link{bfl}}.
+}
+\references{
+\itemize{
+\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+}
 }
 \seealso{
 \code{\link{bfa_gs_linked}}.

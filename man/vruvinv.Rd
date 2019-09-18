@@ -72,11 +72,13 @@ special choice for the number of confounders and forcing
 \code{limmashrink = TRUE}.
 }
 \references{
-Gagnon-Bartsch, J., Laurent Jacob, and Terence
+\itemize{
+\item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
     data with negative controls."
     Berkeley: Department of Statistics. University of California
-    (2013).
+    (2013).}
+}
 }
 \author{
 David Gerard

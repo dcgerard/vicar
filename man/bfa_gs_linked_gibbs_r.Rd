@@ -15,7 +15,7 @@ bfa_gs_linked_gibbs_r(Linit, Finit, xi_init, phi_init, zeta_init, Y22init,
 
 \item{xi_init}{A numeric vector. The initial values of the precisions.}
 
-\item{phi_init}{A numeric scalar. The initial value of the mean of the precitions.}
+\item{phi_init}{A numeric scalar. The initial value of the mean of the precisions.}
 
 \item{zeta_init}{A numeric vector. The initial values of the augmented row precisions.}
 
@@ -47,7 +47,7 @@ precisions.}
 \item{tau_0}{The prior mean of of the expanded parameters.}
 
 \item{display_progress}{A logical. If \code{TRUE}, then a progress bar will
-be displayed and you'll be able to interupt the C++ code. If \code{FALSE},
+be displayed and you'll be able to interrupt the C++ code. If \code{FALSE},
 then neither of these capabilities will be provided.}
 }
 \description{

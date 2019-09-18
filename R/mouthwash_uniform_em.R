@@ -14,7 +14,7 @@
 #' @param betahat_ols A vector of numerics. The OLS regression
 #'     coefficients.
 #' @param S_diag A vector of positive numerics. The standard errors.
-#' @param alpha_tilde A matrix of numerics. The estimats of the
+#' @param alpha_tilde A matrix of numerics. The estimates of the
 #'     coefficients of the confounders.
 #' @param a_seq A vector of numerics (usually non-positive). The lower
 #'     bounds of the uniform mixing densities.
@@ -371,8 +371,8 @@ ptdiff <- function(x, y, degrees_freedom) {
 
 #' More stable way to calculate differences in T cdfs when input is a matrix.
 #'
-#' @param X A matirx of quantiles of the t.
-#' @param Y Another matirx of quantiles of the t.
+#' @param X A matrix of quantiles of the t.
+#' @param Y Another matrix of quantiles of the t.
 #' @param degrees_freedom The degrees of freedom of the t.
 #'
 #' @author David Gerard

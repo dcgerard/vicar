@@ -21,7 +21,7 @@ using namespace arma;
 //' @param Linit A numeric matrix. The initial values of the loadings.
 //' @param Finit A numeric matrix. The initial values for the factors.
 //' @param xi_init A numeric vector. The initial values of the precisions.
-//' @param phi_init A numeric scalar. The initial value of the mean of the precitions.
+//' @param phi_init A numeric scalar. The initial value of the mean of the precisions.
 //' @param zeta_init A numeric vector. The initial values of the augmented row precisions.
 //' @param theta_init A numeric vector. The initial values the the factor precisions.
 //' @param kappa_init A numeric scalar. The initial value of the mean of the factor precisions.
@@ -42,7 +42,7 @@ using namespace arma;
 //' @param hetero_factors A logical. Should we also update the precisions of the
 //'     factors (\code{TRUE}), or not (\code{FALSE})?
 //' @param display_progress A logical. If \code{TRUE}, then a progress bar will
-//'     be displayed and you'll be able to interupt the C++ code. If \code{FALSE},
+//'     be displayed and you'll be able to interrupt the C++ code. If \code{FALSE},
 //'     then neither of these capabilities will be provided.
 //'
 //' @author David Gerard
@@ -226,7 +226,7 @@ List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_ini
 //' @param Linit A numeric matrix. The initial values of the loadings.
 //' @param Finit A numeric matrix. The initial values for the factors.
 //' @param xi_init A numeric vector. The initial values of the precisions.
-//' @param phi_init A numeric scalar. The initial value of the mean of the precitions.
+//' @param phi_init A numeric scalar. The initial value of the mean of the precisions.
 //' @param zeta_init A numeric vector. The initial values of the augmented row precisions.
 //' @param rho_0 The prior sample size for column-specific the
 //'     precisions.
@@ -237,7 +237,7 @@ List bfa_gd_gibbs(NumericMatrix Linit, NumericMatrix Finit, NumericVector xi_ini
 //' @param eta_0 The prior sample size of the expanded parameters.
 //' @param tau_0 The prior mean of of the expanded parameters.
 //' @param display_progress A logical. If \code{TRUE}, then a progress bar will
-//'     be displayed and you'll be able to interupt the C++ code. If \code{FALSE},
+//'     be displayed and you'll be able to interrupt the C++ code. If \code{FALSE},
 //'     then neither of these capabilities will be provided.
 //'
 //' @author David Gerard

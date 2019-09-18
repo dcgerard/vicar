@@ -296,6 +296,11 @@ graphics::legend("bottomright", legend = c("MOUTHWASH", "ASH"), col = c(4, 3),
                  lty = c(1, 2))
 
 }
+\references{
+\itemize{
+  \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+}
+}
 \seealso{
 Factor analyses available in the \code{vicar} package:
     \code{\link{pca_naive}}, \code{\link{fa_ml}}.

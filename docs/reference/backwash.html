@@ -9,21 +9,25 @@
 <title>BACKWASH: Bayesian Adjustment for Confounding Knitted With Adaptive
 SHrinkage. — backwash • vicar</title>
 
+
 <!-- jquery -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
 
-<!-- sticky kit -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script>
+<!-- headroom.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -31,15 +35,16 @@ SHrinkage. — backwash • vicar</title>
 
 
 
+
 <meta property="og:title" content="BACKWASH: Bayesian Adjustment for Confounding Knitted With Adaptive
 SHrinkage. — backwash" />
-
 <meta property="og:description" content="This function implements the full BACKWASH method. This method is
 very similar to the mouthwash method with one very
 key difference: rather than estimate the confounders by maximum
 likelihood, backwash goes more Bayesian and places a g-like prior
 on the confounders. We fit the model by variational approximations." />
 <meta name="twitter:card" content="summary" />
+
 
 
 
@@ -51,6 +56,7 @@ on the confounders. We fit the model by variational approximations." />
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
+
 
 
   </head>
@@ -69,7 +75,7 @@ on the confounders. We fit the model by variational approximations." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vicar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.10</span>
       </span>
     </div>
 
@@ -77,7 +83,7 @@ on the confounders. We fit the model by variational approximations." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -106,11 +112,10 @@ on the confounders. We fit the model by variational approximations." />
   <a href="../news/index.html">Changelog</a>
 </li>
       </ul>
-      
       <ul class="nav navbar-nav navbar-right">
         <li>
   <a href="https://github.com/dcgerard/vicar">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -121,6 +126,7 @@ on the confounders. We fit the model by variational approximations." />
 </div><!--/.navbar -->
 
       
+
       </header>
 
 <div class="row">
@@ -133,22 +139,20 @@ SHrinkage.</h1>
     </div>
 
     <div class="ref-description">
-    
     <p>This function implements the full BACKWASH method. This method is
 very similar to the <code><a href='mouthwash.html'>mouthwash</a></code> method with one very
 key difference: rather than estimate the confounders by maximum
 likelihood, backwash goes more Bayesian and places a g-like prior
 on the confounders. We fit the model by variational approximations.</p>
-    
     </div>
 
-    <pre class="usage"><span class='fu'>backwash</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol</a></span>(<span class='no'>X</span>),
+    <pre class="usage"><span class='fu'>backwash</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span>(<span class='no'>X</span>),
   <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>limmashrink</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>fa_func</span> <span class='kw'>=</span> <span class='no'>pca_naive</span>,
-  <span class='kw'>fa_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/list'>list</a></span>(), <span class='kw'>lambda_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>),
-  <span class='kw'>pi_init_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>, <span class='st'>"random"</span>), <span class='kw'>grid_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
+  <span class='kw'>fa_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(), <span class='kw'>lambda_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>),
+  <span class='kw'>pi_init_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>, <span class='st'>"random"</span>), <span class='kw'>grid_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
   <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda0</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>scale_var</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>sprop</span> <span class='kw'>=</span> <span class='fl'>0</span>,
   <span class='kw'>var_inflate_pen</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
-    
+
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
     <colgroup><col class="name" /><col class="desc" /></colgroup>
@@ -200,10 +204,10 @@ as inputs a numeric matrix <code>Y</code> and a rank (numeric scalar)
 <code>r</code>. It must output numeric matrices <code>alpha</code> and
 <code>Z</code> and a numeric vector <code>sig_diag</code>. <code>alpha</code> is
 the estimate of the coefficients of the unobserved confounders,
-so it must be an <code>r</code> by <code><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol(Y)</a></code> matrix. <code>Z</code>
-must be an <code>r</code> by <code><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>nrow(Y)</a></code> matrix. <code>sig_diag</code>
+so it must be an <code>r</code> by <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(Y)</a></code> matrix. <code>Z</code>
+must be an <code>r</code> by <code><a href='https://rdrr.io/r/base/nrow.html'>nrow(Y)</a></code> matrix. <code>sig_diag</code>
 is the estimate of the column-wise variances so it must be of
-length <code><a href='https://www.rdocumentation.org/packages/base/topics/nrow'>ncol(Y)</a></code>. The default is the function
+length <code><a href='https://rdrr.io/r/base/nrow.html'>ncol(Y)</a></code>. The default is the function
 <code>pca_naive</code> that just uses the first <code>r</code> singular
 vectors as the estimate of <code>alpha</code>. The estimated
 variances are just the column-wise mean square.</p></td>
@@ -273,7 +277,7 @@ and <code>scale_var = TRUE</code>.</p></td>
 to the console.</p></td>
     </tr>
     </table>
-    
+
     <h2 class="hasAnchor" id="value"><a class="anchor" href="#value"></a>Value</h2>
 
     <p><code>backwash</code> returns a list with some or all of the
@@ -310,7 +314,6 @@ to the console.</p></td>
 <li><p><code>proportions</code>: A matrix of the variational mixing proportions. The columns index the observations and the rows index the mixing distributions.</p></li>
 </ul>
 
-    
     <h2 class="hasAnchor" id="details"><a class="anchor" href="#details"></a>Details</h2>
 
     <p>The assumed model is $$Y = X\beta + Z\alpha + E.$$ \(Y\) is a
@@ -345,91 +348,93 @@ mean-squares as the estimates of the column-wise variances.</p>
 <p>For instructions and examples on how to specify your own factor analysis, run the following code in R:
 <code><a href='../articles/customFA.html'>utils::vignette("customFA", package = "vicar")</a></code>. If it doesn't work, then you probably haven't built
 the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignettes'>https://github.com/dcgerard/vicar#vignettes</a>.</p>
-    
     <h2 class="hasAnchor" id="references"><a class="anchor" href="#references"></a>References</h2>
 
-    <p>Matthew Stephens. False discovery rates: a new deal. Biostatistics, 2016. doi: <a href='http://dx.doi.org/10.1093/biostatistics/kxw041'>10.1093/biostatistics/kxw041</a></p>
     
+<ul>
+<li><p>Stephens, Matthew. 2016. "False discovery rates: a new deal." <em>Biostatistics</em> 18 (2): 275–94. &lt;<a href='https://doi.org/10.1093/biostatistics/kxw041'>doi:10.1093/biostatistics/kxw041</a>&gt;.</p></li>
+<li><p>Gerard, D., &amp; Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", <em>Biostatistics</em>, , kxy029, &lt;<a href='https://doi.org/10.1093/biostatistics/kxy029'>doi:10.1093/biostatistics/kxy029</a>&gt;.</p></li>
+</ul>
+
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='mouthwash.html'>mouthwash</a></code> For a similar method that maximizes over the hidden confounders
     rather than puts a prior on them.</p></div>
-    
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/library'>library</a></span>(<span class='no'>vicar</span>)
+    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>vicar</span>)
 
 <span class='co'>## Generate data ----------------------------------------------------------</span>
-<span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/Random'>set.seed</a></span>(<span class='fl'>116</span>)
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>116</span>)
 <span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>13</span>
 <span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>101</span>
 <span class='no'>k</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
 <span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
-<span class='no'>is_null</span>       <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/rep'>rep</a></span>(<span class='fl'>FALSE</span>, <span class='kw'>length</span> <span class='kw'>=</span> <span class='no'>p</span>)
+<span class='no'>is_null</span>       <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>FALSE</span>, <span class='kw'>length</span> <span class='kw'>=</span> <span class='no'>p</span>)
 <span class='no'>is_null</span>[<span class='fl'>1</span>:<span class='fl'>57</span>] <span class='kw'>&lt;-</span> <span class='fl'>TRUE</span>
 
-<span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>q</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
-<span class='no'>B</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>q</span> * <span class='no'>p</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>q</span>)
+<span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>q</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
+<span class='no'>B</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>q</span> * <span class='no'>p</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>q</span>)
 <span class='no'>B</span>[<span class='fl'>2</span>, <span class='no'>is_null</span>] <span class='kw'>&lt;-</span> <span class='fl'>0</span>
-<span class='no'>Z</span> <span class='kw'>&lt;-</span> <span class='no'>X</span> <span class='kw'>%*%</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>q</span> * <span class='no'>k</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>q</span>) +
-     <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>k</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
-<span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>k</span> * <span class='no'>p</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>k</span>)
-<span class='no'>E</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/matrix'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/stats/topics/Normal'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>p</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span> / <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
+<span class='no'>Z</span> <span class='kw'>&lt;-</span> <span class='no'>X</span> <span class='kw'>%*%</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>q</span> * <span class='no'>k</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>q</span>) +
+     <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>k</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
+<span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>k</span> * <span class='no'>p</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>k</span>)
+<span class='no'>E</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>p</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span> / <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
 <span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='no'>X</span> <span class='kw'>%*%</span> <span class='no'>B</span> + <span class='no'>Z</span> <span class='kw'>%*%</span> <span class='no'>A</span> + <span class='no'>E</span>
 
 <span class='co'>## Fit BACKWASH -----------------------------------------------------------</span>
 <span class='no'>bout</span> <span class='kw'>&lt;-</span> <span class='fu'>backwash</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>k</span>, <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
                  <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;  - Computing independent basis using QR decomposition.
-#&gt;  - Computation took 0.005 seconds.
+#&gt;  - Computation took 0.103 seconds.
 #&gt;  - Running additional preprocessing steps.
-#&gt;  - Computation took 0 seconds.
+#&gt;  - Computation took 0.001 seconds.
 #&gt;  - Running second step of backwash:
 #&gt;     + Initializing parameters for EM algorithm.
-#&gt;     + Computation took 0.049 seconds.
+#&gt;     + Computation took 0.826 seconds.
 #&gt;     + Running one round of parameter updates.
 #&gt;     + Computation took 0.003 seconds.
 #&gt;     + Estimating model parameters using EM.
-#&gt;     + Computation took 0.823 seconds.
+#&gt;     + Computation took 0.672 seconds.
 #&gt;     + Generating posterior statistics.
-#&gt;     + Computation took 0.002 seconds.
-#&gt;  - Second step took 2.254 seconds.
+#&gt;     + Computation took 0.001 seconds.
+#&gt;  - Second step took 1.991 seconds.
 #&gt;  - Generating final backwash outputs.
-#&gt;  - Computation took 0.001 seconds.</div><div class='input'><span class='no'>bout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5962887</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/mean'>mean</a></span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
+#&gt;  - Computation took 0 seconds.</div><div class='input'><span class='no'>bout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5962887</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
 <span class='co'>## Fit MOUTHWASH ----------------------------------------------------------</span>
 <span class='no'>mout</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mouthwash.html'>mouthwash</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>k</span>, <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
                   <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; Running mouthwash on 13 x 3 matrix X and 13 x 101 matrix Y.
 #&gt;  - Computing independent basis using QR decomposition.
-#&gt;  - Computation took 0.061 seconds.
+#&gt;  - Computation took 0.001 seconds.
 #&gt;  - Running additional preprocessing steps.
-#&gt;  - Computation took 0.008 seconds.
+#&gt;  - Computation took 0 seconds.
 #&gt;  - Running second step of mouthwash:
 #&gt;     + Estimating model parameters using EM.
-#&gt;     + Computation took 0.865 seconds.
+#&gt;     + Computation took 0.748 seconds.
 #&gt;     + Generating adaptive shrinkage (ash) output.
-#&gt;     + Computation took 0.011 seconds.
-#&gt;  - Second step took 1.5 seconds.
+#&gt;     + Computation took 0.01 seconds.
+#&gt;  - Second step took 1.027 seconds.
 #&gt;  - Estimating additional hidden confounders.
-#&gt;  - Computation took 0.001 seconds.</div><div class='input'><span class='no'>mout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5933965</div><div class='input'><span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/mean'>mean</a></span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
+#&gt;  - Computation took 0 seconds.</div><div class='input'><span class='no'>mout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5933965</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
 <span class='co'>## Very Similar LFDR's ----------------------------------------------------</span>
-<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>, <span class='no'>bout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span> + <span class='fl'>3</span>,
-               <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"MOUTHWASH"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"BACKWASH"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"LFDR's"</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/abline'>abline</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/legend'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Null"</span>, <span class='st'>"Non-null"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
+<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>, <span class='no'>bout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span> + <span class='fl'>3</span>,
+               <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"MOUTHWASH"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"BACKWASH"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"LFDR's"</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Null"</span>, <span class='st'>"Non-null"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
                  <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='img'><img src='backwash-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## Exact Same ROC Curves --------------------------------------------------</span>
-<span class='no'>morder_lfdr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/order'>order</a></span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>)
-<span class='no'>mfpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cumsum'>cumsum</a></span>(<span class='no'>is_null</span>[<span class='no'>morder_lfdr</span>]) / <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>is_null</span>)
-<span class='no'>mtpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cumsum'>cumsum</a></span>(!<span class='no'>is_null</span>[<span class='no'>morder_lfdr</span>]) / <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(!<span class='no'>is_null</span>)
+<span class='no'>morder_lfdr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>)
+<span class='no'>mfpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span>(<span class='no'>is_null</span>[<span class='no'>morder_lfdr</span>]) / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>is_null</span>)
+<span class='no'>mtpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span>(!<span class='no'>is_null</span>[<span class='no'>morder_lfdr</span>]) / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(!<span class='no'>is_null</span>)
 
-<span class='no'>border_lfdr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/order'>order</a></span>(<span class='no'>bout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>)
-<span class='no'>bfpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cumsum'>cumsum</a></span>(<span class='no'>is_null</span>[<span class='no'>border_lfdr</span>]) / <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(<span class='no'>is_null</span>)
-<span class='no'>btpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/cumsum'>cumsum</a></span>(!<span class='no'>is_null</span>[<span class='no'>border_lfdr</span>]) / <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/sum'>sum</a></span>(!<span class='no'>is_null</span>)
+<span class='no'>border_lfdr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>bout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>)
+<span class='no'>bfpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span>(<span class='no'>is_null</span>[<span class='no'>border_lfdr</span>]) / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>is_null</span>)
+<span class='no'>btpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span>(!<span class='no'>is_null</span>[<span class='no'>border_lfdr</span>]) / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(!<span class='no'>is_null</span>)
 
-<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>bfpr</span>, <span class='no'>btpr</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"l"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"False Positive Rate"</span>,
+<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>bfpr</span>, <span class='no'>btpr</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"l"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"False Positive Rate"</span>,
                <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"True Positive Rate"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"ROC Curve"</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-               <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/lines'>lines</a></span>(<span class='no'>mfpr</span>, <span class='no'>mtpr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/abline'>abline</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/legend'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"MOUTHWASH"</span>, <span class='st'>"BACKWASH"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
-                 <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))</div><div class='img'><img src='backwash-2.png' alt='' width='700' height='433' /></div><div class='input'>
+               <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>mfpr</span>, <span class='no'>mtpr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"MOUTHWASH"</span>, <span class='st'>"BACKWASH"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
+                 <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))</div><div class='img'><img src='backwash-2.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## But slightly different ordering ----------------------------------------</span>
-<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/plot'>plot</a></span>(<span class='no'>morder_lfdr</span>, <span class='no'>border_lfdr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span> + <span class='fl'>3</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"MOUTHWASH"</span>,
-               <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"BACKWASH"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Order"</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://www.rdocumentation.org/packages/graphics/topics/legend'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='st'>"Null"</span>, <span class='st'>"Non-null"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://www.rdocumentation.org/packages/base/topics/c'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
+<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>morder_lfdr</span>, <span class='no'>border_lfdr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span> + <span class='fl'>3</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"MOUTHWASH"</span>,
+               <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"BACKWASH"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Order"</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Null"</span>, <span class='st'>"Non-null"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
                  <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='img'><img src='backwash-3.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
@@ -437,15 +442,10 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
     <h2>Contents</h2>
     <ul class="nav nav-pills nav-stacked">
       <li><a href="#arguments">Arguments</a></li>
-      
       <li><a href="#value">Value</a></li>
-
       <li><a href="#details">Details</a></li>
-
       <li><a href="#references">References</a></li>
-
       <li><a href="#see-also">See also</a></li>
-      
       <li><a href="#examples">Examples</a></li>
     </ul>
 
@@ -454,19 +454,23 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
   </div>
 </div>
 
+
       <footer>
       <div class="copyright">
   <p>Developed by David Gerard, Peter Carbonetto.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
    </div>
 
   
 
+
   </body>
 </html>
+
 

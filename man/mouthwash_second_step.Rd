@@ -78,6 +78,11 @@ to the console.}
 \description{
 The second step of MOUTHWASH.
 }
+\references{
+\itemize{
+  \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+}
+}
 \author{
 David Gerard
 }

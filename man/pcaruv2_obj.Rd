@@ -8,7 +8,7 @@ pcaruv2_obj(sig_lambda, r1, r2, n, vr)
 }
 \arguments{
 \item{sig_lambda}{A vector. All but the first elements are the
-current values of Sigma. The last element is the current valur
+current values of Sigma. The last element is the current value
 of lambda.}
 
 \item{r1}{The sum of squares of the first vr columns of the

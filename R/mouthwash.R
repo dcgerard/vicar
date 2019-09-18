@@ -159,6 +159,11 @@
 #' @seealso \code{\link{backwash}} for a similar method that puts a prior on the
 #'     unobserved confounders rather than maximizes over them.
 #'
+#' @references
+#' \itemize{
+#'   \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+#' }
+#'
 #' @author David Gerard
 #'
 #' @examples
@@ -242,7 +247,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
                       use_t_adjust = FALSE,
                       detailed_output = FALSE,
                       verbose = TRUE) {
-    
+
     ## Make sure input is correct -------------------------------------------
     assertthat::assert_that(is.matrix(Y))
     assertthat::assert_that(is.matrix(X))
@@ -288,7 +293,7 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
       cat(sprintf(paste("Running mouthwash on %d x %d matrix X and",
                         "%d x %d matrix Y.\n"),
                   nrow(X),ncol(X),nrow(Y),ncol(Y)))
-    
+
     ## Rotate -------------------------------------------------------------
     if (verbose)
       cat(" - Computing independent basis using QR decomposition.\n")
@@ -561,6 +566,12 @@ mouthwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 #'
 #' @author David Gerard
 #'
+#'
+#' @references
+#' \itemize{
+#'   \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+#' }
+#'
 #' @export
 #'
 mouthwash_second_step <-
@@ -651,7 +662,7 @@ mouthwash_second_step <-
     }})
     if (verbose)
       cat("    + Computation took",timing["elapsed"],"seconds.\n")
-    
+
     ## make mix object  ----------------------------------------------------
     if (verbose)
         cat("    + Generating adaptive shrinkage (ash) output.\n")

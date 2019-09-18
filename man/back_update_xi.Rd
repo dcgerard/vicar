@@ -8,7 +8,7 @@ back_update_xi(betahat_ols, S_diag, Amat, mubeta, mubeta_matrix,
   sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, var_inflate_pen = 0)
 }
 \arguments{
-\item{betahat_ols}{A vector of numerics. The oridinary least
+\item{betahat_ols}{A vector of numerics. The ordinary least
 squares estimates of the regression coefficients.}
 
 \item{S_diag}{A vector of positive numerics. The standard errors of

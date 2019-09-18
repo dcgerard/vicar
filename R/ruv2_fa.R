@@ -70,7 +70,7 @@ pca_ruv2 <- function(Y, r, vr, mle = FALSE) {
 #' This is mostly for use in SQUAREM.
 #'
 #' @param sig_lambda A vector. All but the first elements are the
-#'     current values of Sigma. The last element is the current valur
+#'     current values of Sigma. The last element is the current value
 #'     of lambda.
 #' @param r1 The sum of squares of the first vr columns of the
 #'     residuals.
@@ -329,7 +329,7 @@ qmle_ruv2_lambda_grid <- function(Y, r, vr, gridsize = 20, gridlow = 1,
 
 #' Wrapper for \code{\link[stats]{optim}} and \code{\link{qmle_obj}}.
 #'
-#' Uses Brent's method to obtimize the variance inflation parameter
+#' Uses Brent's method to optimize the variance inflation parameter
 #' given sig_diag and alpha.
 #'
 #' @inheritParams qmle_obj

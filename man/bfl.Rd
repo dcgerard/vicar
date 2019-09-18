@@ -58,6 +58,11 @@ There is no parameter expansion in this one. To see one with
 parameter expansion, and a much faster version, see
 \code{\link{bfa_gs_linked}}.
 }
+\references{
+\itemize{
+\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+}
+}
 \seealso{
 \code{\link{bfa_gs_linked}}.
 }

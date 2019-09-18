@@ -7,8 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Custom Prior for RUVB • vicar</title>
 <!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css" integrity="sha256-eZrrJcwDc/3uDhsdt61sL2oOBY362qM3lon1gyExkL0=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- sticky kit --><script src="https://cdnjs.cloudflare.com/ajax/libs/sticky-kit/1.1.3/sticky-kit.min.js" integrity="sha256-c4Rlo1ZozqTPE2RLuvbusY3+SU1pQaJC0TjuhygMipw=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="../pkgdown.css" rel="stylesheet">
 <script src="../pkgdown.js"></script><meta property="og:title" content="Custom Prior for RUVB">
 <meta property="og:description" content="">
 <meta name="twitter:card" content="summary">
@@ -30,7 +31,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vicar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.9</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.10</span>
       </span>
     </div>
 
@@ -38,7 +39,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="../index.html">
-    <span class="fa fa-home fa-lg"></span>
+    <span class="fas fa fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -70,7 +71,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/dcgerard/vicar">
-    <span class="fa fa-github fa-lg"></span>
+    <span class="fab fa fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -83,6 +84,7 @@
 <!--/.navbar -->
 
       
+
       </header><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
@@ -101,31 +103,26 @@
 <div id="abstract" class="section level1">
 <h1 class="hasAnchor">
 <a href="#abstract" class="anchor"></a>Abstract</h1>
-<p>I provide instructions on how to incorporate a user-specified prior into <code>ruvb</code>. I provide an example with a simulated RNA-seq dataset.</p>
+<p>I provide instructions on how to incorporate a user-specified prior into <code>ruvb</code>. I provide an example with a simulated RNA-seq dataset. The RUVB method is described in detail in <span class="citation">Gerard and Stephens (2019)</span>.</p>
 </div>
 <div id="data" class="section level1">
 <h1 class="hasAnchor">
 <a href="#data" class="anchor"></a>Data</h1>
 <p>We will use the simulated RNA-seq dataset described in the vignette <em>sample_analysis</em>. To read a description about these data, run the following in R:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">utils<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/vignette">vignette</a></span>(<span class="st">"sample_analysis"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" data-line-number="1">utils<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"sample_analysis"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</a></code></pre></div>
 <p>We’ll first load in these data:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(vicar)</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/library">library</a></span>(ggplot2)</a></code></pre></div>
-<pre><code>## Registered S3 methods overwritten by 'ggplot2':
-##   method         from 
-##   [.quosures     rlang
-##   c.quosures     rlang
-##   print.quosures rlang</code></pre>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/Random">set.seed</a></span>(<span class="dv">2512</span>)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2"><span class="kw"><a href="https://www.rdocumentation.org/packages/utils/topics/data">data</a></span>(sim_gtex)</a>
-<a class="sourceLine" id="cb4-3" data-line-number="3">Y &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>Y</a>
-<a class="sourceLine" id="cb4-4" data-line-number="4">X &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>X</a>
-<a class="sourceLine" id="cb4-5" data-line-number="5">ctl &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>ctl</a>
-<a class="sourceLine" id="cb4-6" data-line-number="6">which_null &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>which_null</a>
-<a class="sourceLine" id="cb4-7" data-line-number="7">beta &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>beta</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(vicar)</a>
+<a class="sourceLine" id="cb2-2" data-line-number="2"><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span>(ggplot2)</a>
+<a class="sourceLine" id="cb2-3" data-line-number="3"><span class="kw"><a href="https://rdrr.io/r/base/Random.html">set.seed</a></span>(<span class="dv">2512</span>)</a>
+<a class="sourceLine" id="cb2-4" data-line-number="4"><span class="kw"><a href="https://rdrr.io/r/utils/data.html">data</a></span>(sim_gtex)</a>
+<a class="sourceLine" id="cb2-5" data-line-number="5">Y &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>Y</a>
+<a class="sourceLine" id="cb2-6" data-line-number="6">X &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>X</a>
+<a class="sourceLine" id="cb2-7" data-line-number="7">ctl &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>ctl</a>
+<a class="sourceLine" id="cb2-8" data-line-number="8">which_null &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>which_null</a>
+<a class="sourceLine" id="cb2-9" data-line-number="9">beta &lt;-<span class="st"> </span>sim_gtex<span class="op">$</span>beta</a></code></pre></div>
 <p>As in <em>sample_analysis</em>, we’ll estimate the number of hidden confounders using the <code>num.sv</code> function from the sva R package.</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">num_sv &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/sva/topics/num.sv">num.sv</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/t">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">method =</span> <span class="st">"be"</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">num_sv</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" data-line-number="1">num_sv &lt;-<span class="st"> </span>sva<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/sva/man/num.sv.html">num.sv</a></span>(<span class="dt">dat =</span> <span class="kw"><a href="https://rdrr.io/r/base/t.html">t</a></span>(Y), <span class="dt">mod =</span> X, <span class="dt">method =</span> <span class="st">"be"</span>)</a>
+<a class="sourceLine" id="cb3-2" data-line-number="2">num_sv</a></code></pre></div>
 <pre><code>## [1] 3</code></pre>
 </div>
 <div id="specifying-a-prior" class="section level1">
@@ -143,22 +140,26 @@
 <h1 class="hasAnchor">
 <a href="#example" class="anchor"></a>Example</h1>
 <p>Suppose we had slightly stronger prior information that the signals are all relatively weak, so we’ll put a <span class="math inline">\(N(0, 5)\)</span> prior on the effects. For numerical stability, we’ll return the log-density.</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">strong_prior &lt;-<span class="st"> </span><span class="cf">function</span>(beta_mat, sd_prior) {</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">  <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/sum">sum</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/stats/topics/Normal">dnorm</a></span>(beta_mat, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> sd_prior, <span class="dt">log =</span> <span class="ot">TRUE</span>))</a>
-<a class="sourceLine" id="cb7-3" data-line-number="3">}</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1">strong_prior &lt;-<span class="st"> </span><span class="cf">function</span>(beta_mat, sd_prior) {</a>
+<a class="sourceLine" id="cb5-2" data-line-number="2">  <span class="kw"><a href="https://rdrr.io/r/base/sum.html">sum</a></span>(stats<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/stats/Normal.html">dnorm</a></span>(beta_mat, <span class="dt">mean =</span> <span class="dv">0</span>, <span class="dt">sd =</span> sd_prior, <span class="dt">log =</span> <span class="ot">TRUE</span>))</a>
+<a class="sourceLine" id="cb5-3" data-line-number="3">}</a></code></pre></div>
 <p>Since <code>sd_prior</code> is an argument we need to specify, we’ll use the <code>prior_args</code> parameter to set <code>sd_prior = 5</code>. Now let us run <code>ruvb</code>. Note that you should run the MCMC for many more iterations than what I’m doing here.</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">ruvbout &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">                <span class="dt">prior_fun =</span> strong_prior, <span class="dt">prior_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">sd_prior =</span> <span class="dv">5</span>),</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">                <span class="dt">return_log =</span> <span class="ot">TRUE</span>,</a>
-<a class="sourceLine" id="cb8-4" data-line-number="4">                <span class="dt">fa_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">1</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">ruvbout &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb6-2" data-line-number="2">                <span class="dt">prior_fun =</span> strong_prior, <span class="dt">prior_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">sd_prior =</span> <span class="dv">5</span>),</a>
+<a class="sourceLine" id="cb6-3" data-line-number="3">                <span class="dt">return_log =</span> <span class="ot">TRUE</span>,</a>
+<a class="sourceLine" id="cb6-4" data-line-number="4">                <span class="dt">fa_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">1</span>))</a></code></pre></div>
 <p>We’ll compare the results against just using the default uniform prior:</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb9-1" data-line-number="1">ruvbout_unif &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,</a>
-<a class="sourceLine" id="cb9-2" data-line-number="2">                     <span class="dt">fa_args =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/list">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">1</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1">ruvbout_unif &lt;-<span class="st"> </span><span class="kw"><a href="../reference/ruvb.html">ruvb</a></span>(<span class="dt">Y =</span> Y, <span class="dt">X =</span> X, <span class="dt">ctl =</span> ctl, <span class="dt">k =</span> num_sv, <span class="dt">cov_of_interest =</span> <span class="dv">2</span>,</a>
+<a class="sourceLine" id="cb7-2" data-line-number="2">                     <span class="dt">fa_args =</span> <span class="kw"><a href="https://rdrr.io/r/base/list.html">list</a></span>(<span class="dt">display_progress =</span> <span class="ot">FALSE</span>, <span class="dt">nsamp =</span> <span class="dv">1000</span>, <span class="dt">thin =</span> <span class="dv">1</span>))</a></code></pre></div>
 <p>They give about the same AUC’s.</p>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" data-line-number="1">aucnorm &lt;-<span class="st"> </span>pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvbout<span class="op">$</span>lfsr2))<span class="op">$</span>auc</a>
-<a class="sourceLine" id="cb10-2" data-line-number="2">aucunif &lt;-<span class="st"> </span>pROC<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/pROC/topics/roc">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(ruvbout_unif<span class="op">$</span>lfsr2))<span class="op">$</span>auc</a>
-<a class="sourceLine" id="cb10-3" data-line-number="3">aucdat &lt;-<span class="st"> </span><span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/data.frame">data.frame</a></span>(<span class="dt">Prior =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(<span class="st">"Normal"</span>, <span class="st">"Uniform"</span>), <span class="dt">AUC =</span> <span class="kw"><a href="https://www.rdocumentation.org/packages/base/topics/c">c</a></span>(aucnorm, aucunif))</a>
-<a class="sourceLine" id="cb10-4" data-line-number="4">knitr<span class="op">::</span><span class="kw"><a href="https://www.rdocumentation.org/packages/knitr/topics/kable">kable</a></span>(<span class="dt">x =</span> aucdat)</a></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">aucnorm &lt;-<span class="st"> </span>pROC<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/pROC/man/roc.html">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(ruvbout<span class="op">$</span>lfsr2))<span class="op">$</span>auc</a></code></pre></div>
+<pre><code>## Setting levels: control = 0, case = 1</code></pre>
+<pre><code>## Setting direction: controls &lt; cases</code></pre>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb11-1" data-line-number="1">aucunif &lt;-<span class="st"> </span>pROC<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/pROC/man/roc.html">roc</a></span>(<span class="dt">response =</span> which_null, <span class="dt">predictor =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(ruvbout_unif<span class="op">$</span>lfsr2))<span class="op">$</span>auc</a></code></pre></div>
+<pre><code>## Setting levels: control = 0, case = 1
+## Setting direction: controls &lt; cases</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb13-1" data-line-number="1">aucdat &lt;-<span class="st"> </span><span class="kw"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span>(<span class="dt">Prior =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"Normal"</span>, <span class="st">"Uniform"</span>), <span class="dt">AUC =</span> <span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(aucnorm, aucunif))</a>
+<a class="sourceLine" id="cb13-2" data-line-number="2">knitr<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span>(<span class="dt">x =</span> aucdat)</a></code></pre></div>
 <table class="table">
 <thead><tr class="header">
 <th align="left">Prior</th>
@@ -176,9 +177,19 @@
 </tbody>
 </table>
 </div>
+<div id="references" class="section level1 unnumbered">
+<h1 class="hasAnchor">
+<a href="#references" class="anchor"></a>References</h1>
+<div id="refs" class="references">
+<div id="ref-gerard2019unifying">
+<p>Gerard, David, and Matthew Stephens. 2019. “Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls.” <em>Statistica Sinica</em>, in press. <a href="https://doi.org/10.5705/ss.202018.0345">https://doi.org/10.5705/ss.202018.0345</a>.</p>
+</div>
+</div>
+</div>
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+
         <div id="tocnav">
       <h2 class="hasAnchor">
 <a href="#tocnav" class="anchor"></a>Contents</h2>
@@ -187,6 +198,7 @@
       <li><a href="#data">Data</a></li>
       <li><a href="#specifying-a-prior">Specifying a Prior</a></li>
       <li><a href="#example">Example</a></li>
+      <li><a href="#references">References</a></li>
       </ul>
 </div>
       </div>
@@ -194,17 +206,20 @@
 </div>
 
 
+
       <footer><div class="copyright">
   <p>Developed by David Gerard, Peter Carbonetto.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.3.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
 </div>
+
       </footer>
 </div>
 
   
+
 
   </body>
 </html>

@@ -64,11 +64,13 @@ See \code{\link{bfa_gs}} for a description. This is the same thing
 but a slower R implementation.
 }
 \references{
-Ghosh, Joyee, and David
+\itemize{
+\item{Ghosh, Joyee, and David
     B. Dunson. "Default prior distributions and efficient posterior
     computation in Bayesian factor analysis."
     Journal of Computational and Graphical Statistics 18.2 (2009):
-    306-320.
+    306-320.}
+}
 }
 \seealso{
 \code{\link{bfa_gs}}

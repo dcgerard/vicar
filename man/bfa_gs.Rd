@@ -62,11 +62,13 @@ the factors and factor loadings unidentified), and (2) we place
 hierarchical priors on the uniquenesses (variances).
 }
 \references{
-Ghosh, Joyee, and David
+\itemize{
+\item{Ghosh, Joyee, and David
     B. Dunson. "Default prior distributions and efficient posterior
     computation in Bayesian factor analysis."
     Journal of Computational and Graphical Statistics 18.2 (2009):
-    306-320.
+    306-320.}
+}
 }
 \seealso{
 \code{\link{gdfa}} for the slower R implementation.

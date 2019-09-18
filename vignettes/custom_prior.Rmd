@@ -7,12 +7,14 @@ vignette: >
   %\VignetteIndexEntry{Custom Prior for RUVB}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
+bibliography: "vicar.bib"
 ---
 
 # Abstract
 
 I provide instructions on how to incorporate a user-specified prior into `ruvb`. 
-I provide an example with a simulated RNA-seq dataset.
+I provide an example with a simulated RNA-seq dataset. The RUVB method is
+described in detail in @gerard2019unifying.
 
 # Data
 
@@ -80,3 +82,5 @@ aucunif <- pROC::roc(response = which_null, predictor = c(ruvbout_unif$lfsr2))$a
 aucdat <- data.frame(Prior = c("Normal", "Uniform"), AUC = c(aucnorm, aucunif))
 knitr::kable(x = aucdat)
 ```
+
+# References

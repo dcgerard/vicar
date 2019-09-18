@@ -9,7 +9,7 @@ back_elbo(betahat_ols, S_diag, Amat, tau2_seq, pivec, lambda_seq, mubeta,
   var_inflate_pen = 0)
 }
 \arguments{
-\item{betahat_ols}{A vector of numerics. The oridinary least
+\item{betahat_ols}{A vector of numerics. The ordinary least
 squares estimates of the regression coefficients.}
 
 \item{S_diag}{A vector of positive numerics. The standard errors of

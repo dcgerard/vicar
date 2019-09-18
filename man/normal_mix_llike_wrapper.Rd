@@ -37,7 +37,7 @@ Defaults to 0, but should be something non-zero when \code{alpha = 1}
 and \code{scale_var = TRUE}.}
 }
 \description{
-This returns the negative log-liklihood for SQUAREM to use.
+This returns the negative log-likelihood for SQUAREM to use.
 }
 \seealso{
 \code{\link{normal_mix_llike}}

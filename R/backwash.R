@@ -106,7 +106,11 @@
 #' @seealso \code{\link{mouthwash}} For a similar method that maximizes over the hidden confounders
 #'     rather than puts a prior on them.
 #'
-#' @references Matthew Stephens. False discovery rates: a new deal. Biostatistics, 2016. doi: \href{http://dx.doi.org/10.1093/biostatistics/kxw041}{10.1093/biostatistics/kxw041}
+#' @references
+#' \itemize{
+#'   \item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. <\href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}>.}
+#'   \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+#' }
 #'
 #' @examples
 #' library(vicar)
@@ -316,7 +320,7 @@ backwash <- function(Y, X, k = NULL, cov_of_interest = ncol(X),
 
 #' Second step of the backwash procedure.
 #'
-#' @param betahat_ols A vector of numerics. The oridinary least
+#' @param betahat_ols A vector of numerics. The ordinary least
 #'     squares estimates of the regression coefficients.
 #' @param S_diag A vector of positive numerics. The standard errors of
 #'     \code{betahat_ols}.
@@ -425,7 +429,7 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
                                 var_inflate_pen = var_inflate_pen))
     if (verbose)
       cat("    + Computation took",timing["elapsed"],"seconds.\n")
-                          
+
     ## Get returned parameters ----------------------------------------------
     if (verbose)
       cat("    + Generating posterior statistics.\n")
@@ -491,7 +495,7 @@ backwash_second_step <- function(betahat_ols, S_diag, alpha_tilde,
     })
     if (verbose)
       cat("    + Computation took",timing["elapsed"],"seconds.\n")
-      
+
     return(return_list)
 }
 

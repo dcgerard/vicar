@@ -2,7 +2,7 @@
 % Please edit documentation in R/em_miss.R
 \name{rubin_copy}
 \alias{rubin_copy}
-\title{Very inneficient copy of rubin and thayer iteration mostly meant for debugging.}
+\title{Very inefficient copy of Rubin and Thayer iteration mostly meant for debugging.}
 \usage{
 rubin_copy(alpha_sigma, S, n, p, k)
 }
@@ -20,7 +20,7 @@ samples that don't have a missing block.}
 \item{k}{The rank of the mean.}
 }
 \description{
-Very inneficient copy of rubin and thayer iteration mostly meant for debugging.
+Very inefficient copy of Rubin and Thayer iteration mostly meant for debugging.
 }
 \author{
 David Gerard

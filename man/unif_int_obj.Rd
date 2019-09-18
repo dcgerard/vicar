@@ -17,7 +17,7 @@ inflation factor.}
 \item{betahat_ols}{A vector of numerics. The OLS regression
 coefficients.}
 
-\item{alpha_tilde}{A matrix of numerics. The estimats of the
+\item{alpha_tilde}{A matrix of numerics. The estimates of the
 coefficients of the confounders.}
 
 \item{S_diag}{A vector of positive numerics. The standard errors.}

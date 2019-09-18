@@ -40,6 +40,11 @@
 #'
 #' @author David Gerard
 #'
+#' @references
+#' \itemize{
+#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#' }
+#'
 #' @export
 ruvimpute <- function(Y, X, ctl, k = NULL, impute_func = em_miss,
                       impute_args = list(), cov_of_interest = ncol(X),
@@ -138,6 +143,11 @@ ruvimpute <- function(Y, X, ctl, k = NULL, impute_func = em_miss,
 #'     (\code{FALSE})?
 #' @author David Gerard
 #' @export
+#'
+#' @references
+#' \itemize{
+#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#' }
 #' @seealso \code{\link{ruvimpute}}, \code{\link{em_miss}}.
 ruvem <- function(Y, X, ctl, k = NULL, impute_args = list(),
                   cov_of_interest = ncol(X), include_intercept = TRUE,
@@ -339,7 +349,7 @@ softimpute_wrapper <- function(Y, max_rank) {
 
 #' Wrapper for missForest package.
 #'
-#' @param Y A matirx with missing values.
+#' @param Y A matrix with missing values.
 #'
 #' @return A matrix with the missing values imputed.
 #'
@@ -358,7 +368,7 @@ missforest_wrapper <- function(Y) {
 
 #' Wrapper for impute.knn
 #'
-#' @param Y A matirx with missing values.
+#' @param Y A matrix with missing values.
 #'
 #' @return A matrix with the missing values imputed.
 #'
@@ -462,7 +472,7 @@ hard_impute <- function(Y21, Y31, Y32, k, tol = 10 ^ -5, maxit = 1000,
 
 #' Reproduce RUV2, RUV3, and RUV4 with RUVimpute.
 #'
-#' This is a proof of concept function to inegrate
+#' This is a proof of concept function to integrate
 #' \code{\link{ruvimpute}} with \code{\link[ruv]{RUV2}},
 #' \code{\link{ruv3}}, \code{\link[ruv]{RUV4}}.
 #'
@@ -471,6 +481,11 @@ hard_impute <- function(Y21, Y31, Y32, k, tol = 10 ^ -5, maxit = 1000,
 #'     \code{"ruv2"}, \code{"ruv3"}, or \code{"ruv4"}?
 #'
 #' @export
+#'
+#' @references
+#' \itemize{
+#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#' }
 #'
 #' @author David Gerard
 impute_ruv_reproduce <- function(Y21, Y31, Y32, k,

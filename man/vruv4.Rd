@@ -244,25 +244,23 @@ cor(c(ruv4olsp), c(vruv4olsp), method = "kendall")
 
 }
 \references{
-Gagnon-Bartsch, J., Laurent Jacob, and Terence
+\itemize{
+\item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
     P. Speed. "Removing unwanted variation from high dimensional
     data with negative controls."
     Berkeley: Department of Statistics. University of California
-    (2013).
-
-    Andreas Buja and Nermin
+    (2013).}
+\item{Andreas Buja and Nermin
     Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
-    research, 27(4):509-540, 1992.
-
-    Bradley Efron
+    research, 27(4):509-540, 1992.}
+\item{Bradley Efron
     "Large-Scale Simultaneous Hypothesis Testing: The Choice of a Null
     Hypothesis",
     Journal of the American Statistical Association, 99:465,
-    96-104, 2004.
-
-    Wang, J., Zhao, Q., Hastie, T., & Owen, A. B
-    "Confounder Adjustment in Multiple Hypotheses Testing."
-    arXiv preprint arXiv:1508.04178 (2015).
+    96-104, 2004.}
+\item{Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B. Owen. 2017. "Confounder adjustment in multiple hypothesis testing." \emph{The Annals of Statistics} 45, no. 5: 1863-1894.}
+\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+}
 }
 \seealso{
 \code{\link{ruv3}} for a version of RUV4 that can also be considered a version of RUV2.

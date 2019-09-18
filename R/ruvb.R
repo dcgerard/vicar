@@ -122,6 +122,11 @@
 #'
 #' @export
 #'
+#' @references
+#' \itemize{
+#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#' }
+#'
 #' @examples
 #' library(vicar)
 #'
@@ -504,9 +509,10 @@ calc_quantiles_g <- function(y, g, quant = 0.5) {
 #'     \code{\link[coda]{effectiveSize}}
 #'
 #'
-#' @references Hoff, P. D. (2012). Model averaging and dimension
-#'     selection for the singular value decomposition. Journal of the
-#'     American Statistical Association.
+#' @references
+#' \itemize{
+#' \item{Hoff, P. D. 2012. "Model averaging and dimension selection for the singular value decomposition". \emph{Journal of the American Statistical Association}.}
+#' }
 bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
                  burnin = round(nsamp / 4), keep = 20,
                  print_update = TRUE,
@@ -682,8 +688,8 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #' factors are a prior assumed to have the same variances as the data
 #' observations. This might be distasteful to some.
 #'
-#' This also has parameter expansion impelemented and is written in
-#' compiled code. To see a slower version without paramaeter epansion,
+#' This also has parameter expansion implemented and is written in
+#' compiled code. To see a slower version without parameter expansion,
 #' go to \code{\link{bfl}}.
 #'
 #'
@@ -695,7 +701,7 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #'     \code{Y22} every \code{keep} iteration of the Gibbs sampler.
 #' @param display_progress A logical. Should we print a text progress
 #'     bar to keep track of the Gibbs sampler (\code{TRUE}) or not
-#'     (\code{FALSE})? Also, if \code{TRUE}, then you can interupt the
+#'     (\code{FALSE})? Also, if \code{TRUE}, then you can interrupt the
 #'     C++ code every 1\% of runtime.
 #' @param rho_0 A scalar. The prior "sample size" for the precisions.
 #' @param alpha_0 A scalar. The prior "sample size" for the mean of
@@ -713,6 +719,11 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #' @author David Gerard
 #'
 #' @seealso \code{\link{bfa_gs_linked}}.
+#'
+#' @references
+#' \itemize{
+#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#' }
 #'
 bfa_gs_linked <- function(Y21, Y31, Y32, k, nsamp = 10000,
                           burnin = round(nsamp / 4), thin = 10,
@@ -781,6 +792,7 @@ bfa_gs_linked <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #' @inheritParams bfa_gs_linked_gibbs
 #'
 #' @author David Gerard
+#'
 #'
 bfa_gs_linked_gibbs_r <- function(Linit, Finit, xi_init, phi_init,
                                   zeta_init, Y22init, Y21, Y31, Y32,
@@ -935,6 +947,11 @@ bfa_gs_linked_gibbs_r <- function(Linit, Finit, xi_init, phi_init,
 #' @author David Gerard
 #'
 #' @seealso \code{\link{bfa_gs_linked}}.
+#'
+#' @references
+#' \itemize{
+#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#' }
 #'
 bfl <- function(Y21, Y31, Y32, k, nsamp = 10000,
                 burnin = round(nsamp / 4), keep = 20,
@@ -1174,11 +1191,14 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
 #'
 #' @seealso \code{\link{gdfa}} for the slower R implementation.
 #'
-#' @references Ghosh, Joyee, and David
+#' @references
+#' \itemize{
+#' \item{Ghosh, Joyee, and David
 #'     B. Dunson. "Default prior distributions and efficient posterior
 #'     computation in Bayesian factor analysis."
 #'     Journal of Computational and Graphical Statistics 18.2 (2009):
-#'     306-320.
+#'     306-320.}
+#' }
 bfa_gs <- function(Y21, Y31, Y32, k, nsamp = 10000,
                    burnin = round(nsamp / 4), thin = 20,
                    display_progress = TRUE, hetero_factors = TRUE,
@@ -1286,11 +1306,14 @@ bfa_gs <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #'
 #' @seealso \code{\link{bfa_gs}}
 #'
-#' @references Ghosh, Joyee, and David
+#' @references
+#' \itemize{
+#' \item{Ghosh, Joyee, and David
 #'     B. Dunson. "Default prior distributions and efficient posterior
 #'     computation in Bayesian factor analysis."
 #'     Journal of Computational and Graphical Statistics 18.2 (2009):
-#'     306-320.
+#'     306-320.}
+#' }
 gdfa <- function(Y21, Y31, Y32, k, nsamp = 10000,
                  burnin = round(nsamp / 4), keep = 20,
                  print_update = TRUE, plot_update = FALSE,
