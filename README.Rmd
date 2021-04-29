@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/dcgerard/vicar/workflows/R-CMD-check/badge.svg)](https://github.com/dcgerard/vicar/actions)
-[![Coverage Status](https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master)](https://coveralls.io/github/dcgerard/vicar?branch=master)
+[![Codecov test coverage](https://codecov.io/gh/dcgerard/vicar/branch/master/graph/badge.svg)](https://codecov.io/gh/dcgerard/vicar?branch=master)
 [![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 <!-- badges: end -->
 
