@@ -7,28 +7,32 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Tests whether a user-specified factor analysis function
-is appropriate for use in <code><a href='vruv4.html'>vruv4</a></code>, <code><a href='ruv3.html'>ruv3</a></code>,
-<code><a href='mouthwash.html'>mouthwash</a></code>, or <code><a href='backwash.html'>backwash</a></code>. — fa_tester • vicar</title>
+is appropriate for use in vruv4, ruv3,
+mouthwash, or backwash. — fa_tester • vicar</title>
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -38,14 +42,13 @@ is appropriate for use in <code><a href='vruv4.html'>vruv4</a></code>, <code><a 
 
 
 <meta property="og:title" content="Tests whether a user-specified factor analysis function
-is appropriate for use in <code><a href='vruv4.html'>vruv4</a></code>, <code><a href='ruv3.html'>ruv3</a></code>,
-<code><a href='mouthwash.html'>mouthwash</a></code>, or <code><a href='backwash.html'>backwash</a></code>. — fa_tester" />
+is appropriate for use in vruv4, ruv3,
+mouthwash, or backwash. — fa_tester" />
 <meta property="og:description" content="This function tests that the output of fa_func is compatible with the
 confounder adjustment methods in this package. In general, fa_func needs to take as input
 at least a matrix Y, which is dimensions n by p, and the rank of the factor analysis r.
 fa_func needs to return three elements, a matrix alpha that is p by r, a matrix Z that
 is n by r, and a numeric vector sig_diag that is of length p." />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -63,7 +66,7 @@ is n by r, and a numeric vector sig_diag that is of length p." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -77,7 +80,7 @@ is n by r, and a numeric vector sig_diag that is of length p." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vicar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1-11</span>
       </span>
     </div>
 
@@ -85,7 +88,7 @@ is n by r, and a numeric vector sig_diag that is of length p." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -116,8 +119,8 @@ is n by r, and a numeric vector sig_diag that is of length p." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/dcgerard/vicar">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="http://github.com/dcgerard/vicar/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -137,7 +140,7 @@ is n by r, and a numeric vector sig_diag that is of length p." />
     <h1>Tests whether a user-specified factor analysis function
 is appropriate for use in <code><a href='vruv4.html'>vruv4</a></code>, <code><a href='ruv3.html'>ruv3</a></code>,
 <code><a href='mouthwash.html'>mouthwash</a></code>, or <code><a href='backwash.html'>backwash</a></code>.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/dcgerard/vicar/blob/master/R/fa_tester.R'><code>R/fa_tester.R</code></a></small>
+    <small class="dont-index">Source: <a href='http://github.com/dcgerard/vicar/blob/master/R/fa_tester.R'><code>R/fa_tester.R</code></a></small>
     <div class="hidden name"><code>fa_tester.Rd</code></div>
     </div>
 
@@ -149,7 +152,7 @@ at least a matrix <code>Y</code>, which is dimensions n by p, and the rank of th
 is n by r, and a numeric vector <code>sig_diag</code> that is of length <code>p</code>.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>fa_tester</span>(<span class='no'>fa_func</span>, <span class='kw'>fa_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(), <span class='kw'>test_ortho</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>fa_tester</span><span class='op'>(</span><span class='va'>fa_func</span>, fa_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>, test_ortho <span class='op'>=</span> <span class='cn'>TRUE</span><span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -183,18 +186,15 @@ of left orthogonal equivariance.
 You can turn off this test with <code>test_ortho = FALSE</code>, but any factor analysis that is not
 left orthogonally equivariant would be dubious as the rotation onto the null space is completely
 arbitrary.</p>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>David Gerard</p>
 
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>David Gerard</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -205,7 +205,7 @@ arbitrary.</p>
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

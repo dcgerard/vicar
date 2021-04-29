@@ -11,23 +11,27 @@ SHrinkage. — backwash • vicar</title>
 
 
 <!-- jquery -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
 <!-- Bootstrap -->
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous" />
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script>
+
+<!-- bootstrap-toc -->
+<link rel="stylesheet" href="../bootstrap-toc.css">
+<script src="../bootstrap-toc.js"></script>
 
 <!-- Font Awesome icons -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous" />
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous" />
 
 <!-- clipboard.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script>
 
 <!-- headroom.js -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script>
 
 <!-- pkgdown -->
 <link href="../pkgdown.css" rel="stylesheet">
@@ -43,7 +47,6 @@ very similar to the mouthwash method with one very
 key difference: rather than estimate the confounders by maximum
 likelihood, backwash goes more Bayesian and places a g-like prior
 on the confounders. We fit the model by variational approximations." />
-<meta name="twitter:card" content="summary" />
 
 
 
@@ -61,7 +64,7 @@ on the confounders. We fit the model by variational approximations." />
 
   </head>
 
-  <body>
+  <body data-spy="scroll" data-target="#toc">
     <div class="container template-reference-topic">
       <header>
       <div class="navbar navbar-default navbar-fixed-top" role="navigation">
@@ -75,7 +78,7 @@ on the confounders. We fit the model by variational approximations." />
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">vicar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1-11</span>
       </span>
     </div>
 
@@ -83,7 +86,7 @@ on the confounders. We fit the model by variational approximations." />
       <ul class="nav navbar-nav">
         <li>
   <a href="../index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -114,8 +117,8 @@ on the confounders. We fit the model by variational approximations." />
       </ul>
       <ul class="nav navbar-nav navbar-right">
         <li>
-  <a href="https://github.com/dcgerard/vicar">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="http://github.com/dcgerard/vicar/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -134,7 +137,7 @@ on the confounders. We fit the model by variational approximations." />
     <div class="page-header">
     <h1>BACKWASH: Bayesian Adjustment for Confounding Knitted With Adaptive
 SHrinkage.</h1>
-    <small class="dont-index">Source: <a href='https://github.com/dcgerard/vicar/blob/master/R/backwash.R'><code>R/backwash.R</code></a></small>
+    <small class="dont-index">Source: <a href='http://github.com/dcgerard/vicar/blob/master/R/backwash.R'><code>R/backwash.R</code></a></small>
     <div class="hidden name"><code>backwash.Rd</code></div>
     </div>
 
@@ -146,12 +149,25 @@ likelihood, backwash goes more Bayesian and places a g-like prior
 on the confounders. We fit the model by variational approximations.</p>
     </div>
 
-    <pre class="usage"><span class='fu'>backwash</span>(<span class='no'>Y</span>, <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span>(<span class='no'>X</span>),
-  <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>limmashrink</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>fa_func</span> <span class='kw'>=</span> <span class='no'>pca_naive</span>,
-  <span class='kw'>fa_args</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span>(), <span class='kw'>lambda_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>),
-  <span class='kw'>pi_init_type</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>, <span class='st'>"random"</span>), <span class='kw'>grid_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>,
-  <span class='kw'>lambda_seq</span> <span class='kw'>=</span> <span class='kw'>NULL</span>, <span class='kw'>lambda0</span> <span class='kw'>=</span> <span class='fl'>10</span>, <span class='kw'>scale_var</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>, <span class='kw'>sprop</span> <span class='kw'>=</span> <span class='fl'>0</span>,
-  <span class='kw'>var_inflate_pen</span> <span class='kw'>=</span> <span class='fl'>0</span>, <span class='kw'>verbose</span> <span class='kw'>=</span> <span class='fl'>TRUE</span>)</pre>
+    <pre class="usage"><span class='fu'>backwash</span><span class='op'>(</span>
+  <span class='va'>Y</span>,
+  <span class='va'>X</span>,
+  k <span class='op'>=</span> <span class='cn'>NULL</span>,
+  cov_of_interest <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/nrow.html'>ncol</a></span><span class='op'>(</span><span class='va'>X</span><span class='op'>)</span>,
+  include_intercept <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  limmashrink <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  fa_func <span class='op'>=</span> <span class='va'>pca_naive</span>,
+  fa_args <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/list.html'>list</a></span><span class='op'>(</span><span class='op'>)</span>,
+  lambda_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span><span class='op'>)</span>,
+  pi_init_type <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"zero_conc"</span>, <span class='st'>"uniform"</span>, <span class='st'>"random"</span><span class='op'>)</span>,
+  grid_seq <span class='op'>=</span> <span class='cn'>NULL</span>,
+  lambda_seq <span class='op'>=</span> <span class='cn'>NULL</span>,
+  lambda0 <span class='op'>=</span> <span class='fl'>10</span>,
+  scale_var <span class='op'>=</span> <span class='cn'>TRUE</span>,
+  sprop <span class='op'>=</span> <span class='fl'>0</span>,
+  var_inflate_pen <span class='op'>=</span> <span class='fl'>0</span>,
+  verbose <span class='op'>=</span> <span class='cn'>TRUE</span>
+<span class='op'>)</span></pre>
 
     <h2 class="hasAnchor" id="arguments"><a class="anchor" href="#arguments"></a>Arguments</h2>
     <table class="ref-arguments">
@@ -352,105 +368,114 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
 
     
 <ul>
-<li><p>Stephens, Matthew. 2016. "False discovery rates: a new deal." <em>Biostatistics</em> 18 (2): 275–94. &lt;<a href='https://doi.org/10.1093/biostatistics/kxw041'>doi:10.1093/biostatistics/kxw041</a>&gt;.</p></li>
-<li><p>Gerard, D., &amp; Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", <em>Biostatistics</em>, , kxy029, &lt;<a href='https://doi.org/10.1093/biostatistics/kxy029'>doi:10.1093/biostatistics/kxy029</a>&gt;.</p></li>
+<li><p>Gerard, D., and Stephens, M. 2020. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", <em>Biostatistics</em>, 21(1), 15-32 doi: <a href='https://doi.org/10.1093/biostatistics/kxy029'>10.1093/biostatistics/kxy029</a></p></li>
+<li><p>Stephens, Matthew. 2016. "False discovery rates: a new deal." <em>Biostatistics</em> 18 (2): 275–94. doi: <a href='https://doi.org/10.1093/biostatistics/kxw041'>10.1093/biostatistics/kxw041</a></p></li>
 </ul>
 
     <h2 class="hasAnchor" id="see-also"><a class="anchor" href="#see-also"></a>See also</h2>
 
     <div class='dont-index'><p><code><a href='mouthwash.html'>mouthwash</a></code> For a similar method that maximizes over the hidden confounders
     rather than puts a prior on them.</p></div>
+    <h2 class="hasAnchor" id="author"><a class="anchor" href="#author"></a>Author</h2>
+
+    <p>David Gerard</p>
 
     <h2 class="hasAnchor" id="examples"><a class="anchor" href="#examples"></a>Examples</h2>
-    <pre class="examples"><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/library.html'>library</a></span>(<span class='no'>vicar</span>)
+    <pre class="examples"><div class='input'><span class='kw'><a href='https://rdrr.io/r/base/library.html'>library</a></span><span class='op'>(</span><span class='va'><a href='https://github.com/dcgerard/vicar'>vicar</a></span><span class='op'>)</span>
 
 <span class='co'>## Generate data ----------------------------------------------------------</span>
-<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span>(<span class='fl'>116</span>)
-<span class='no'>n</span> <span class='kw'>&lt;-</span> <span class='fl'>13</span>
-<span class='no'>p</span> <span class='kw'>&lt;-</span> <span class='fl'>101</span>
-<span class='no'>k</span> <span class='kw'>&lt;-</span> <span class='fl'>2</span>
-<span class='no'>q</span> <span class='kw'>&lt;-</span> <span class='fl'>3</span>
-<span class='no'>is_null</span>       <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span>(<span class='fl'>FALSE</span>, <span class='kw'>length</span> <span class='kw'>=</span> <span class='no'>p</span>)
-<span class='no'>is_null</span>[<span class='fl'>1</span>:<span class='fl'>57</span>] <span class='kw'>&lt;-</span> <span class='fl'>TRUE</span>
+<span class='fu'><a href='https://rdrr.io/r/base/Random.html'>set.seed</a></span><span class='op'>(</span><span class='fl'>116</span><span class='op'>)</span>
+<span class='va'>n</span> <span class='op'>&lt;-</span> <span class='fl'>13</span>
+<span class='va'>p</span> <span class='op'>&lt;-</span> <span class='fl'>101</span>
+<span class='va'>k</span> <span class='op'>&lt;-</span> <span class='fl'>2</span>
+<span class='va'>q</span> <span class='op'>&lt;-</span> <span class='fl'>3</span>
+<span class='va'>is_null</span>       <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/rep.html'>rep</a></span><span class='op'>(</span><span class='cn'>FALSE</span>, length <span class='op'>=</span> <span class='va'>p</span><span class='op'>)</span>
+<span class='va'>is_null</span><span class='op'>[</span><span class='fl'>1</span><span class='op'>:</span><span class='fl'>57</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='cn'>TRUE</span>
 
-<span class='no'>X</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>q</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
-<span class='no'>B</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>q</span> * <span class='no'>p</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>q</span>)
-<span class='no'>B</span>[<span class='fl'>2</span>, <span class='no'>is_null</span>] <span class='kw'>&lt;-</span> <span class='fl'>0</span>
-<span class='no'>Z</span> <span class='kw'>&lt;-</span> <span class='no'>X</span> <span class='kw'>%*%</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>q</span> * <span class='no'>k</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>q</span>) +
-     <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>k</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
-<span class='no'>A</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>k</span> * <span class='no'>p</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>k</span>)
-<span class='no'>E</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span>(<span class='kw pkg'>stats</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span>(<span class='no'>n</span> * <span class='no'>p</span>, <span class='kw'>sd</span> <span class='kw'>=</span> <span class='fl'>1</span> / <span class='fl'>2</span>), <span class='kw'>nrow</span> <span class='kw'>=</span> <span class='no'>n</span>)
-<span class='no'>Y</span> <span class='kw'>&lt;-</span> <span class='no'>X</span> <span class='kw'>%*%</span> <span class='no'>B</span> + <span class='no'>Z</span> <span class='kw'>%*%</span> <span class='no'>A</span> + <span class='no'>E</span>
+<span class='va'>X</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>q</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='va'>n</span><span class='op'>)</span>
+<span class='va'>B</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>q</span> <span class='op'>*</span> <span class='va'>p</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='va'>q</span><span class='op'>)</span>
+<span class='va'>B</span><span class='op'>[</span><span class='fl'>2</span>, <span class='va'>is_null</span><span class='op'>]</span> <span class='op'>&lt;-</span> <span class='fl'>0</span>
+<span class='va'>Z</span> <span class='op'>&lt;-</span> <span class='va'>X</span> <span class='op'>%*%</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>q</span> <span class='op'>*</span> <span class='va'>k</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='va'>q</span><span class='op'>)</span> <span class='op'>+</span>
+     <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>k</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='va'>n</span><span class='op'>)</span>
+<span class='va'>A</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>k</span> <span class='op'>*</span> <span class='va'>p</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='va'>k</span><span class='op'>)</span>
+<span class='va'>E</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/matrix.html'>matrix</a></span><span class='op'>(</span><span class='fu'>stats</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/stats/Normal.html'>rnorm</a></span><span class='op'>(</span><span class='va'>n</span> <span class='op'>*</span> <span class='va'>p</span>, sd <span class='op'>=</span> <span class='fl'>1</span> <span class='op'>/</span> <span class='fl'>2</span><span class='op'>)</span>, nrow <span class='op'>=</span> <span class='va'>n</span><span class='op'>)</span>
+<span class='va'>Y</span> <span class='op'>&lt;-</span> <span class='va'>X</span> <span class='op'>%*%</span> <span class='va'>B</span> <span class='op'>+</span> <span class='va'>Z</span> <span class='op'>%*%</span> <span class='va'>A</span> <span class='op'>+</span> <span class='va'>E</span>
 
 <span class='co'>## Fit BACKWASH -----------------------------------------------------------</span>
-<span class='no'>bout</span> <span class='kw'>&lt;-</span> <span class='fu'>backwash</span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>k</span>, <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-                 <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt;  - Computing independent basis using QR decomposition.
-#&gt;  - Computation took 0.103 seconds.
+<span class='va'>bout</span> <span class='op'>&lt;-</span> <span class='fu'>backwash</span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>Y</span>, X <span class='op'>=</span> <span class='va'>X</span>, k <span class='op'>=</span> <span class='va'>k</span>, include_intercept <span class='op'>=</span> <span class='cn'>FALSE</span>,
+                 cov_of_interest <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt;  - Computing independent basis using QR decomposition.
+#&gt;  - Computation took 0.11 seconds.
 #&gt;  - Running additional preprocessing steps.
-#&gt;  - Computation took 0.001 seconds.
+#&gt;  - Computation took 0 seconds.
 #&gt;  - Running second step of backwash:
 #&gt;     + Initializing parameters for EM algorithm.
-#&gt;     + Computation took 0.826 seconds.
+#&gt;     + Computation took 0.659 seconds.
 #&gt;     + Running one round of parameter updates.
-#&gt;     + Computation took 0.003 seconds.
+#&gt;     + Computation took 0.002 seconds.
 #&gt;     + Estimating model parameters using EM.
-#&gt;     + Computation took 0.672 seconds.
+#&gt;     + Computation took 0.583 seconds.
 #&gt;     + Generating posterior statistics.
 #&gt;     + Computation took 0.001 seconds.
-#&gt;  - Second step took 1.991 seconds.
+#&gt;  - Second step took 1.62 seconds.
 #&gt;  - Generating final backwash outputs.
-#&gt;  - Computation took 0 seconds.</div><div class='input'><span class='no'>bout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5962887</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
+#&gt;  - Computation took 0.001 seconds.</div><div class='input'><span class='va'>bout</span><span class='op'>$</span><span class='va'>pi0</span> <span class='co'>## Estimate</span>
+</div><div class='output co'>#&gt; [1] 0.5962884</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>is_null</span><span class='op'>)</span> <span class='co'>## Truth</span>
+</div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
 <span class='co'>## Fit MOUTHWASH ----------------------------------------------------------</span>
-<span class='no'>mout</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='mouthwash.html'>mouthwash</a></span>(<span class='kw'>Y</span> <span class='kw'>=</span> <span class='no'>Y</span>, <span class='kw'>X</span> <span class='kw'>=</span> <span class='no'>X</span>, <span class='kw'>k</span> <span class='kw'>=</span> <span class='no'>k</span>, <span class='kw'>include_intercept</span> <span class='kw'>=</span> <span class='fl'>FALSE</span>,
-                  <span class='kw'>cov_of_interest</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='output co'>#&gt; Running mouthwash on 13 x 3 matrix X and 13 x 101 matrix Y.
+<span class='va'>mout</span> <span class='op'>&lt;-</span> <span class='fu'><a href='mouthwash.html'>mouthwash</a></span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>Y</span>, X <span class='op'>=</span> <span class='va'>X</span>, k <span class='op'>=</span> <span class='va'>k</span>, include_intercept <span class='op'>=</span> <span class='cn'>FALSE</span>,
+                  cov_of_interest <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='output co'>#&gt; Running mouthwash on 13 x 3 matrix X and 13 x 101 matrix Y.
 #&gt;  - Computing independent basis using QR decomposition.
 #&gt;  - Computation took 0.001 seconds.
 #&gt;  - Running additional preprocessing steps.
-#&gt;  - Computation took 0 seconds.
+#&gt;  - Computation took 0.001 seconds.
 #&gt;  - Running second step of mouthwash:
 #&gt;     + Estimating model parameters using EM.
-#&gt;     + Computation took 0.748 seconds.
+#&gt;     + Computation took 0.501 seconds.
 #&gt;     + Generating adaptive shrinkage (ash) output.
-#&gt;     + Computation took 0.01 seconds.
-#&gt;  - Second step took 1.027 seconds.
+#&gt;     + Computation took 0.013 seconds.
+#&gt;  - Second step took 0.737 seconds.
 #&gt;  - Estimating additional hidden confounders.
-#&gt;  - Computation took 0 seconds.</div><div class='input'><span class='no'>mout</span>$<span class='no'>pi0</span> <span class='co'>## Estimate</span></div><div class='output co'>#&gt; [1] 0.5933965</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span>(<span class='no'>is_null</span>) <span class='co'>## Truth</span></div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
+#&gt;  - Computation took 0.001 seconds.</div><div class='input'><span class='va'>mout</span><span class='op'>$</span><span class='va'>pi0</span> <span class='co'>## Estimate</span>
+</div><div class='output co'>#&gt; [1] 0.593371</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>is_null</span><span class='op'>)</span> <span class='co'>## Truth</span>
+</div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
 <span class='co'>## Very Similar LFDR's ----------------------------------------------------</span>
-<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>, <span class='no'>bout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span> + <span class='fl'>3</span>,
-               <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"MOUTHWASH"</span>, <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"BACKWASH"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"LFDR's"</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Null"</span>, <span class='st'>"Non-null"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
-                 <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='img'><img src='backwash-1.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>mout</span><span class='op'>$</span><span class='va'>result</span><span class='op'>$</span><span class='va'>lfdr</span>, <span class='va'>bout</span><span class='op'>$</span><span class='va'>result</span><span class='op'>$</span><span class='va'>lfdr</span>, col <span class='op'>=</span> <span class='va'>is_null</span> <span class='op'>+</span> <span class='fl'>3</span>,
+               xlab <span class='op'>=</span> <span class='st'>"MOUTHWASH"</span>, ylab <span class='op'>=</span> <span class='st'>"BACKWASH"</span>, main <span class='op'>=</span> <span class='st'>"LFDR's"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, lty <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span><span class='op'>(</span><span class='st'>"bottomright"</span>, legend <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Null"</span>, <span class='st'>"Non-null"</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>3</span><span class='op'>)</span>,
+                 pch <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='backwash-1.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## Exact Same ROC Curves --------------------------------------------------</span>
-<span class='no'>morder_lfdr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>mout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>)
-<span class='no'>mfpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span>(<span class='no'>is_null</span>[<span class='no'>morder_lfdr</span>]) / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>is_null</span>)
-<span class='no'>mtpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span>(!<span class='no'>is_null</span>[<span class='no'>morder_lfdr</span>]) / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(!<span class='no'>is_null</span>)
+<span class='va'>morder_lfdr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>mout</span><span class='op'>$</span><span class='va'>result</span><span class='op'>$</span><span class='va'>lfdr</span><span class='op'>)</span>
+<span class='va'>mfpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span><span class='op'>(</span><span class='va'>is_null</span><span class='op'>[</span><span class='va'>morder_lfdr</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>is_null</span><span class='op'>)</span>
+<span class='va'>mtpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span><span class='op'>(</span><span class='op'>!</span><span class='va'>is_null</span><span class='op'>[</span><span class='va'>morder_lfdr</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='op'>!</span><span class='va'>is_null</span><span class='op'>)</span>
 
-<span class='no'>border_lfdr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span>(<span class='no'>bout</span>$<span class='no'>result</span>$<span class='no'>lfdr</span>)
-<span class='no'>bfpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span>(<span class='no'>is_null</span>[<span class='no'>border_lfdr</span>]) / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(<span class='no'>is_null</span>)
-<span class='no'>btpr</span> <span class='kw'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span>(!<span class='no'>is_null</span>[<span class='no'>border_lfdr</span>]) / <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span>(!<span class='no'>is_null</span>)
+<span class='va'>border_lfdr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/order.html'>order</a></span><span class='op'>(</span><span class='va'>bout</span><span class='op'>$</span><span class='va'>result</span><span class='op'>$</span><span class='va'>lfdr</span><span class='op'>)</span>
+<span class='va'>bfpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span><span class='op'>(</span><span class='va'>is_null</span><span class='op'>[</span><span class='va'>border_lfdr</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='va'>is_null</span><span class='op'>)</span>
+<span class='va'>btpr</span> <span class='op'>&lt;-</span> <span class='fu'><a href='https://rdrr.io/r/base/cumsum.html'>cumsum</a></span><span class='op'>(</span><span class='op'>!</span><span class='va'>is_null</span><span class='op'>[</span><span class='va'>border_lfdr</span><span class='op'>]</span><span class='op'>)</span> <span class='op'>/</span> <span class='fu'><a href='https://rdrr.io/r/base/sum.html'>sum</a></span><span class='op'>(</span><span class='op'>!</span><span class='va'>is_null</span><span class='op'>)</span>
 
-<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>bfpr</span>, <span class='no'>btpr</span>, <span class='kw'>type</span> <span class='kw'>=</span> <span class='st'>"l"</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"False Positive Rate"</span>,
-               <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"True Positive Rate"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"ROC Curve"</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>3</span>,
-               <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span>(<span class='no'>mfpr</span>, <span class='no'>mtpr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>4</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span>(<span class='fl'>0</span>, <span class='fl'>1</span>, <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fl'>2</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"MOUTHWASH"</span>, <span class='st'>"BACKWASH"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
-                 <span class='kw'>lty</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>1</span>, <span class='fl'>2</span>))</div><div class='img'><img src='backwash-2.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>bfpr</span>, <span class='va'>btpr</span>, type <span class='op'>=</span> <span class='st'>"l"</span>, xlab <span class='op'>=</span> <span class='st'>"False Positive Rate"</span>,
+               ylab <span class='op'>=</span> <span class='st'>"True Positive Rate"</span>, main <span class='op'>=</span> <span class='st'>"ROC Curve"</span>, col <span class='op'>=</span> <span class='fl'>3</span>,
+               lty <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/lines.html'>lines</a></span><span class='op'>(</span><span class='va'>mfpr</span>, <span class='va'>mtpr</span>, col <span class='op'>=</span> <span class='fl'>4</span>, lty <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/abline.html'>abline</a></span><span class='op'>(</span><span class='fl'>0</span>, <span class='fl'>1</span>, lty <span class='op'>=</span> <span class='fl'>2</span>, col <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span><span class='op'>(</span><span class='st'>"bottomright"</span>, legend <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"MOUTHWASH"</span>, <span class='st'>"BACKWASH"</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>3</span><span class='op'>)</span>,
+                 lty <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>1</span>, <span class='fl'>2</span><span class='op'>)</span><span class='op'>)</span>
+</div><div class='img'><img src='backwash-2.png' alt='' width='700' height='433' /></div><div class='input'>
 <span class='co'>## But slightly different ordering ----------------------------------------</span>
-<span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.html'>plot</a></span>(<span class='no'>morder_lfdr</span>, <span class='no'>border_lfdr</span>, <span class='kw'>col</span> <span class='kw'>=</span> <span class='no'>is_null</span> + <span class='fl'>3</span>, <span class='kw'>xlab</span> <span class='kw'>=</span> <span class='st'>"MOUTHWASH"</span>,
-               <span class='kw'>ylab</span> <span class='kw'>=</span> <span class='st'>"BACKWASH"</span>, <span class='kw'>main</span> <span class='kw'>=</span> <span class='st'>"Order"</span>)</div><div class='input'><span class='kw pkg'>graphics</span><span class='kw ns'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span>(<span class='st'>"bottomright"</span>, <span class='kw'>legend</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='st'>"Null"</span>, <span class='st'>"Non-null"</span>), <span class='kw'>col</span> <span class='kw'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span>(<span class='fl'>4</span>, <span class='fl'>3</span>),
-                 <span class='kw'>pch</span> <span class='kw'>=</span> <span class='fl'>1</span>)</div><div class='img'><img src='backwash-3.png' alt='' width='700' height='433' /></div><div class='input'>
+<span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/plot.default.html'>plot</a></span><span class='op'>(</span><span class='va'>morder_lfdr</span>, <span class='va'>border_lfdr</span>, col <span class='op'>=</span> <span class='va'>is_null</span> <span class='op'>+</span> <span class='fl'>3</span>, xlab <span class='op'>=</span> <span class='st'>"MOUTHWASH"</span>,
+               ylab <span class='op'>=</span> <span class='st'>"BACKWASH"</span>, main <span class='op'>=</span> <span class='st'>"Order"</span><span class='op'>)</span>
+</div><div class='input'><span class='fu'>graphics</span><span class='fu'>::</span><span class='fu'><a href='https://rdrr.io/r/graphics/legend.html'>legend</a></span><span class='op'>(</span><span class='st'>"bottomright"</span>, legend <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='st'>"Null"</span>, <span class='st'>"Non-null"</span><span class='op'>)</span>, col <span class='op'>=</span> <span class='fu'><a href='https://rdrr.io/r/base/c.html'>c</a></span><span class='op'>(</span><span class='fl'>4</span>, <span class='fl'>3</span><span class='op'>)</span>,
+                 pch <span class='op'>=</span> <span class='fl'>1</span><span class='op'>)</span>
+</div><div class='img'><img src='backwash-3.png' alt='' width='700' height='433' /></div><div class='input'>
 </div></pre>
   </div>
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
-    <h2>Contents</h2>
-    <ul class="nav nav-pills nav-stacked">
-      <li><a href="#arguments">Arguments</a></li>
-      <li><a href="#value">Value</a></li>
-      <li><a href="#details">Details</a></li>
-      <li><a href="#references">References</a></li>
-      <li><a href="#see-also">See also</a></li>
-      <li><a href="#examples">Examples</a></li>
-    </ul>
-
-    <h2>Author</h2>
-    <p>David Gerard</p>
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
+    <nav id="toc" data-toggle="toc" class="sticky-top">
+      <h2 data-toc-skip>Contents</h2>
+    </nav>
   </div>
 </div>
 
@@ -461,7 +486,7 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>

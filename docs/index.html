@@ -6,10 +6,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Various Ideas for Confounder Adjustment in Regression • vicar</title>
-<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha256-916EbMg70RQy9LHiGkXzG8hSg9EdNy97GazNG/aiY1w=" crossorigin="anonymous">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha256-U5ZEeKfGNOja007MMD3YBI0A3OSZOQbeG6z2f2Y0hu8=" crossorigin="anonymous"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/all.min.css" integrity="sha256-nAmazAk6vS34Xqo0BSrTb+abbtFlgsFK7NKSi6o7Y78=" crossorigin="anonymous">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.7.1/css/v4-shims.min.css" integrity="sha256-6qHlizsOWFskGlwVOKuns+D1nB6ssZrHQrNj1wGplHc=" crossorigin="anonymous">
-<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js" integrity="sha256-FiZwavyI2V6+EXO1U+xzLG3IKldpiTFf3153ea9zikQ=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/headroom.min.js" integrity="sha256-DJFC1kqIhelURkuza0AvYal5RxMtpzLjFhsnVIeuk+U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.9.4/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
+<!-- jquery --><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script><!-- Bootstrap --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha256-bZLfwXAP04zRMK2BjiO8iu9pf4FbLqX6zitd+tIvLhE=" crossorigin="anonymous">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/3.4.1/js/bootstrap.min.js" integrity="sha256-nuL8/2cJ5NDSSwnKD8VqreErSWHtnEP9E7AySL+1ev4=" crossorigin="anonymous"></script><!-- bootstrap-toc --><link rel="stylesheet" href="bootstrap-toc.css">
+<script src="bootstrap-toc.js"></script><!-- Font Awesome icons --><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/all.min.css" integrity="sha256-mmgLkCYLUQbXn0B1SRqzHar6dCnv9oZFPEC1g1cwlkk=" crossorigin="anonymous">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.1/css/v4-shims.min.css" integrity="sha256-wZjR52fzng1pJHwx4aV2AO3yyTOXrcDW7jBpJtTwVxw=" crossorigin="anonymous">
+<!-- clipboard.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.6/clipboard.min.js" integrity="sha256-inc5kl9MA1hkeYUt+EC3BhlIgyp/2jDIyBLS6k3UxPI=" crossorigin="anonymous"></script><!-- headroom.js --><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/headroom.min.js" integrity="sha256-AsUX4SJE1+yuDu5+mAVzJbuYNPHj/WroHuZ8Ir/CkE0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/headroom/0.11.0/jQuery.headroom.min.js" integrity="sha256-ZX/yNShbjqsohH1k95liqY9Gd8uOiE1S4vZc+9KQ1K4=" crossorigin="anonymous"></script><!-- pkgdown --><link href="pkgdown.css" rel="stylesheet">
 <script src="pkgdown.js"></script><meta property="og:title" content="Various Ideas for Confounder Adjustment in Regression">
 <meta property="og:description" content="Implements many methods for accounting for unobserved confounding
              in linear regression. If control genes are available, then the
@@ -20,15 +21,14 @@
              then MOUTHWASH mouthwash() and BACKWASH backwash() are excellent
              procedures to use as long as only one covariate is of interest.
              The methods are described in detail in Gerard and 
-             Stephens (2018) &lt;doi:10.1093/biostatistics/kxy029&gt; and Gerard and 
-             Stephens (2019) &lt;doi:10.5705/ss.202018.0345&gt;.">
-<meta name="twitter:card" content="summary">
+             Stephens (2020) &lt;doi:10.1093/biostatistics/kxy029&gt; and Gerard and 
+             Stephens (2021) &lt;doi:10.5705/ss.202018.0345&gt;.">
 <!-- mathjax --><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js" integrity="sha256-nvJJv9wWKEm88qvoQl9ekL2J+k/RWIsaSScxxlsrv8k=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/config/TeX-AMS-MML_HTMLorMML.js" integrity="sha256-84DKXVJXs0/F8OTMzX4UR909+jtl4G7SPypPavF+GfA=" crossorigin="anonymous"></script><!--[if lt IE 9]>
 <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
 <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
 <![endif]-->
 </head>
-<body>
+<body data-spy="scroll" data-target="#toc">
     <div class="container template-home">
       <header><div class="navbar navbar-default navbar-fixed-top" role="navigation">
   <div class="container">
@@ -41,7 +41,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">vicar</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1.10</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">0.1-11</span>
       </span>
     </div>
 
@@ -49,7 +49,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -80,8 +80,8 @@
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-  <a href="https://github.com/dcgerard/vicar">
-    <span class="fab fa fab fa-github fa-lg"></span>
+  <a href="http://github.com/dcgerard/vicar/">
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -101,6 +101,7 @@
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#various-ideas-for-confounder-adjustment-in-regression" class="anchor"></a>Various Ideas for Confounder Adjustment in Regression</h1></div>
 <!-- README.md is generated from README.Rmd. Please edit that file -->
+<!-- badges: start -->
 
 <div id="description" class="section level2">
 <h2 class="hasAnchor">
@@ -117,17 +118,17 @@
 <li>E an n by p matrix of independent normal errors with column variances s1,…,sp.</li>
 </ul>
 <p>Not accounting for the hidden covariates, Z, can reduce power and result in poor control of false discovery rate. This package provides a suite of functions to adjust for hidden confounders, both when one has and does not have access to control genes.</p>
-<p>The functions <code><a href="reference/mouthwash.html">mouthwash()</a></code> and <code><a href="reference/backwash.html">backwash()</a></code> can adjust for hidden confounding when one does not have access to control genes. They do so via non-parametric empirical Bayes methods that use the powerful methodology of Adaptive Shrinkage (Stephens 2016) within the factor-augmented regression framework described in Wang et al. (2017). <code><a href="reference/backwash.html">backwash()</a></code> is a slightly more Bayesian version of <code><a href="reference/mouthwash.html">mouthwash()</a></code>. These methods are described in Gerard and Stephens (2018).</p>
-<p>When one has control genes, there are many approaches to take. Such methods include RUV2 (Gagnon-Bartsch and Speed 2012), RUV4 (Gagnon-Bartsch, Jacob, and Speed 2013), and CATE (Wang et al. 2017). This package adds to the field of confounder adjustment with control genes by</p>
+<p>The functions <code><a href="reference/mouthwash.html">mouthwash()</a></code> and <code><a href="reference/backwash.html">backwash()</a></code> can adjust for hidden confounding when one does not have access to control genes. They do so via non-parametric empirical Bayes methods that use the powerful methodology of Adaptive Shrinkage (Stephens 2016) within the factor-augmented regression framework described in Wang et al. (2017). <code><a href="reference/backwash.html">backwash()</a></code> is a slightly more Bayesian version of <code><a href="reference/mouthwash.html">mouthwash()</a></code>. These methods are described in Gerard and Stephens (2020).</p>
+<p>When one has control genes, there are many approaches to take. Such methods include RUV2 (J. A. Gagnon-Bartsch and Speed 2012), RUV4 (J. Gagnon-Bartsch, Jacob, and Speed 2013), and CATE (Wang et al. 2017). This package adds to the field of confounder adjustment with control genes by</p>
 <ol>
-<li>Implementing a version of CATE that is calibrated using control genes similarly to the method in Gagnon-Bartsch, Jacob, and Speed (2013). The function is called <code><a href="reference/vruv4.html">vruv4()</a></code>.</li>
+<li>Implementing a version of CATE that is calibrated using control genes similarly to the method in J. Gagnon-Bartsch, Jacob, and Speed (2013). The function is called <code><a href="reference/vruv4.html">vruv4()</a></code>.</li>
 <li>Introduces RUV3, a version of RUV that can be considered both RUV2 and RUV4. The function is called <code><a href="reference/ruv3.html">ruv3()</a></code>.</li>
 <li>Introduces RUV-impute, a more general framework for accounting for hidden confounders in regression. The function is called <code><a href="reference/ruvimpute.html">ruvimpute()</a></code>
 </li>
 <li>Introduces RUV-Bayes, a Bayesian version of RUV. The function is called <code><a href="reference/ruvb.html">ruvb()</a></code>.</li>
 </ol>
-<p>These additions are described in detail in Gerard and Stephens (2019).</p>
-<p>See also the related R packages <a href="https://cran.r-project.org/package=cate"><code>cate</code></a> (Wang and Zhao 2015) and <a href="https://cran.r-project.org/package=ruv"><code>ruv</code></a> (Gagnon-Bartsch 2015).</p>
+<p>These additions are described in detail in Gerard and Stephens (2021).</p>
+<p>See also the related R packages <a href="https://cran.r-project.org/package=cate"><code>cate</code></a> (Wang and Zhao 2015) and <a href="https://cran.r-project.org/package=ruv"><code>ruv</code></a> (J. Gagnon-Bartsch 2015).</p>
 <p>Check out <a href="NEWS.html">NEWS.md</a> to see what’s new with each version.</p>
 </div>
 <div id="how-to-cite" class="section level2">
@@ -135,160 +136,103 @@
 <a href="#how-to-cite" class="anchor"></a>How to cite</h2>
 <p>If you use any of the control-gene based methods, please cite:</p>
 <blockquote>
-<p>Gerard, D., &amp; Stephens, M. 2019. “Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls”. <em>Statistica Sinica</em>, in press &lt;<a href="https://doi.org/10.5705/ss.202018.0345">doi:10.5705/ss.202018.0345</a>&gt;.</p>
+<p>Gerard, D., &amp; Stephens, M. 2021. “Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls.” <em>Statistica Sinica</em>, 31(3), 1-22 &lt;<a href="https://doi.org/10.5705/ss.202018.0345">doi:10.5705/ss.202018.0345</a>&gt;.</p>
 </blockquote>
 <p>Or, using BibTex:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode tex"><code class="sourceCode latex"><a class="sourceLine" id="cb1-1" data-line-number="1">@article{gerard2019unifying,</a>
-<a class="sourceLine" id="cb1-2" data-line-number="2">  title={Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls},</a>
-<a class="sourceLine" id="cb1-3" data-line-number="3">  author={Gerard, David and Stephens, Matthew},</a>
-<a class="sourceLine" id="cb1-4" data-line-number="4">  journal={Statistica Sinica},</a>
-<a class="sourceLine" id="cb1-5" data-line-number="5">  doi={10.5705/ss.202018.0345},</a>
-<a class="sourceLine" id="cb1-6" data-line-number="6">  volume={},</a>
-<a class="sourceLine" id="cb1-7" data-line-number="7">  number={},</a>
-<a class="sourceLine" id="cb1-8" data-line-number="8">  year={2019},</a>
-<a class="sourceLine" id="cb1-9" data-line-number="9">  pages={in press}</a>
-<a class="sourceLine" id="cb1-10" data-line-number="10">}</a></code></pre></div>
+<div class="sourceCode" id="cb1"><pre class="sourceCode tex"><code class="sourceCode latex"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>@article{gerard2021unifying,</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  title={Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls},</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  author={Gerard, David and Stephens, Matthew},</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  journal={Statistica Sinica},</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  doi={10.5705/ss.202018.0345},</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  volume={31},</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  number={3},</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>  pages={1--22},</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>  year={2021}</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 <p>If you use either MOUTHWASH or BACKWASH, please cite:</p>
 <blockquote>
-<p>Gerard, D., &amp; Stephens, M. 2018. “Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation”, <em>Biostatistics</em>, , kxy029, &lt;<a href="https://doi.org/10.1093/biostatistics/kxy029">doi:10.1093/biostatistics/kxy029</a>&gt;.</p>
+<p>Gerard, D., &amp; Stephens, M. 2020. “Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation,” <em>Biostatistics</em>, 21(1), 15-32 &lt;<a href="https://doi.org/10.1093/biostatistics/kxy029">doi:10.1093/biostatistics/kxy029</a>&gt;.</p>
 </blockquote>
 <p>Or, using BibTex:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode tex"><code class="sourceCode latex"><a class="sourceLine" id="cb2-1" data-line-number="1">@article{gerard2018empirical,</a>
-<a class="sourceLine" id="cb2-2" data-line-number="2">  author = {Gerard, David and Stephens, Matthew},</a>
-<a class="sourceLine" id="cb2-3" data-line-number="3">  title = {Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted variation},</a>
-<a class="sourceLine" id="cb2-4" data-line-number="4">  journal = {Biostatistics},</a>
-<a class="sourceLine" id="cb2-5" data-line-number="5">  volume = {},</a>
-<a class="sourceLine" id="cb2-6" data-line-number="6">  number = {},</a>
-<a class="sourceLine" id="cb2-7" data-line-number="7">  pages = {kxy029},</a>
-<a class="sourceLine" id="cb2-8" data-line-number="8">  year = {2018},</a>
-<a class="sourceLine" id="cb2-9" data-line-number="9">  doi = {10.1093/biostatistics/kxy029},</a>
-<a class="sourceLine" id="cb2-10" data-line-number="10">}</a></code></pre></div>
-<p>Otherwise, please cite this package as:</p>
-<blockquote>
-<p>Gerard, David. 2016. <em>vicar: Various Ideas for Confounder Adjustment in Regression</em>. <a href="https://github.com/dcgerard/vicar" class="uri">https://github.com/dcgerard/vicar</a>.</p>
-</blockquote>
-<p>Or, using BibTex:</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode tex"><code class="sourceCode latex"><a class="sourceLine" id="cb3-1" data-line-number="1">@Manual{gerard2016vicar,</a>
-<a class="sourceLine" id="cb3-2" data-line-number="2">    title = {{vicar}: Various Ideas for Confounder Adjustment in Regression},</a>
-<a class="sourceLine" id="cb3-3" data-line-number="3">    author = {David Gerard},</a>
-<a class="sourceLine" id="cb3-4" data-line-number="4">    year = {2016},</a>
-<a class="sourceLine" id="cb3-5" data-line-number="5">    note = {R package version 0.1-9},</a>
-<a class="sourceLine" id="cb3-6" data-line-number="6">    url = {https://github.com/dcgerard/vicar},</a>
-<a class="sourceLine" id="cb3-7" data-line-number="7">}</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode tex"><code class="sourceCode latex"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>@article{gerard2020empirical,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  author = {Gerard, David and Stephens, Matthew},</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  title = "{Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted variation}",</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  journal = {Biostatistics},</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  volume = {21},</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  number = {1},</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  pages = {15--32},</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  year = {2020},</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  issn = {1465-4644},</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  doi = {10.1093/biostatistics/kxy029},</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
 </div>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>To install, first install <code>sva</code> and <code>limma</code> from Bioconductor in R:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"BiocManager"</span>)</a>
-<a class="sourceLine" id="cb4-2" data-line-number="2">BiocManager<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span>(<span class="kw"><a href="https://rdrr.io/r/base/c.html">c</a></span>(<span class="st">"limma"</span>, <span class="st">"sva"</span>))</a></code></pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"BiocManager"</span><span class="op">)</span>
+<span class="fu">BiocManager</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/BiocManager/man/install.html">install</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"limma"</span>, <span class="st">"sva"</span><span class="op">)</span><span class="op">)</span></code></pre></div>
 <p>Then run in R:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb5-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)</a>
-<a class="sourceLine" id="cb5-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"dcgerard/vicar"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"dcgerard/vicar"</span><span class="op">)</span></code></pre></div>
 <p>If you want some of the tools in <code>vicar</code> to be exactly equivalent to those in <code>ruv</code>, you’ll need to install an older version of <code>ruv</code> (<code>ruv</code> was updated and now the those equivalencies are not <em>exactly</em> the same)</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" data-line-number="1">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_version</a></span>(<span class="st">"ruv"</span>, <span class="dt">version =</span> <span class="st">"0.9.6"</span>, <span class="dt">repos =</span> <span class="st">"http://cran.us.r-project.org"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_version</a></span><span class="op">(</span><span class="st">"ruv"</span>, version <span class="op">=</span> <span class="st">"0.9.6"</span>, repos <span class="op">=</span> <span class="st">"http://cran.us.r-project.org"</span><span class="op">)</span></code></pre></div>
 <p>A note about matrix computations in vicar: Some of the methods in the vicar package such as mouthwash and backwash rely heavily on matrix-vector operations. The speed of these operations can have a big impact on vicar’s performance, especially in large-scale data sets. If you are applying vicar to large data sets, I recommend that you set up R with optimized BLAS (optionally, LAPACK) libraries, especially if you have a multicore computer (most modern laptops and desktops are multicore). See <a href="https://csgillespie.github.io/efficientR/set-up.html#blas-and-alternative-r-interpreters">here</a> and <a href="https://cran.r-project.org/doc/manuals/r-release/R-admin.html#Linear-algebra">here</a> for advice and technical details on this. For example, in <a href="https://github.com/pcarbo/mouthwash_sims/blob/master/mouthwash.sbatch">our experiments on a high-performance compute cluster</a> we set up R with multithreaded OpenBLAS.</p>
 </div>
 <div id="vignettes" class="section level2">
 <h2 class="hasAnchor">
 <a href="#vignettes" class="anchor"></a>Vignettes</h2>
 <p>I’ve provided three vignettes to help you get started with vicar. By default, the vignettes are not built when you use <code>install_github</code>. To build the vignettes during installation, run</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb7-1" data-line-number="1"><span class="kw"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"devtools"</span>)</a>
-<a class="sourceLine" id="cb7-2" data-line-number="2">devtools<span class="op">::</span><span class="kw"><a href="https://rdrr.io/pkg/devtools/man/remote-reexports.html">install_github</a></span>(<span class="st">"dcgerard/vicar"</span>, <span class="dt">build_vignettes =</span> <span class="ot">TRUE</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"devtools"</span><span class="op">)</span>
+<span class="fu">devtools</span><span class="fu">::</span><span class="fu"><a href="https://devtools.r-lib.org//reference/remote-reexports.html">install_github</a></span><span class="op">(</span><span class="st">"dcgerard/vicar"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></code></pre></div>
 <p>Note that this will result in a somewhat slower install. The first vignette, <em>sample_analysis</em>, gives a sample analysis using vicar to account for hidden confounding. The second vignette, <em>customFA</em>, gives a few instructions on how to incorporate user-defined factor analyses with the confounder adjustment procedures implemented in vicar. The third vignette, <em>custom_prior</em>, gives instructions and examples on incorporating a user-specified prior into <code>ruvb</code>. To see these vignettes after install, run</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" data-line-number="1">utils<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"sample_analysis"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</a>
-<a class="sourceLine" id="cb8-2" data-line-number="2">utils<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"customFA"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</a>
-<a class="sourceLine" id="cb8-3" data-line-number="3">utils<span class="op">::</span><span class="kw"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span>(<span class="st">"custom_prior"</span>, <span class="dt">package =</span> <span class="st">"vicar"</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span><span class="op">(</span><span class="st">"sample_analysis"</span>, package <span class="op">=</span> <span class="st">"vicar"</span><span class="op">)</span>
+<span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span><span class="op">(</span><span class="st">"customFA"</span>, package <span class="op">=</span> <span class="st">"vicar"</span><span class="op">)</span>
+<span class="fu">utils</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/r/utils/vignette.html">vignette</a></span><span class="op">(</span><span class="st">"custom_prior"</span>, package <span class="op">=</span> <span class="st">"vicar"</span><span class="op">)</span></code></pre></div>
 </div>
 <div id="references" class="section level2">
 <h2 class="hasAnchor">
 <a href="#references" class="anchor"></a>References</h2>
-<div id="refs" class="references">
-
-<div id="ref-bartsch2015ruv">
-
-Gagnon-Bartsch, Johann. 2015. *ruv: Detect and Remove Unwanted Variation
-Using Negative Controls*. <https:>.
-
-</https:>
+<div id="refs" class="references csl-bib-body hanging-indent">
+<div id="ref-bartsch2015ruv" class="csl-entry">
+Gagnon-Bartsch, Johann. 2015. <em><span class="nocase">ruv</span>: Detect and Remove Unwanted Variation Using Negative Controls</em>. <a href="https://CRAN.R-project.org/package=ruv" class="uri">https://CRAN.R-project.org/package=ruv</a>.
 </div>
-
-<div id="ref-gagnon2012using">
-
-Gagnon-Bartsch, Johann A, and Terence P Speed. 2012. “Using Control
-Genes to Correct for Unwanted Variation in Microarray Data.”
-*Biostatistics* 13 (3). Biometrika Trust: 539–52.
-<https:>.
-
-</https:>
+<div id="ref-gagnon2012using" class="csl-entry">
+Gagnon-Bartsch, Johann A, and Terence P Speed. 2012. “Using Control Genes to Correct for Unwanted Variation in Microarray Data.” <em>Biostatistics</em> 13 (3): 539–52. <a href="https://doi.org/10.1093/biostatistics/kxr034" class="uri">https://doi.org/10.1093/biostatistics/kxr034</a>.
 </div>
-
-<div id="ref-gagnon2013removing">
-
-Gagnon-Bartsch, Johann, Laurent Jacob, and Terence Speed. 2013.
-“Removing Unwanted Variation from High Dimensional Data with Negative
-Controls.” Technical Report 820, Department of Statistics, University of
-California, Berkeley. <http:>.
-
-</http:>
+<div id="ref-gagnon2013removing" class="csl-entry">
+Gagnon-Bartsch, Johann, Laurent Jacob, and Terence Speed. 2013. “Removing Unwanted Variation from High Dimensional Data with Negative Controls.” Technical Report 820, Department of Statistics, University of California, Berkeley. <a href="http://statistics.berkeley.edu/tech-reports/820" class="uri">http://statistics.berkeley.edu/tech-reports/820</a>.
 </div>
-
-<div id="ref-gerard2018empirical">
-
-Gerard, David, and Matthew Stephens. 2018. “Empirical Bayes Shrinkage
-and False Discovery Rate Estimation, Allowing for Unwanted Variation.”
-*Biostatistics*, kxy029. <https:>.
-
-</https:>
+<div id="ref-gerard2020empirical" class="csl-entry">
+Gerard, David, and Matthew Stephens. 2020. “<span class="nocase">Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation</span>.” <em>Biostatistics</em> 21 (1): 15–32. <a href="https://doi.org/10.1093/biostatistics/kxy029" class="uri">https://doi.org/10.1093/biostatistics/kxy029</a>.
 </div>
-
-<div id="ref-gerard2019unifying">
-
-———. 2019. “Unifying and Generalizing Methods for Removing Unwanted
-Variation Based on Negative Controls.” *Statistica Sinica*, in press.
-<https:>.
-
-</https:>
+<div id="ref-gerard2021unifying" class="csl-entry">
+———. 2021. “Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls.” <em>Statistica Sinica</em> 31 (3): 1–22. <a href="https://doi.org/10.5705/ss.202018.0345" class="uri">https://doi.org/10.5705/ss.202018.0345</a>.
 </div>
-
-<div id="ref-stephens2016false">
-
-Stephens, Matthew. 2016. “False discovery rates: a new deal.”
-*Biostatistics* 18 (2): 275–94.
-<https:>.
-
-</https:>
+<div id="ref-stephens2016false" class="csl-entry">
+Stephens, Matthew. 2016. “<span class="nocase">False discovery rates: a new deal</span>.” <em>Biostatistics</em> 18 (2): 275–94. <a href="https://doi.org/10.1093/biostatistics/kxw041" class="uri">https://doi.org/10.1093/biostatistics/kxw041</a>.
 </div>
-
-<div id="ref-wang2015cate">
-
-Wang, Jingshu, and Qingyuan Zhao. 2015. *cate: High Dimensional Factor
-Analysis and Confounder Adjusted Testing and Estimation*.
-<https:>.
-
-</https:>
+<div id="ref-wang2015cate" class="csl-entry">
+Wang, Jingshu, and Qingyuan Zhao. 2015. <em><span class="nocase">cate</span>: High Dimensional Factor Analysis and Confounder Adjusted Testing and Estimation</em>. <a href="https://CRAN.R-project.org/package=cate" class="uri">https://CRAN.R-project.org/package=cate</a>.
 </div>
-
-<div id="ref-wang2017confounder">
-
-Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B. Owen. 2017.
-“Confounder Adjustment in Multiple Hypothesis Testing.” *Ann.
-Statist.* 45 (5). The Institute of Mathematical Statistics: 1863–94.
-<https:>.
-
-</https:>
+<div id="ref-wang2017confounder" class="csl-entry">
+Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B. Owen. 2017. “Confounder Adjustment in Multiple Hypothesis Testing.” <em>Ann. Statist.</em> 45 (5): 1863–94. <a href="https://doi.org/10.1214/16-AOS1511" class="uri">https://doi.org/10.1214/16-AOS1511</a>.
 </div>
-
 </div>
 </div>
 </div>
   </div>
 
-  <div class="col-md-3 hidden-xs hidden-sm" id="sidebar">
+  <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
     <div class="links">
 <h2>Links</h2>
 <ul class="list-unstyled">
-<li>Browse source code at <br><a href="https://github.com/dcgerard/vicar">https://​github.com/​dcgerard/​vicar</a>
+<li>Browse source code at <br><a href="http://github.com/dcgerard/vicar/">http://​github.com/​dcgerard/​vicar/​</a>
 </li>
 <li>Report a bug at <br><a href="http://github.com/dcgerard/vicar/issues">http://​github.com/​dcgerard/​vicar/​issues</a>
 </li>
@@ -317,8 +261,7 @@ Statist.* 45 (5). The Institute of Mathematical Statistics: 1863–94.
   <div class="dev-status">
 <h2>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://ci.appveyor.com/project/dcgerard/vicar"><img src="https://ci.appveyor.com/api/projects/status/github/dcgerard/vicar?branch=master&amp;svg=true" alt="Windows Build"></a></li>
-<li><a href="https://travis-ci.org/dcgerard/vicar"><img src="https://travis-ci.org/dcgerard/vicar.svg?branch=master" alt="Linux Build"></a></li>
+<li><a href="https://github.com/dcgerard/vicar/actions"><img src="https://github.com/dcgerard/vicar/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://coveralls.io/github/dcgerard/vicar?branch=master"><img src="https://coveralls.io/repos/github/dcgerard/vicar/badge.svg?branch=master" alt="Coverage Status"></a></li>
 <li><a href="https://www.gnu.org/licenses/gpl-3.0"><img src="https://img.shields.io/badge/License-GPL%20v3-blue.svg" alt="License: GPL v3"></a></li>
 </ul>
@@ -332,7 +275,7 @@ Statist.* 45 (5). The Institute of Mathematical Statistics: 1863–94.
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.4.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
