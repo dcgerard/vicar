@@ -405,21 +405,21 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
 <span class='va'>bout</span> <span class='op'>&lt;-</span> <span class='fu'>backwash</span><span class='op'>(</span>Y <span class='op'>=</span> <span class='va'>Y</span>, X <span class='op'>=</span> <span class='va'>X</span>, k <span class='op'>=</span> <span class='va'>k</span>, include_intercept <span class='op'>=</span> <span class='cn'>FALSE</span>,
                  cov_of_interest <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
 </div><div class='output co'>#&gt;  - Computing independent basis using QR decomposition.
-#&gt;  - Computation took 0.132 seconds.
+#&gt;  - Computation took 0.11 seconds.
 #&gt;  - Running additional preprocessing steps.
 #&gt;  - Computation took 0.001 seconds.
 #&gt;  - Running second step of backwash:
 #&gt;     + Initializing parameters for EM algorithm.
-#&gt;     + Computation took 0.789 seconds.
+#&gt;     + Computation took 0.662 seconds.
 #&gt;     + Running one round of parameter updates.
-#&gt;     + Computation took 0.003 seconds.
+#&gt;     + Computation took 0.002 seconds.
 #&gt;     + Estimating model parameters using EM.
-#&gt;     + Computation took 0.673 seconds.
+#&gt;     + Computation took 0.586 seconds.
 #&gt;     + Generating posterior statistics.
 #&gt;     + Computation took 0.002 seconds.
-#&gt;  - Second step took 1.902 seconds.
+#&gt;  - Second step took 1.621 seconds.
 #&gt;  - Generating final backwash outputs.
-#&gt;  - Computation took 0 seconds.</div><div class='input'><span class='va'>bout</span><span class='op'>$</span><span class='va'>pi0</span> <span class='co'>## Estimate</span>
+#&gt;  - Computation took 0.001 seconds.</div><div class='input'><span class='va'>bout</span><span class='op'>$</span><span class='va'>pi0</span> <span class='co'>## Estimate</span>
 </div><div class='output co'>#&gt; [1] 0.5962884</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>is_null</span><span class='op'>)</span> <span class='co'>## Truth</span>
 </div><div class='output co'>#&gt; [1] 0.5643564</div><div class='input'>
 <span class='co'>## Fit MOUTHWASH ----------------------------------------------------------</span>
@@ -427,15 +427,15 @@ the vignettes. To do so, see <a href='https://github.com/dcgerard/vicar#vignette
                   cov_of_interest <span class='op'>=</span> <span class='fl'>2</span><span class='op'>)</span>
 </div><div class='output co'>#&gt; Running mouthwash on 13 x 3 matrix X and 13 x 101 matrix Y.
 #&gt;  - Computing independent basis using QR decomposition.
-#&gt;  - Computation took 0.001 seconds.
+#&gt;  - Computation took 0.002 seconds.
 #&gt;  - Running additional preprocessing steps.
 #&gt;  - Computation took 0.001 seconds.
 #&gt;  - Running second step of mouthwash:
 #&gt;     + Estimating model parameters using EM.
-#&gt;     + Computation took 0.549 seconds.
+#&gt;     + Computation took 0.513 seconds.
 #&gt;     + Generating adaptive shrinkage (ash) output.
-#&gt;     + Computation took 0.012 seconds.
-#&gt;  - Second step took 0.821 seconds.
+#&gt;     + Computation took 0.011 seconds.
+#&gt;  - Second step took 0.747 seconds.
 #&gt;  - Estimating additional hidden confounders.
 #&gt;  - Computation took 0.001 seconds.</div><div class='input'><span class='va'>mout</span><span class='op'>$</span><span class='va'>pi0</span> <span class='co'>## Estimate</span>
 </div><div class='output co'>#&gt; [1] 0.593371</div><div class='input'><span class='fu'><a href='https://rdrr.io/r/base/mean.html'>mean</a></span><span class='op'>(</span><span class='va'>is_null</span><span class='op'>)</span> <span class='co'>## Truth</span>

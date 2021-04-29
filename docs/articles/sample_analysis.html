@@ -185,35 +185,35 @@ Y = X\beta + Z\alpha + E,
 <code class="sourceCode R"><span class="va">mout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mouthwash.html">mouthwash</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">Y</span>, X <span class="op">=</span> <span class="va">X</span>, k <span class="op">=</span> <span class="va">num_sv</span>, cov_of_interest <span class="op">=</span> <span class="fl">2</span>, include_intercept <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Running mouthwash on 20 x 2 matrix X and 20 x 1000 matrix Y.
 ##  - Computing independent basis using QR decomposition.
-##  - Computation took 0.01 seconds.
+##  - Computation took 0.009 seconds.
 ##  - Running additional preprocessing steps.
 ##  - Computation took 0.001 seconds.
 ##  - Running second step of mouthwash:
 ##     + Estimating model parameters using EM.
-##     + Computation took 5.162 seconds.
+##     + Computation took 3.495 seconds.
 ##     + Generating adaptive shrinkage (ash) output.
-##     + Computation took 0.111 seconds.
-##  - Second step took 5.813 seconds.
+##     + Computation took 0.092 seconds.
+##  - Second step took 4.075 seconds.
 ##  - Estimating additional hidden confounders.
-##  - Computation took 0.012 seconds.</code></pre>
+##  - Computation took 0.013 seconds.</code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/backwash.html">backwash</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">Y</span>, X <span class="op">=</span> <span class="va">X</span>, k <span class="op">=</span> <span class="va">num_sv</span>, cov_of_interest <span class="op">=</span> <span class="fl">2</span>, include_intercept <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <pre><code>##  - Computing independent basis using QR decomposition.
-##  - Computation took 0.023 seconds.
+##  - Computation took 0.01 seconds.
 ##  - Running additional preprocessing steps.
 ##  - Computation took 0 seconds.
 ##  - Running second step of backwash:
 ##     + Initializing parameters for EM algorithm.
-##     + Computation took 1.373 seconds.
+##     + Computation took 0.99 seconds.
 ##     + Running one round of parameter updates.
-##     + Computation took 0.02 seconds.
+##     + Computation took 0.019 seconds.
 ##     + Estimating model parameters using EM.
-##     + Computation took 19.148 seconds.
+##     + Computation took 13.006 seconds.
 ##     + Generating posterior statistics.
-##     + Computation took 0.005 seconds.
-##  - Second step took 21.625 seconds.
+##     + Computation took 0.004 seconds.
+##  - Second step took 14.971 seconds.
 ##  - Generating final backwash outputs.
-##  - Computation took 0.011 seconds.</code></pre>
+##  - Computation took 0.012 seconds.</code></pre>
 <p>In terms of other packages, you can use the <code>sva</code> function in the sva package, the <code>cate</code> function in the cate package, or the <code>leapp</code> function in the leapp package.</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">cate_cate</span>   <span class="op">&lt;-</span> <span class="fu">cate</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/cate/man/cate.html">cate.fit</a></span><span class="op">(</span>X.primary <span class="op">=</span> <span class="va">X</span><span class="op">[</span>, <span class="fl">2</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>, X.nuis <span class="op">=</span> <span class="va">X</span><span class="op">[</span>, <span class="op">-</span><span class="fl">2</span>, drop <span class="op">=</span> <span class="cn">FALSE</span><span class="op">]</span>,

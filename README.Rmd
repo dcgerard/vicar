@@ -96,7 +96,7 @@ Or, using BibTex:
 ``` tex
 @article{gerard2020empirical,
   author = {Gerard, David and Stephens, Matthew},
-  title = "{Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted variation}",
+  title = "Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted variation",
   journal = {Biostatistics},
   volume = {21},
   number = {1},
