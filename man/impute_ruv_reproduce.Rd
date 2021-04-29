@@ -4,8 +4,7 @@
 \alias{impute_ruv_reproduce}
 \title{Reproduce RUV2, RUV3, and RUV4 with RUVimpute.}
 \usage{
-impute_ruv_reproduce(Y21, Y31, Y32, k, impute_type = c("ruv2", "ruv3",
-  "ruv4"))
+impute_ruv_reproduce(Y21, Y31, Y32, k, impute_type = c("ruv2", "ruv3", "ruv4"))
 }
 \arguments{
 \item{Y21}{Top left of matrix.}
@@ -26,7 +25,7 @@ This is a proof of concept function to integrate
 }
 \references{
 \itemize{
-\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 }
 }
 \author{

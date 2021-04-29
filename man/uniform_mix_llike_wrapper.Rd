@@ -4,8 +4,17 @@
 \alias{uniform_mix_llike_wrapper}
 \title{Wrapper for \code{\link{uniform_mix_llike}}, mostly for the SQUAREM package.}
 \usage{
-uniform_mix_llike_wrapper(pizxi_vec, betahat_ols, S_diag, alpha_tilde,
-  a_seq, b_seq, lambda_seq, degrees_freedom, scale_var = TRUE)
+uniform_mix_llike_wrapper(
+  pizxi_vec,
+  betahat_ols,
+  S_diag,
+  alpha_tilde,
+  a_seq,
+  b_seq,
+  lambda_seq,
+  degrees_freedom,
+  scale_var = TRUE
+)
 }
 \arguments{
 \item{pizxi_vec}{A vector of numerics. The first M of which are

@@ -1,9 +1,10 @@
 c(bibentry(bibtype  = "Article",
           title     = "Empirical {B}ayes shrinkage and false discovery rate estimation, allowing for unwanted variation",
-          year      = "2018",
+          year      = "2020",
           journal   = "Biostatistics",
-          volume    = "",
-          pages     = "kxy029",
+          volume    = "21",
+          number    = "1",
+          pages     = "15-32",
           doi       = "10.1093/biostatistics/kxy029",
           author    = c(person(given  = "David",
                                family = "Gerard",
@@ -13,19 +14,20 @@ c(bibentry(bibtype  = "Article",
                                email  = "mstephens@uchicago.edu")
                        )
 ),
-bibentry(bibtype    = "Article",
-         title      = "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls",
-          year      = "2019",
-          journal   = "Statistica Sinica",
-          volume    = "",
-          pages     = "in press",
-          doi       = "10.5705/ss.202018.0345",
-          author    = c(person(given  = "David",
-                               family = "Gerard",
-                               email  = "gerard.1787@gmail.com"),
-                        person(given  = "Matthew",
-                               family = "Stephens",
-                               email  = "mstephens@uchicago.edu")
-                       )
+bibentry(bibtype   = "Article",
+         title     = "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls",
+         year      = "2021",
+         journal   = "Statistica Sinica",
+         volume    = "31",
+         number    = "3",
+         pages     = "1-22",
+         doi       = "10.5705/ss.202018.0345",
+         author    = c(person(given  = "David",
+                              family = "Gerard",
+                              email  = "gerard.1787@gmail.com"),
+                       person(given  = "Matthew",
+                              family = "Stephens",
+                              email  = "mstephens@uchicago.edu")
+                      )
 )
 )

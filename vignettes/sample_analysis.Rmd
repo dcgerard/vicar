@@ -1,7 +1,7 @@
 ---
 title: "Sample Analysis"
 author: "David Gerard"
-date: "2016-12-13"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Sample Analysis}
@@ -13,7 +13,7 @@ bibliography: "vicar.bib"
 # Abstract
 
 In this vignette, I take an example simulated RNA-seq dataset and analyze it using the functions in the vicar R package. I compare their performances against the methods available in other packages. The methods in vicar
-are described in detail in @gerard2018empirical and @gerard2019unifying.
+are described in detail in @gerard2020empirical and @gerard2021unifying.
 
 # Data
 

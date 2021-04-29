@@ -4,8 +4,15 @@
 \alias{cruv4}
 \title{RUV4's second step.}
 \usage{
-cruv4(betahat_ols, alpha_scaled, sig_diag_scaled, ctl, degrees_freedom,
-  gls = TRUE, likelihood = "t")
+cruv4(
+  betahat_ols,
+  alpha_scaled,
+  sig_diag_scaled,
+  ctl,
+  degrees_freedom,
+  gls = TRUE,
+  likelihood = "t"
+)
 }
 \arguments{
 \item{betahat_ols}{A matrix of numerics with one column. The ols

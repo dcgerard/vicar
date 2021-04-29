@@ -3,7 +3,6 @@
 \docType{package}
 \name{vicar}
 \alias{vicar}
-\alias{vicar-package}
 \title{\code{vicar}: Various Ideas for Confounder Adjustment in Regression.}
 \description{
 \code{vicar} contains functions for implementing RUV3, a
@@ -40,6 +39,12 @@ adjustment when one does not have access to control genes.
     \url{https://github.com/dcgerard/vicar#vignettes}.
 }
 
+\references{
+\itemize{
+  \item{Gerard, D., and Stephens, M. 2020. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, 21(1), 15-32 \doi{10.1093/biostatistics/kxy029}}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+}
+}
 \author{
 David Gerard
 }

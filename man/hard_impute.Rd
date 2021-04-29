@@ -4,8 +4,15 @@
 \alias{hard_impute}
 \title{My version of hard imputation that begins at the ruv estimates}
 \usage{
-hard_impute(Y21, Y31, Y32, k, tol = 10^-5, maxit = 1000,
-  init_type = c("ruv4", "ruv3"))
+hard_impute(
+  Y21,
+  Y31,
+  Y32,
+  k,
+  tol = 10^-5,
+  maxit = 1000,
+  init_type = c("ruv4", "ruv3")
+)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}

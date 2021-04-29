@@ -4,8 +4,13 @@
 \alias{fix_caw_wrapper}
 \title{A wrapper for \code{\link{fix_caw}} so that I can use SQUAREM.}
 \usage{
-fix_caw_wrapper(wzs_vec, rotate_out, weight_func = ash_wrap,
-  weight_args = list(), min_scale = 0.8)
+fix_caw_wrapper(
+  wzs_vec,
+  rotate_out,
+  weight_func = ash_wrap,
+  weight_args = list(),
+  min_scale = 0.8
+)
 }
 \arguments{
 \item{wzs_vec}{A vector of numerics. The first p of which are the

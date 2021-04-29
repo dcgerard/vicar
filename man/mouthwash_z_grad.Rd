@@ -4,8 +4,19 @@
 \alias{mouthwash_z_grad}
 \title{Gradient wrt z of \code{\link{uniform_mix_llike}}.}
 \usage{
-mouthwash_z_grad(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq,
-  b_seq, lambda_seq, degrees_freedom, var_inflate_pen = 0)
+mouthwash_z_grad(
+  pi_vals,
+  z2,
+  xi,
+  betahat_ols,
+  S_diag,
+  alpha_tilde,
+  a_seq,
+  b_seq,
+  lambda_seq,
+  degrees_freedom,
+  var_inflate_pen = 0
+)
 }
 \arguments{
 \item{pi_vals}{A vector of non-negative numerics that sums to

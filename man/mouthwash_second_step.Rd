@@ -4,13 +4,24 @@
 \alias{mouthwash_second_step}
 \title{The second step of MOUTHWASH.}
 \usage{
-mouthwash_second_step(betahat_ols, S_diag, alpha_tilde, lambda_seq,
-  tau2_seq = NULL, a_seq = NULL, b_seq = NULL,
+mouthwash_second_step(
+  betahat_ols,
+  S_diag,
+  alpha_tilde,
+  lambda_seq,
+  tau2_seq = NULL,
+  a_seq = NULL,
+  b_seq = NULL,
   mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform"),
-  likelihood = c("normal", "t"), pi_init_type = c("zero_conc",
-  "uniform", "random"), scale_var = TRUE, degrees_freedom = NULL,
-  plot_update = FALSE, sprop = 0, var_inflate_pen = 0,
-  verbose = TRUE)
+  likelihood = c("normal", "t"),
+  pi_init_type = c("zero_conc", "uniform", "random"),
+  scale_var = TRUE,
+  degrees_freedom = NULL,
+  plot_update = FALSE,
+  sprop = 0,
+  var_inflate_pen = 0,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The OLS estimates of the
@@ -80,7 +91,7 @@ The second step of MOUTHWASH.
 }
 \references{
 \itemize{
-  \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+  \item{Gerard, D., and Stephens, M. 2020. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, 21(1), 15-32 \doi{10.1093/biostatistics/kxy029}}
 }
 }
 \author{

@@ -4,11 +4,26 @@
 \alias{gdfa}
 \title{Old version of Bayesian factor analysis.}
 \usage{
-gdfa(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4),
-  keep = 20, print_update = TRUE, plot_update = FALSE,
-  hetero_factors = FALSE, rho_0 = 0.1, alpha_0 = 0.1,
-  delta_0 = 0.1, lambda_0 = 0.1, nu_0 = 1, beta_0 = 1, eta_0 = 1,
-  tau_0 = 1)
+gdfa(
+  Y21,
+  Y31,
+  Y32,
+  k,
+  nsamp = 10000,
+  burnin = round(nsamp/4),
+  keep = 20,
+  print_update = TRUE,
+  plot_update = FALSE,
+  hetero_factors = FALSE,
+  rho_0 = 0.1,
+  alpha_0 = 0.1,
+  delta_0 = 0.1,
+  lambda_0 = 0.1,
+  nu_0 = 1,
+  beta_0 = 1,
+  eta_0 = 1,
+  tau_0 = 1
+)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}
@@ -65,11 +80,7 @@ but a slower R implementation.
 }
 \references{
 \itemize{
-\item{Ghosh, Joyee, and David
-    B. Dunson. "Default prior distributions and efficient posterior
-    computation in Bayesian factor analysis."
-    Journal of Computational and Graphical Statistics 18.2 (2009):
-    306-320.}
+  \item{Ghosh, J. and Dunson, D.B., 2009. "Default prior distributions and efficient posterior computation in Bayesian factor analysis." \emph{Journal of Computational and Graphical Statistics}, 18(2), pp.306-320. \doi{10.1198/jcgs.2009.07145}}
 }
 }
 \seealso{

@@ -1,7 +1,7 @@
 ---
 title: "Custom Prior for RUVB"
 author: "David Gerard"
-date: "2016-12-13"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Custom Prior for RUVB}
@@ -14,7 +14,7 @@ bibliography: "vicar.bib"
 
 I provide instructions on how to incorporate a user-specified prior into `ruvb`. 
 I provide an example with a simulated RNA-seq dataset. The RUVB method is
-described in detail in @gerard2019unifying.
+described in detail in @gerard2021unifying.
 
 # Data
 

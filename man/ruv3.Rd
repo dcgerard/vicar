@@ -4,9 +4,18 @@
 \alias{ruv3}
 \title{Removing Unwanted Variation 3.}
 \usage{
-ruv3(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
-  include_intercept = TRUE, limmashrink = TRUE, gls = TRUE,
-  fa_func = pca_naive, fa_args = list())
+ruv3(
+  Y,
+  X,
+  ctl,
+  k = NULL,
+  cov_of_interest = ncol(X),
+  include_intercept = TRUE,
+  limmashrink = TRUE,
+  gls = TRUE,
+  fa_func = pca_naive,
+  fa_args = list()
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -214,7 +223,7 @@ graphics::legend("bottomright", legend = c("RUV2", "RUV3", "RUV4"),
 }
 \references{
 \itemize{
-\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 }
 }
 \seealso{

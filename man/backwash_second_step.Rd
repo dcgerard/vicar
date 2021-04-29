@@ -4,9 +4,18 @@
 \alias{backwash_second_step}
 \title{Second step of the backwash procedure.}
 \usage{
-backwash_second_step(betahat_ols, S_diag, alpha_tilde, tau2_seq,
-  lambda_seq, pi_init_type = c("zero_conc", "uniform", "random"),
-  scale_var = TRUE, sprop = 0, var_inflate_pen = 0, verbose = TRUE)
+backwash_second_step(
+  betahat_ols,
+  S_diag,
+  alpha_tilde,
+  tau2_seq,
+  lambda_seq,
+  pi_init_type = c("zero_conc", "uniform", "random"),
+  scale_var = TRUE,
+  sprop = 0,
+  var_inflate_pen = 0,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The ordinary least

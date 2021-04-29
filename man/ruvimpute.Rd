@@ -4,9 +4,17 @@
 \alias{ruvimpute}
 \title{General imputation framework.}
 \usage{
-ruvimpute(Y, X, ctl, k = NULL, impute_func = em_miss,
-  impute_args = list(), cov_of_interest = ncol(X),
-  include_intercept = TRUE, do_variance = FALSE)
+ruvimpute(
+  Y,
+  X,
+  ctl,
+  k = NULL,
+  impute_func = em_miss,
+  impute_args = list(),
+  cov_of_interest = ncol(X),
+  include_intercept = TRUE,
+  do_variance = FALSE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -75,7 +83,7 @@ General imputation framework.
 }
 \references{
 \itemize{
-\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 }
 }
 \author{

@@ -5,12 +5,23 @@
 \title{Iterative procedure for confounder correction with a procedure that
 returns lfdrs.}
 \usage{
-caw(Y, X, k = NULL, cov_of_interest = ncol(X), limmashrink = TRUE,
-  weight_func = ash_wrap, weight_args = list(), fa_func = pca_naive,
-  fa_args = list(), scale_var = TRUE, include_intercept = TRUE,
+caw(
+  Y,
+  X,
+  k = NULL,
+  cov_of_interest = ncol(X),
+  limmashrink = TRUE,
+  weight_func = ash_wrap,
+  weight_args = list(),
+  fa_func = pca_naive,
+  fa_args = list(),
+  scale_var = TRUE,
+  include_intercept = TRUE,
   weight_init = c("all_null", "random", "limma"),
-  weight_func_input = c("summary2"), degrees_freedom = NULL,
-  min_scale = 0.8)
+  weight_func_input = c("summary2"),
+  degrees_freedom = NULL,
+  min_scale = 0.8
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables

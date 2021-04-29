@@ -6,8 +6,18 @@
 confounders associated with the covariates of interest when using a
 mixture of normals prior.}
 \usage{
-normal_mix_fix(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, tau2_seq,
-  lambda_seq, scale_var = TRUE, var_inflate_pen = 0)
+normal_mix_fix(
+  pi_vals,
+  z2,
+  xi,
+  betahat_ols,
+  S_diag,
+  alpha_tilde,
+  tau2_seq,
+  lambda_seq,
+  scale_var = TRUE,
+  var_inflate_pen = 0
+)
 }
 \arguments{
 \item{pi_vals}{The current values of the mixing proportions.}

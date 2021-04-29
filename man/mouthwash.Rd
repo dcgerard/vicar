@@ -4,17 +4,35 @@
 \alias{mouthwash}
 \title{MOUTHWASH: Maximize Over Unobservables To Help With Adaptive SHrinkage.}
 \usage{
-mouthwash(Y, X, k = NULL, cov_of_interest = ncol(X),
-  include_intercept = TRUE, limmashrink = TRUE, fa_func = pca_naive,
-  fa_args = list(), likelihood = c("normal", "t"),
+mouthwash(
+  Y,
+  X,
+  k = NULL,
+  cov_of_interest = ncol(X),
+  include_intercept = TRUE,
+  limmashrink = TRUE,
+  fa_func = pca_naive,
+  fa_args = list(),
+  likelihood = c("normal", "t"),
   mixing_dist = c("normal", "uniform", "+uniform", "sym_uniform"),
   lambda_type = c("zero_conc", "uniform"),
   pi_init_type = c("zero_conc", "uniform", "random"),
-  degrees_freedom = NULL, pi_init = NULL, grid_seq = NULL,
-  lambda_seq = NULL, lambda0 = 10, scale_var = TRUE,
-  plot_update = FALSE, sprop = 0, var_inflate_pen = 0,
-  subsample = FALSE, num_sub = min(1000, ncol(Y)), same_grid = FALSE,
-  use_t_adjust = FALSE, detailed_output = FALSE, verbose = TRUE)
+  degrees_freedom = NULL,
+  pi_init = NULL,
+  grid_seq = NULL,
+  lambda_seq = NULL,
+  lambda0 = 10,
+  scale_var = TRUE,
+  plot_update = FALSE,
+  sprop = 0,
+  var_inflate_pen = 0,
+  subsample = FALSE,
+  num_sub = min(1000, ncol(Y)),
+  same_grid = FALSE,
+  use_t_adjust = FALSE,
+  detailed_output = FALSE,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -298,7 +316,7 @@ graphics::legend("bottomright", legend = c("MOUTHWASH", "ASH"), col = c(4, 3),
 }
 \references{
 \itemize{
-  \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+  \item{Gerard, D., and Stephens, M. 2020. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, 21(1), 15-32 \doi{10.1093/biostatistics/kxy029}}
 }
 }
 \seealso{

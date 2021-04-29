@@ -4,8 +4,17 @@
 \alias{bsvd}
 \title{Gibbs sampler for Bayesian SVD.}
 \usage{
-bsvd(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4),
-  keep = 20, print_update = TRUE, plot_update = FALSE)
+bsvd(
+  Y21,
+  Y31,
+  Y32,
+  k,
+  nsamp = 10000,
+  burnin = round(nsamp/4),
+  keep = 20,
+  print_update = TRUE,
+  plot_update = FALSE
+)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}
@@ -52,7 +61,7 @@ A list with the following elements:
     \code{\link[coda]{effectiveSize}}
 }
 \description{
-This is a modification of the Bayesian approach from Hoff (2007) to
+This is a modification of the Bayesian approach from Hoff (2012) to
 allow for heteroscedastic columns. We start the missing values from
 the RUV4 solution.
 }
@@ -62,7 +71,7 @@ almost always stalls, so I am removing it from exports for now.
 }
 \references{
 \itemize{
-\item{Hoff, P. D. 2012. "Model averaging and dimension selection for the singular value decomposition". \emph{Journal of the American Statistical Association}.}
+  \item{Hoff, P. D. 2012. "Model averaging and dimension selection for the singular value decomposition". \emph{Journal of the American Statistical Association}. \doi{10.1198/016214506000001310}}
 }
 }
 \author{

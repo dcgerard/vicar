@@ -4,9 +4,16 @@
 \alias{fix_caw}
 \title{A fixed point iteration for CAW.}
 \usage{
-fix_caw(w_current, Z2hat, scale_val, rotate_out, weight_func = ash_wrap,
-  weight_args = list(), min_scale = 0.8, return_val = c("params",
-  "full"))
+fix_caw(
+  w_current,
+  Z2hat,
+  scale_val,
+  rotate_out,
+  weight_func = ash_wrap,
+  weight_args = list(),
+  min_scale = 0.8,
+  return_val = c("params", "full")
+)
 }
 \arguments{
 \item{w_current}{A vector of weights. The probability given Z2hat

@@ -5,12 +5,25 @@
 \title{BACKWASH: Bayesian Adjustment for Confounding Knitted With Adaptive
 SHrinkage.}
 \usage{
-backwash(Y, X, k = NULL, cov_of_interest = ncol(X),
-  include_intercept = TRUE, limmashrink = TRUE, fa_func = pca_naive,
-  fa_args = list(), lambda_type = c("zero_conc", "uniform"),
-  pi_init_type = c("zero_conc", "uniform", "random"), grid_seq = NULL,
-  lambda_seq = NULL, lambda0 = 10, scale_var = TRUE, sprop = 0,
-  var_inflate_pen = 0, verbose = TRUE)
+backwash(
+  Y,
+  X,
+  k = NULL,
+  cov_of_interest = ncol(X),
+  include_intercept = TRUE,
+  limmashrink = TRUE,
+  fa_func = pca_naive,
+  fa_args = list(),
+  lambda_type = c("zero_conc", "uniform"),
+  pi_init_type = c("zero_conc", "uniform", "random"),
+  grid_seq = NULL,
+  lambda_seq = NULL,
+  lambda0 = 10,
+  scale_var = TRUE,
+  sprop = 0,
+  var_inflate_pen = 0,
+  verbose = TRUE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -255,8 +268,8 @@ graphics::legend("bottomright", legend = c("Null", "Non-null"), col = c(4, 3),
 }
 \references{
 \itemize{
-  \item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. <\href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}>.}
-  \item{Gerard, D., & Stephens, M. 2018. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, , kxy029, <\href{https://doi.org/10.1093/biostatistics/kxy029}{doi:10.1093/biostatistics/kxy029}>.}
+  \item{Gerard, D., and Stephens, M. 2020. "Empirical Bayes shrinkage and false discovery rate estimation, allowing for unwanted variation", \emph{Biostatistics}, 21(1), 15-32 \doi{10.1093/biostatistics/kxy029}}
+  \item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. \doi{10.1093/biostatistics/kxw041}}
 }
 }
 \seealso{

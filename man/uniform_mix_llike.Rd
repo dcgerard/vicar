@@ -4,8 +4,19 @@
 \alias{uniform_mix_llike}
 \title{Log-likelihood when using t errors and mixture of uniforms prior.}
 \usage{
-uniform_mix_llike(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde, a_seq,
-  b_seq, lambda_seq, degrees_freedom, var_inflate_pen = 0)
+uniform_mix_llike(
+  pi_vals,
+  z2,
+  xi,
+  betahat_ols,
+  S_diag,
+  alpha_tilde,
+  a_seq,
+  b_seq,
+  lambda_seq,
+  degrees_freedom,
+  var_inflate_pen = 0
+)
 }
 \arguments{
 \item{pi_vals}{A vector of non-negative numerics that sums to

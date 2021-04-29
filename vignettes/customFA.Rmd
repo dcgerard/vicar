@@ -1,7 +1,7 @@
 ---
 title: "Customizable Factor Analyses"
 author: "David Gerard"
-date: "2016-12-09"
+date: "`r Sys.Date()`"
 output: rmarkdown::html_vignette
 vignette: >
   %\VignetteIndexEntry{Customizable Factor Analyses}
@@ -10,7 +10,7 @@ vignette: >
 bibliography: "vicar.bib"
 ---
 
-This vignette describes how to build your own factor analysis functions for use in vicar's primary functions `vruv4`, `ruv3`, `mouthwash`, `backwash`, and `ruvb`. These methods are described in detail in @gerard2018empirical and @gerard2019unifying.
+This vignette describes how to build your own factor analysis functions for use in vicar's primary functions `vruv4`, `ruv3`, `mouthwash`, `backwash`, and `ruvb`. These methods are described in detail in @gerard2020empirical and @gerard2021unifying.
 
 # `fa_func` in `vruv4`, `ruv3`, `mouthwash`, and `backwash`
 

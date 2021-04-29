@@ -19,7 +19,7 @@
 #' I have three versions of Bayesian factor analyses that I
 #' recommend. The first is \code{\link{bfa_gs_linked}}. This version
 #' links the variances between the factors and observations and is the
-#' version used in Gerard and Stephens (2016). This version appears to
+#' version used in Gerard and Stephens (2021). This version appears to
 #' work the best in practice and is thus the default. The second,
 #' \code{\link{bfa_gs}}, is the same as the first except it does not
 #' link the variances between the factors and the observations. The
@@ -124,7 +124,7 @@
 #'
 #' @references
 #' \itemize{
-#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 #' }
 #'
 #' @examples
@@ -361,7 +361,7 @@ prior_fun_wrapper <- function(beta_mat, prior_fun, prior_args = list()) {
 }
 
 
-#' Hierarchical prior density function as described in Gerard and Stephens (2016)
+#' Hierarchical prior density function as described in Gerard and Stephens (2021)
 #'
 #' @param beta_mat A matrix. The rows are the coefficients of the
 #'     difference covariates. The columns are the different genes.
@@ -373,6 +373,11 @@ prior_fun_wrapper <- function(beta_mat, prior_fun, prior_args = list()) {
 #'     (\code{"TRUE"}) or the the density (\code{"FALSE"})?
 #'
 #' @author David Gerard
+#'
+#' @references
+#' \itemize{
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#' }
 #'
 #' @export
 hier_fun <- function(beta_mat, shape_param = 1, rate_param = 1, return_log = TRUE) {
@@ -468,7 +473,7 @@ calc_quantiles_g <- function(y, g, quant = 0.5) {
 
 #' Gibbs sampler for Bayesian SVD.
 #'
-#' This is a modification of the Bayesian approach from Hoff (2007) to
+#' This is a modification of the Bayesian approach from Hoff (2012) to
 #' allow for heteroscedastic columns. We start the missing values from
 #' the RUV4 solution.
 #'
@@ -511,7 +516,7 @@ calc_quantiles_g <- function(y, g, quant = 0.5) {
 #'
 #' @references
 #' \itemize{
-#' \item{Hoff, P. D. 2012. "Model averaging and dimension selection for the singular value decomposition". \emph{Journal of the American Statistical Association}.}
+#'   \item{Hoff, P. D. 2012. "Model averaging and dimension selection for the singular value decomposition". \emph{Journal of the American Statistical Association}. \doi{10.1198/016214506000001310}}
 #' }
 bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
                  burnin = round(nsamp / 4), keep = 20,
@@ -721,8 +726,9 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #' @seealso \code{\link{bfa_gs_linked}}.
 #'
 #' @references
+#' @references
 #' \itemize{
-#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 #' }
 #'
 bfa_gs_linked <- function(Y21, Y31, Y32, k, nsamp = 10000,
@@ -949,8 +955,9 @@ bfa_gs_linked_gibbs_r <- function(Linit, Finit, xi_init, phi_init,
 #' @seealso \code{\link{bfa_gs_linked}}.
 #'
 #' @references
+#' @references
 #' \itemize{
-#' \item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 #' }
 #'
 bfl <- function(Y21, Y31, Y32, k, nsamp = 10000,
@@ -1151,7 +1158,7 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
 
 
 
-#' Bayesian factor analysis used in Gerard and Stephens (2016).
+#' Bayesian factor analysis used in Gerard and Stephens (2021).
 #'
 #' Similar to that of Ghosh and Dunson (2009) but with two key
 #' differences: (1) the prior is order invariant (though this makes
@@ -1192,13 +1199,12 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
 #' @seealso \code{\link{gdfa}} for the slower R implementation.
 #'
 #' @references
+#' @references
 #' \itemize{
-#' \item{Ghosh, Joyee, and David
-#'     B. Dunson. "Default prior distributions and efficient posterior
-#'     computation in Bayesian factor analysis."
-#'     Journal of Computational and Graphical Statistics 18.2 (2009):
-#'     306-320.}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#'   \item{Ghosh, J. and Dunson, D.B., 2009. "Default prior distributions and efficient posterior computation in Bayesian factor analysis." \emph{Journal of Computational and Graphical Statistics}, 18(2), pp.306-320. \doi{10.1198/jcgs.2009.07145}}
 #' }
+#'
 bfa_gs <- function(Y21, Y31, Y32, k, nsamp = 10000,
                    burnin = round(nsamp / 4), thin = 20,
                    display_progress = TRUE, hetero_factors = TRUE,
@@ -1308,11 +1314,7 @@ bfa_gs <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #'
 #' @references
 #' \itemize{
-#' \item{Ghosh, Joyee, and David
-#'     B. Dunson. "Default prior distributions and efficient posterior
-#'     computation in Bayesian factor analysis."
-#'     Journal of Computational and Graphical Statistics 18.2 (2009):
-#'     306-320.}
+#'   \item{Ghosh, J. and Dunson, D.B., 2009. "Default prior distributions and efficient posterior computation in Bayesian factor analysis." \emph{Journal of Computational and Graphical Statistics}, 18(2), pp.306-320. \doi{10.1198/jcgs.2009.07145}}
 #' }
 gdfa <- function(Y21, Y31, Y32, k, nsamp = 10000,
                  burnin = round(nsamp / 4), keep = 20,

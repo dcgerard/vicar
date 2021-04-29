@@ -4,8 +4,16 @@
 \alias{back_obj}
 \title{Objective function for BACKWASH.}
 \usage{
-back_obj(par_vec, betahat_ols, S_diag, Amat, tau2_seq, lambda_seq,
-  scale_var = TRUE, var_inflate_pen = 0)
+back_obj(
+  par_vec,
+  betahat_ols,
+  S_diag,
+  Amat,
+  tau2_seq,
+  lambda_seq,
+  scale_var = TRUE,
+  var_inflate_pen = 0
+)
 }
 \arguments{
 \item{par_vec}{A huge vector of parameters whose elements are in

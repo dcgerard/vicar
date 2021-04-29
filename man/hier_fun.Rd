@@ -2,10 +2,9 @@
 % Please edit documentation in R/ruvb.R
 \name{hier_fun}
 \alias{hier_fun}
-\title{Hierarchical prior density function as described in Gerard and Stephens (2016)}
+\title{Hierarchical prior density function as described in Gerard and Stephens (2021)}
 \usage{
-hier_fun(beta_mat, shape_param = 1, rate_param = 1,
-  return_log = TRUE)
+hier_fun(beta_mat, shape_param = 1, rate_param = 1, return_log = TRUE)
 }
 \arguments{
 \item{beta_mat}{A matrix. The rows are the coefficients of the
@@ -21,7 +20,12 @@ gamma prior.}
 (\code{"TRUE"}) or the the density (\code{"FALSE"})?}
 }
 \description{
-Hierarchical prior density function as described in Gerard and Stephens (2016)
+Hierarchical prior density function as described in Gerard and Stephens (2021)
+}
+\references{
+\itemize{
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+}
 }
 \author{
 David Gerard

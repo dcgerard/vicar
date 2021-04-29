@@ -5,8 +5,7 @@
 \title{Objective function for updating variance inflation parameter during
 EM for mixtures of normals prior.}
 \usage{
-brent_obj_norm(xi, qvals, S_diag, tau2_seq, resid_vec,
-  var_inflate_pen = 0)
+brent_obj_norm(xi, qvals, S_diag, tau2_seq, resid_vec, var_inflate_pen = 0)
 }
 \arguments{
 \item{xi}{The current value of the variance inflation parameter.}

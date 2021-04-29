@@ -4,8 +4,7 @@
 \alias{normal_prior}
 \title{A basic normal prior density function.}
 \usage{
-normal_prior(beta_mat, prior_mean = 0, prior_variance = 100,
-  return_log = TRUE)
+normal_prior(beta_mat, prior_mean = 0, prior_variance = 100, return_log = TRUE)
 }
 \arguments{
 \item{beta_mat}{A matrix. The rows are the coefficients of the

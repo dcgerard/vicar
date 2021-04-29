@@ -4,9 +4,17 @@
 \alias{rotate_model}
 \title{QR rotation to independent models.}
 \usage{
-rotate_model(Y, X, k, cov_of_interest = ncol(X),
-  include_intercept = TRUE, limmashrink = FALSE, fa_func = pca_naive,
-  fa_args = list(), do_factor = TRUE)
+rotate_model(
+  Y,
+  X,
+  k,
+  cov_of_interest = ncol(X),
+  include_intercept = TRUE,
+  limmashrink = FALSE,
+  fa_func = pca_naive,
+  fa_args = list(),
+  do_factor = TRUE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables

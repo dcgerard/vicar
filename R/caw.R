@@ -39,7 +39,6 @@
 #'
 #' @author David Gerard
 #'
-#' @export
 caw <- function(Y, X, k = NULL,
                 cov_of_interest = ncol(X),
                 limmashrink = TRUE,
@@ -170,6 +169,7 @@ caw <- function(Y, X, k = NULL,
 fix_caw_wrapper <- function(wzs_vec, rotate_out,
                             weight_func = ash_wrap,
                             weight_args = list(), min_scale = 0.8) {
+    ncov <- ncol(rotate_out$X)
     assertthat::are_equal(length(wzs_vec), ncov * k + p + 1)
 
     p    <- ncol(rotate_out$Y2)

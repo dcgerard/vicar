@@ -4,10 +4,21 @@
 \alias{ruvb}
 \title{Bayesian version of Removing Unwanted Variation.}
 \usage{
-ruvb(Y, X, ctl, k = NULL, fa_func = bfa_gs_linked, fa_args = list(),
-  cov_of_interest = ncol(X), include_intercept = TRUE,
-  return_mcmc = FALSE, prior_fun = NULL, prior_args = list(),
-  return_log = NULL, pad_na = TRUE)
+ruvb(
+  Y,
+  X,
+  ctl,
+  k = NULL,
+  fa_func = bfa_gs_linked,
+  fa_args = list(),
+  cov_of_interest = ncol(X),
+  include_intercept = TRUE,
+  return_mcmc = FALSE,
+  prior_fun = NULL,
+  prior_args = list(),
+  return_log = NULL,
+  pad_na = TRUE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -130,7 +141,7 @@ Gaussian and each column shares a common variance. The rows of
 I have three versions of Bayesian factor analyses that I
 recommend. The first is \code{\link{bfa_gs_linked}}. This version
 links the variances between the factors and observations and is the
-version used in Gerard and Stephens (2016). This version appears to
+version used in Gerard and Stephens (2021). This version appears to
 work the best in practice and is thus the default. The second,
 \code{\link{bfa_gs}}, is the same as the first except it does not
 link the variances between the factors and the observations. The
@@ -219,7 +230,7 @@ graphics::abline(0, 1, lty = 2)
 }
 \references{
 \itemize{
-\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 }
 }
 \seealso{

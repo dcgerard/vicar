@@ -4,9 +4,22 @@
 \alias{bfl}
 \title{Simple Bayesian low rank matrix decomposition.}
 \usage{
-bfl(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4),
-  keep = 20, print_update = TRUE, plot_update = FALSE, rho_0 = 0.1,
-  alpha_0 = 0.1, beta_0 = 1, eta_0 = 0.1, tau_0 = 1)
+bfl(
+  Y21,
+  Y31,
+  Y32,
+  k,
+  nsamp = 10000,
+  burnin = round(nsamp/4),
+  keep = 20,
+  print_update = TRUE,
+  plot_update = FALSE,
+  rho_0 = 0.1,
+  alpha_0 = 0.1,
+  beta_0 = 1,
+  eta_0 = 0.1,
+  tau_0 = 1
+)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}
@@ -59,8 +72,10 @@ parameter expansion, and a much faster version, see
 \code{\link{bfa_gs_linked}}.
 }
 \references{
+
+
 \itemize{
-\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 }
 }
 \seealso{

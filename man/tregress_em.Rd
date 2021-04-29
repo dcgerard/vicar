@@ -5,8 +5,15 @@
 \title{EM algorithm to find regression coefficients using t-likelihood
 when variances are known up to scale.}
 \usage{
-tregress_em(Y, alpha, sig_diag, nu, lambda_init = NULL, Z_init = NULL,
-  control_args = list())
+tregress_em(
+  Y,
+  alpha,
+  sig_diag,
+  nu,
+  lambda_init = NULL,
+  Z_init = NULL,
+  control_args = list()
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics with one column. The response
@@ -41,10 +48,7 @@ procedure to Lange et al (1989).
 }
 \references{
 \itemize{
-\item{Lange, Kenneth L., Roderick JA Little, and Jeremy MG
-    Taylor. "Robust statistical modeling using the t distribution."
-    Journal of the American Statistical Association 84.408 (1989):
-    881-896.}
+  \item{Lange, K.L., Little, R.J. and Taylor, J.M., 1989. "Robust statistical modeling using the t distribution." \emph{Journal of the American Statistical Association}, 84(408), pp.881-896. \doi{10.1080/01621459.1989.10478852}}
 }
 }
 \seealso{

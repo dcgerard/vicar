@@ -5,11 +5,22 @@
 \title{Use control genes to estimate hidden confounders and variance
 inflation parameter, then run ASH.}
 \usage{
-ash_ruv4(Y, X, ctl = NULL, k = NULL, cov_of_interest = ncol(X),
-  likelihood = c("t", "normal"), ash_args = list(),
-  limmashrink = TRUE, degrees_freedom = NULL,
-  include_intercept = TRUE, gls = TRUE, fa_func = pca_naive,
-  fa_args = list(), scale_var = TRUE)
+ash_ruv4(
+  Y,
+  X,
+  ctl = NULL,
+  k = NULL,
+  cov_of_interest = ncol(X),
+  likelihood = c("t", "normal"),
+  ash_args = list(),
+  limmashrink = TRUE,
+  degrees_freedom = NULL,
+  include_intercept = TRUE,
+  gls = TRUE,
+  fa_func = pca_naive,
+  fa_args = list(),
+  scale_var = TRUE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -123,21 +134,11 @@ are regressed out using OLS.
 }
 \references{
 \itemize{
-\item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
-    P. Speed. "Removing unwanted variation from high dimensional
-    data with negative controls."
-    Berkeley: Department of Statistics. University of California
-    (2013).}
-\item{Andreas Buja and Nermin
-    Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
-    research, 27(4):509-540, 1992.}
-\item{Bradley Efron
-    "Large-Scale Simultaneous Hypothesis Testing: The Choice of a Null
-    Hypothesis",
-    \emph{Journal of the American Statistical Association}, 99:465,
-    96-104, 2004.}
-\item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. <\href{https://doi.org/10.1093/biostatistics/kxw041}{doi:10.1093/biostatistics/kxw041}>.}
-\item{Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B. Owen. 2017. "Confounder adjustment in multiple hypothesis testing." \emph{The Annals of Statistics} 45, no. 5: 1863-1894.}
+  \item{Buja, A. and Eyuboglu, N., 1992. "Remarks on parallel analysis." \emph{Multivariate behavioral research}, 27(4), pp.509-540. \doi{10.1207/s15327906mbr2704_2}}
+  \item{Efron, B., 2004. "Large-scale simultaneous hypothesis testing: the choice of a null hypothesis." \emph{Journal of the American Statistical Association}, 99(465), pp.96-104. \doi{10.1198/016214504000000089}}
+  \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence P. Speed, 2013. "Removing unwanted variation from high dimensional data with negative controls." Berkeley: Department of Statistics. University of California. \url{https://statistics.berkeley.edu/tech-reports/820}}
+  \item{Stephens, Matthew. 2016. "False discovery rates: a new deal." \emph{Biostatistics} 18 (2): 275–94. \doi{10.1093/biostatistics/kxw041}}
+  \item{Wang, Jingshu, Qingyuan Zhao, Trevor Hastie, and Art B. Owen. 2017. "Confounder adjustment in multiple hypothesis testing." \emph{The Annals of Statistics} 45, no. 5: 1863-1894. \doi{10.1214/16-AOS1511}}
 }
 }
 \author{

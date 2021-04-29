@@ -4,10 +4,20 @@
 \alias{vruv2_old}
 \title{Old version of Calibrated RUV2 that doesn't really work.}
 \usage{
-vruv2_old(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
-  likelihood = c("t", "normal"), limmashrink = TRUE,
-  degrees_freedom = NULL, include_intercept = TRUE, gls = TRUE,
-  fa_func = pca_naive, fa_args = list())
+vruv2_old(
+  Y,
+  X,
+  ctl,
+  k = NULL,
+  cov_of_interest = ncol(X),
+  likelihood = c("t", "normal"),
+  limmashrink = TRUE,
+  degrees_freedom = NULL,
+  include_intercept = TRUE,
+  gls = TRUE,
+  fa_func = pca_naive,
+  fa_args = list()
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -91,15 +101,9 @@ use hierarchical shrinkage of the variances. That is, you must set
 }
 \references{
 \itemize{
-\item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
-    P. Speed. "Removing unwanted variation from high dimensional
-    data with negative controls."
-    Berkeley: Department of Statistics. University of California
-    (2013).}
-\item{Andreas Buja and Nermin
-    Eyuboglu. "Remarks on parallel analysis." Multivariate behavior
-    research, 27(4):509-540, 1992.}
-\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+  \item{Buja, A. and Eyuboglu, N., 1992. "Remarks on parallel analysis." \emph{Multivariate behavioral research}, 27(4), pp.509-540. \doi{10.1207/s15327906mbr2704_2}}
+  \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence P. Speed, 2013. "Removing unwanted variation from high dimensional data with negative controls." Berkeley: Department of Statistics. University of California. \url{https://statistics.berkeley.edu/tech-reports/820}}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 }
 }
 \author{

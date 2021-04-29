@@ -4,8 +4,17 @@
 \alias{normal_mix_llike}
 \title{Penalized MOUTHWASH likelihood when using a mixture of normals.}
 \usage{
-normal_mix_llike(pi_vals, z2, xi, betahat_ols, S_diag, alpha_tilde,
-  tau2_seq, lambda_seq, var_inflate_pen = 0)
+normal_mix_llike(
+  pi_vals,
+  z2,
+  xi,
+  betahat_ols,
+  S_diag,
+  alpha_tilde,
+  tau2_seq,
+  lambda_seq,
+  var_inflate_pen = 0
+)
 }
 \arguments{
 \item{pi_vals}{The current values of the mixing proportions.}

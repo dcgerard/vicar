@@ -2,12 +2,27 @@
 % Please edit documentation in R/ruvb.R
 \name{bfa_gs}
 \alias{bfa_gs}
-\title{Bayesian factor analysis used in Gerard and Stephens (2016).}
+\title{Bayesian factor analysis used in Gerard and Stephens (2021).}
 \usage{
-bfa_gs(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp/4),
-  thin = 20, display_progress = TRUE, hetero_factors = TRUE,
-  rho_0 = 0.1, alpha_0 = 0.1, delta_0 = 0.1, lambda_0 = 0.1,
-  nu_0 = 1, beta_0 = 1, eta_0 = 1, tau_0 = 1)
+bfa_gs(
+  Y21,
+  Y31,
+  Y32,
+  k,
+  nsamp = 10000,
+  burnin = round(nsamp/4),
+  thin = 20,
+  display_progress = TRUE,
+  hetero_factors = TRUE,
+  rho_0 = 0.1,
+  alpha_0 = 0.1,
+  delta_0 = 0.1,
+  lambda_0 = 0.1,
+  nu_0 = 1,
+  beta_0 = 1,
+  eta_0 = 1,
+  tau_0 = 1
+)
 }
 \arguments{
 \item{Y21}{Top left of matrix.}
@@ -62,12 +77,11 @@ the factors and factor loadings unidentified), and (2) we place
 hierarchical priors on the uniquenesses (variances).
 }
 \references{
+
+
 \itemize{
-\item{Ghosh, Joyee, and David
-    B. Dunson. "Default prior distributions and efficient posterior
-    computation in Bayesian factor analysis."
-    Journal of Computational and Graphical Statistics 18.2 (2009):
-    306-320.}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+  \item{Ghosh, J. and Dunson, D.B., 2009. "Default prior distributions and efficient posterior computation in Bayesian factor analysis." \emph{Journal of Computational and Graphical Statistics}, 18(2), pp.306-320. \doi{10.1198/jcgs.2009.07145}}
 }
 }
 \seealso{

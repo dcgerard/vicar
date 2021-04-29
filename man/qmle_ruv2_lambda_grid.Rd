@@ -5,8 +5,17 @@
 \title{Quasi-mle when first \code{vr} rows of \code{Y} have variances
 which differ by a scale factor from the rest of the rows.}
 \usage{
-qmle_ruv2_lambda_grid(Y, r, vr, gridsize = 20, gridlow = 1,
-  gridhigh = 10, tol = 10^-3, maxit = 1000, plot_llike = FALSE)
+qmle_ruv2_lambda_grid(
+  Y,
+  r,
+  vr,
+  gridsize = 20,
+  gridlow = 1,
+  gridhigh = 10,
+  tol = 10^-3,
+  maxit = 1000,
+  plot_llike = FALSE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. The data.}

@@ -4,9 +4,17 @@
 \alias{vruvinv}
 \title{Variance inflated RUV-inverse.}
 \usage{
-vruvinv(Y, X, ctl, cov_of_interest = ncol(X), likelihood = c("t",
-  "normal"), include_intercept = TRUE, fa_func = pca_naive,
-  fa_args = list(), adjust_bias = FALSE)
+vruvinv(
+  Y,
+  X,
+  ctl,
+  cov_of_interest = ncol(X),
+  likelihood = c("t", "normal"),
+  include_intercept = TRUE,
+  fa_func = pca_naive,
+  fa_args = list(),
+  adjust_bias = FALSE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -73,11 +81,7 @@ special choice for the number of confounders and forcing
 }
 \references{
 \itemize{
-\item{Gagnon-Bartsch, J., Laurent Jacob, and Terence
-    P. Speed. "Removing unwanted variation from high dimensional
-    data with negative controls."
-    Berkeley: Department of Statistics. University of California
-    (2013).}
+  \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence P. Speed, 2013. "Removing unwanted variation from high dimensional data with negative controls." Berkeley: Department of Statistics. University of California. \url{https://statistics.berkeley.edu/tech-reports/820}}
 }
 }
 \author{

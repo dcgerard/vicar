@@ -4,8 +4,14 @@
 \alias{impute_block}
 \title{Constructs an overall matrix, then applies a given imputation function.}
 \usage{
-impute_block(Y21, Y31, Y32, impute_func, impute_args = list(),
-  do_variance = FALSE)
+impute_block(
+  Y21,
+  Y31,
+  Y32,
+  impute_func,
+  impute_args = list(),
+  do_variance = FALSE
+)
 }
 \arguments{
 \item{Y21}{A matrix of size k by m}

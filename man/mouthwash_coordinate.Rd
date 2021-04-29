@@ -4,10 +4,23 @@
 \alias{mouthwash_coordinate}
 \title{Coordinate ascent for optimizing t likelihood with uniform mixtures.}
 \usage{
-mouthwash_coordinate(pi_init, z_init, xi_init, betahat_ols, S_diag,
-  alpha_tilde, a_seq, b_seq, lambda_seq, degrees_freedom,
-  scale_var = TRUE, tol = 10^-6, maxit = 100, plot_update = FALSE,
-  var_inflate_pen = 0)
+mouthwash_coordinate(
+  pi_init,
+  z_init,
+  xi_init,
+  betahat_ols,
+  S_diag,
+  alpha_tilde,
+  a_seq,
+  b_seq,
+  lambda_seq,
+  degrees_freedom,
+  scale_var = TRUE,
+  tol = 10^-6,
+  maxit = 100,
+  plot_update = FALSE,
+  var_inflate_pen = 0
+)
 }
 \arguments{
 \item{pi_init}{The initial values of the mixing proportions. A

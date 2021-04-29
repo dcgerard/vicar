@@ -4,8 +4,16 @@
 \alias{ruvem}
 \title{Same as ruvimpute but only does ruvem and comes up with estimates of standard errors.}
 \usage{
-ruvem(Y, X, ctl, k = NULL, impute_args = list(),
-  cov_of_interest = ncol(X), include_intercept = TRUE, gls = TRUE)
+ruvem(
+  Y,
+  X,
+  ctl,
+  k = NULL,
+  impute_args = list(),
+  cov_of_interest = ncol(X),
+  include_intercept = TRUE,
+  gls = TRUE
+)
 }
 \arguments{
 \item{Y}{A matrix of numerics. These are the response variables
@@ -45,7 +53,7 @@ This is more friendly than \code{\link{ruvimpute}}.
 }
 \references{
 \itemize{
-\item{Gerard, David, and Matthew Stephens. 2019. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, in press. <\href{https://doi.org/10.5705/ss.202018.0345}{doi:10.5705/ss.202018.0345}>.}
+  \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
 }
 }
 \seealso{

@@ -4,8 +4,19 @@
 \alias{back_update_xi}
 \title{Update for the variance scaling parameter.}
 \usage{
-back_update_xi(betahat_ols, S_diag, Amat, mubeta, mubeta_matrix,
-  sig2beta_matrix, gamma_mat, muv, Sigma_v, phi, var_inflate_pen = 0)
+back_update_xi(
+  betahat_ols,
+  S_diag,
+  Amat,
+  mubeta,
+  mubeta_matrix,
+  sig2beta_matrix,
+  gamma_mat,
+  muv,
+  Sigma_v,
+  phi,
+  var_inflate_pen = 0
+)
 }
 \arguments{
 \item{betahat_ols}{A vector of numerics. The ordinary least

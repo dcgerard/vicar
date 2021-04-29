@@ -4,9 +4,26 @@
 \alias{bfa_gs_linked_gibbs_r}
 \title{R implementation of \code{\link{bfa_gs_linked_gibbs}}.}
 \usage{
-bfa_gs_linked_gibbs_r(Linit, Finit, xi_init, phi_init, zeta_init, Y22init,
-  Y21, Y31, Y32, nsamp, burnin, thin, rho_0, alpha_0, beta_0, eta_0, tau_0,
-  display_progress)
+bfa_gs_linked_gibbs_r(
+  Linit,
+  Finit,
+  xi_init,
+  phi_init,
+  zeta_init,
+  Y22init,
+  Y21,
+  Y31,
+  Y32,
+  nsamp,
+  burnin,
+  thin,
+  rho_0,
+  alpha_0,
+  beta_0,
+  eta_0,
+  tau_0,
+  display_progress
+)
 }
 \arguments{
 \item{Linit}{A numeric matrix. The initial values of the loadings.}
