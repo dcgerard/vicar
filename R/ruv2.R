@@ -94,7 +94,7 @@
 #' \itemize{
 #'   \item{Buja, A. and Eyuboglu, N., 1992. "Remarks on parallel analysis." \emph{Multivariate behavioral research}, 27(4), pp.509-540. \doi{10.1207/s15327906mbr2704_2}}
 #'   \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence P. Speed, 2013. "Removing unwanted variation from high dimensional data with negative controls." Berkeley: Department of Statistics. University of California. \url{https://statistics.berkeley.edu/tech-reports/820}}
-#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1145-1166. \doi{10.5705/ss.202018.0345}}
 #' }
 vruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
                   likelihood = c("t", "normal"), limmashrink = TRUE,
@@ -307,7 +307,7 @@ vruv2 <- function(Y, X, ctl, k = NULL, cov_of_interest = ncol(X),
 #' \itemize{
 #'   \item{Buja, A. and Eyuboglu, N., 1992. "Remarks on parallel analysis." \emph{Multivariate behavioral research}, 27(4), pp.509-540. \doi{10.1207/s15327906mbr2704_2}}
 #'   \item{Gagnon-Bartsch, J., Laurent Jacob, and Terence P. Speed, 2013. "Removing unwanted variation from high dimensional data with negative controls." Berkeley: Department of Statistics. University of California. \url{https://statistics.berkeley.edu/tech-reports/820}}
-#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1145-1166. \doi{10.5705/ss.202018.0345}}
 #' }
 #'
 vruv2_old <- function(Y, X, ctl, k = NULL,

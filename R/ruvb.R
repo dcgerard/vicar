@@ -124,7 +124,7 @@
 #'
 #' @references
 #' \itemize{
-#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1145-1166. \doi{10.5705/ss.202018.0345}}
 #' }
 #'
 #' @examples
@@ -376,7 +376,7 @@ prior_fun_wrapper <- function(beta_mat, prior_fun, prior_args = list()) {
 #'
 #' @references
 #' \itemize{
-#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1145-1166. \doi{10.5705/ss.202018.0345}}
 #' }
 #'
 #' @export
@@ -728,7 +728,7 @@ bsvd <- function(Y21, Y31, Y32, k, nsamp = 10000,
 #' @references
 #' @references
 #' \itemize{
-#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1145-1166. \doi{10.5705/ss.202018.0345}}
 #' }
 #'
 bfa_gs_linked <- function(Y21, Y31, Y32, k, nsamp = 10000,
@@ -957,7 +957,7 @@ bfa_gs_linked_gibbs_r <- function(Linit, Finit, xi_init, phi_init,
 #' @references
 #' @references
 #' \itemize{
-#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1145-1166. \doi{10.5705/ss.202018.0345}}
 #' }
 #'
 bfl <- function(Y21, Y31, Y32, k, nsamp = 10000,
@@ -1201,7 +1201,7 @@ bfa_wrapper <- function(Y21, Y31, Y32, k, nsamp = 10000, burnin = round(nsamp / 
 #' @references
 #' @references
 #' \itemize{
-#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1-22. \doi{10.5705/ss.202018.0345}}
+#'   \item{Gerard, David, and Matthew Stephens. 2021. "Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls." \emph{Statistica Sinica}, 31(3), 1145-1166. \doi{10.5705/ss.202018.0345}}
 #'   \item{Ghosh, J. and Dunson, D.B., 2009. "Default prior distributions and efficient posterior computation in Bayesian factor analysis." \emph{Journal of Computational and Graphical Statistics}, 18(2), pp.306-320. \doi{10.1198/jcgs.2009.07145}}
 #' }
 #'

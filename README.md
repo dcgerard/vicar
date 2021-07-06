@@ -75,7 +75,7 @@ If you use any of the control-gene based methods, please cite:
 
 > Gerard, D., & Stephens, M. 2021. “Unifying and Generalizing Methods
 > for Removing Unwanted Variation Based on Negative Controls.”
-> *Statistica Sinica*, 31(3), 1-22
+> *Statistica Sinica*, 31(3), 1145-1166
 > &lt;[doi:10.5705/ss.202018.0345](https://doi.org/10.5705/ss.202018.0345)&gt;.
 
 Or, using BibTex:
@@ -88,7 +88,7 @@ Or, using BibTex:
   doi={10.5705/ss.202018.0345},
   volume={31},
   number={3},
-  pages={1--22},
+  pages={1145--1166},
   year={2021}
 }
 ```
@@ -224,8 +224,8 @@ estimation, allowing for unwanted variation</span>.” *Biostatistics* 21
 <div id="ref-gerard2021unifying" class="csl-entry">
 
 ———. 2021. “Unifying and Generalizing Methods for Removing Unwanted
-Variation Based on Negative Controls.” *Statistica Sinica* 31 (3): 1–22.
-<https://doi.org/10.5705/ss.202018.0345>.
+Variation Based on Negative Controls.” *Statistica Sinica* 31 (3):
+1145–66. <https://doi.org/10.5705/ss.202018.0345>.
 
 </div>
 

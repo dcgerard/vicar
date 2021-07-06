@@ -85,13 +85,13 @@
 
       
 
-      </header><script src="sample_analysis_files/header-attrs-2.7/header-attrs.js"></script><div class="row">
+      </header><script src="sample_analysis_files/header-attrs-2.9/header-attrs.js"></script><div class="row">
   <div class="col-md-9 contents">
     <div class="page-header toc-ignore">
       <h1 data-toc-skip>Sample Analysis</h1>
                         <h4 class="author">David Gerard</h4>
             
-            <h4 class="date">2021-04-29</h4>
+            <h4 class="date">2021-07-06</h4>
       
       <small class="dont-index">Source: <a href="http://github.com/dcgerard/vicar/blob/master/vignettes/sample_analysis.Rmd"><code>vignettes/sample_analysis.Rmd</code></a></small>
       <div class="hidden name"><code>sample_analysis.Rmd</code></div>
@@ -185,33 +185,33 @@ Y = X\beta + Z\alpha + E,
 <code class="sourceCode R"><span class="va">mout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/mouthwash.html">mouthwash</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">Y</span>, X <span class="op">=</span> <span class="va">X</span>, k <span class="op">=</span> <span class="va">num_sv</span>, cov_of_interest <span class="op">=</span> <span class="fl">2</span>, include_intercept <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <pre><code>## Running mouthwash on 20 x 2 matrix X and 20 x 1000 matrix Y.
 ##  - Computing independent basis using QR decomposition.
-##  - Computation took 0.009 seconds.
+##  - Computation took 0.01 seconds.
 ##  - Running additional preprocessing steps.
 ##  - Computation took 0.001 seconds.
 ##  - Running second step of mouthwash:
 ##     + Estimating model parameters using EM.
-##     + Computation took 3.495 seconds.
+##     + Computation took 3.933 seconds.
 ##     + Generating adaptive shrinkage (ash) output.
-##     + Computation took 0.092 seconds.
-##  - Second step took 4.075 seconds.
+##     + Computation took 0.094 seconds.
+##  - Second step took 4.627 seconds.
 ##  - Estimating additional hidden confounders.
-##  - Computation took 0.013 seconds.</code></pre>
+##  - Computation took 0.012 seconds.</code></pre>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span class="va">bout</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/backwash.html">backwash</a></span><span class="op">(</span>Y <span class="op">=</span> <span class="va">Y</span>, X <span class="op">=</span> <span class="va">X</span>, k <span class="op">=</span> <span class="va">num_sv</span>, cov_of_interest <span class="op">=</span> <span class="fl">2</span>, include_intercept <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></code></pre></div>
 <pre><code>##  - Computing independent basis using QR decomposition.
 ##  - Computation took 0.01 seconds.
 ##  - Running additional preprocessing steps.
-##  - Computation took 0 seconds.
+##  - Computation took 0.001 seconds.
 ##  - Running second step of backwash:
 ##     + Initializing parameters for EM algorithm.
-##     + Computation took 0.99 seconds.
+##     + Computation took 1.078 seconds.
 ##     + Running one round of parameter updates.
-##     + Computation took 0.019 seconds.
+##     + Computation took 0.024 seconds.
 ##     + Estimating model parameters using EM.
-##     + Computation took 13.006 seconds.
+##     + Computation took 11.411 seconds.
 ##     + Generating posterior statistics.
-##     + Computation took 0.004 seconds.
-##  - Second step took 14.971 seconds.
+##     + Computation took 0.005 seconds.
+##  - Second step took 13.672 seconds.
 ##  - Generating final backwash outputs.
 ##  - Computation took 0.012 seconds.</code></pre>
 <p>In terms of other packages, you can use the <code>sva</code> function in the sva package, the <code>cate</code> function in the cate package, or the <code>leapp</code> function in the leapp package.</p>
@@ -444,7 +444,7 @@ Y = X\beta + Z\alpha + E,
 Gerard, David, and Matthew Stephens. 2020. <span>“<span class="nocase">Empirical <span>B</span>ayes shrinkage and false discovery rate estimation, allowing for unwanted variation</span>.”</span> <em>Biostatistics</em> 21 (1): 15–32. <a href="https://doi.org/10.1093/biostatistics/kxy029">https://doi.org/10.1093/biostatistics/kxy029</a>.
 </div>
 <div id="ref-gerard2021unifying" class="csl-entry">
-———. 2021. <span>“Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls.”</span> <em>Statistica Sinica</em> 31 (3): 1–22. <a href="https://doi.org/10.5705/ss.202018.0345">https://doi.org/10.5705/ss.202018.0345</a>.
+———. 2021. <span>“Unifying and Generalizing Methods for Removing Unwanted Variation Based on Negative Controls.”</span> <em>Statistica Sinica</em> 31 (3): 1145–66. <a href="https://doi.org/10.5705/ss.202018.0345">https://doi.org/10.5705/ss.202018.0345</a>.
 </div>
 </div>
 </div>

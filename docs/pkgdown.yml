@@ -1,9 +1,9 @@
-pandoc: 2.11.2
+pandoc: 2.11.4
 pkgdown: 1.6.1
 pkgdown_sha: ~
 articles:
   customFA: customFA.html
   custom_prior: custom_prior.html
   sample_analysis: sample_analysis.html
-last_built: 2021-04-29T15:24Z
+last_built: 2021-07-06T13:03Z
 
